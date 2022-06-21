@@ -1,0 +1,22 @@
+{
+    "components": {
+        "schemas": {
+
+            "siwc":{
+                "type":"object",
+                "required":["status","version"],
+                "properties":{
+                    "status":{
+                        "type":"string",
+                        "example": "running"
+                    },
+                    "version":{
+                        "type":"string",
+                        "example": "1.0.0"
+                    }
+                }
+            }
+        }    
+    
+    }
+}

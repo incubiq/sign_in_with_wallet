@@ -1,0 +1,58 @@
+:root {
+  --dark-text: #3f272f;
+  --light: #f5f5ff;
+  --light-alt: #eeeef9;
+
+  --disabled: #aaa;
+  --disabled-alt: #ccc;
+  --disabled-dark: #888;
+
+  --danger: #ff6a50;
+
+  --green: #20e720;
+  --orange: #ffbb55;
+  --red: #ff6a50;
+  --grey: #ccc;
+
+  --accent-1-lighter: #e4e5ff;
+  --accent-1-light: #c1c3ff;
+  --accent-1: #a2a4ff;
+  --accent-1-shadow: #c9cbff;
+  --accent-1-dark: #777bff;
+  --accent-1-darker: #5b4ce2;
+
+  --accent-2-light: #e159ae;
+  --accent-2: #e01695;
+  --accent-2-dark: #e1008d;
+
+  --accent-3-light: #91D707;
+  --accent-3: #5E8B04;
+  --accent-3-dark: #4A6D03;
+
+  --shadow: rgba(63,39, 47, 0.5);
+}
+
+.fCIiLJ {
+  background-color: initial !important;
+}
+
+li.sc-bhVIhj[data-item-id="h1a"], li.sc-bhVIhj[data-item-id="h1b"], li.sc-bhVIhj[data-item-id="h1c"], li.sc-bhVIhj [data-item-id="h1d"]   {
+  font-weight: bold;
+  background-color: var(--accent-1-lighter);
+}
+
+li.sc-bhVIhj[data-item-id="h1a"] .cShvKR.active, li.sc-bhVIhj [data-item-id="h1b"] .cShvKR.active, li.sc-bhVIhj [data-item-id="h1c"] .cShvKR.active, li.sc-bhVIhj [data-item-id="h1d"] .cShvKR.active   {
+  background-color: var(--accent-1-light);
+}
+
+.fYEeMm .lmMrOG {
+  color: var(--accent-1-dark);
+  border-bottom: 1px solid var(--accent-1-dark);
+}
+
+#h1a .lmMrOG, #h1b .lmMrOG, #h1c .lmMrOG, #h1d .lmMrOG, .api-info .lmMrOG  {
+  font-weight: bold;
+  color: var(--accent-1-darker);
+  border-bottom: 2px solid var(--accent-1-darker);
+}
+

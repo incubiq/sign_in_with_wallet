@@ -1,0 +1,61 @@
+:root {
+  --dark-text: #3f272f;
+  --light: #f5f5ff;
+  --light-alt: #eeeef9;
+
+  --disabled: #aaa;
+  --disabled-alt: #ccc;
+  --disabled-dark: #888;
+
+  --danger: #ff6a50;
+
+  --green: #20e720;
+  --orange: #ffbb55;
+  --red: #ff6a50;
+  --grey: #ccc;
+
+  --accent-1-lighter: #e4e5ff;
+  --accent-1-light: #c1c3ff;
+  --accent-1: #a2a4ff;
+  --accent-1-shadow: #c9cbff;
+  --accent-1-dark: #777bff;
+  --accent-1-darker: #5b4ce2;
+
+  --accent-2-light: #e159ae;
+  --accent-2: #e01695;
+  --accent-2-dark: #e1008d;
+
+  --accent-3-light: #91D707;
+  --accent-3: #5E8B04;
+  --accent-3-dark: #4A6D03;
+
+  --shadow: rgba(63,39, 47, 0.5);
+}
+
+body {
+  overflow-y: hidden;
+}
+
+.noshow {
+  display: none !important;
+}
+
+.btn {
+  margin: 8px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.connectContainer {
+  display: block;
+  margin:12px;
+  border: 1px solid #888;
+}
+
+.connectContainer ul {
+  list-style-type: none;
+}
+
+.connectContainer li {
+  margin-bottom: 6px;
+}

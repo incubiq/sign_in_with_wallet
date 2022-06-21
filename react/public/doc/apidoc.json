@@ -1,0 +1,80 @@
+{
+    "swagger":"2.0",
+    "info":{
+        "description":"",
+        "version":"0.1.0",
+        "title":"Sign-in with Cardano - API documentation",
+        "termsOfService":"",
+        "contact":{
+            "email":"eric@incubiq.com"
+        },
+        "license":{
+            "name":"Apache 2.0",
+            "url":"http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "TODO",
+            "variables": {
+                "username": {
+                    "default": "demo",
+                    "description": "TODO"
+                },
+                "basePath": {
+                    "default": "/api/v1"
+                }
+            }
+        }
+    ],
+
+    "host":"http://locahost:3000",
+    "basePath":"/api/v1",
+    "tags":[{
+        "name":"Concept",
+        "id": "h1a",
+        "description":"Sign-In with Cardano (SIWC) is a form of authentication that enables users to control their digital identity with their Cardano account instead of relying on a traditional intermediary such as Facebook, LinkedIn, Twitter or other web 2 social apps. SIWC effort standardizes the authentication method with best practices by implementing the oAuth 2.0 protocol and making use of web3 resources, in our case wallets and message signature."
+    }, {
+        "name":"Quick start",
+        "id": "h1b",
+        "description":"This guide will show how to implement Sign-In with Cardano (SIWC) in a JavaScript web application (implementation of client and backend).<br>"
+    }, {
+        "name":"JS client",
+        "description":"TODO...",
+    }],
+    "schemes":["https","http"],
+    
+    "paths":{
+
+"_c004" : "***************************************************************",
+"_c005" : "****************           SIWC                ****************",
+"_c006" : "***************************************************************",
+
+"_c102" : "****************          Base                 ****************",                                
+
+        "/public":  {"$ref": "path_public.json#"},
+
+"_c500" : "***************************************************************",
+"_c501" : "****************        Authentication         ****************",
+"_c502" : "***************************************************************",
+    },
+    
+    "securityDefinitions":{
+        "api_key":{
+            "type":"apiKey",
+            "name":"api_key",
+            "in":"header"
+        },
+        "oauth2.x":{
+            "type":"oauth2",
+            "authorizationUrl":"https://localhost:3000/oauth/authorize",
+            "flow":"implicit",
+            "scopes":{
+                "read:siwc":"TODO",
+                "write:siwc":"TODO"
+            }
+        }
+    }
+}
