@@ -2,21 +2,22 @@
 
 * [Sign-in with Cardano (SIWC)](README.md)
 
-## Guides
+## Specifications
 
-* [Creating your first project](guides/creating-your-first-project.md)
-* [Creating your first task](guides/creating-your-first-task.md)
-* [Advanced permissions](guides/advanced-permissions.md)
+* [Abstract](specifications/creating-your-first-project.md)
+* [Motivation](specifications/creating-your-first-task.md)
+* [Detailed specs](specifications/advanced-permissions.md)
+* [Security](specifications/security.md)
 
 ## Use Cases
 
 * [JS - Client implementation](use-cases/js-client-implementation/README.md)
-  * [Initialize SIWC client lib](use-cases/js-client-implementation/initialize-siwc-client-lib.md)
-  * [Connect with Wallet](use-cases/js-client-implementation/connect-with-wallet.md)
-  * [Signing messages](use-cases/js-client-implementation/signing-messages.md)
+  * [1. Initialize SIWC client lib](use-cases/js-client-implementation/initialize-siwc-client-lib.md)
+  * [2. Connect with Wallet](use-cases/js-client-implementation/connect-with-wallet.md)
+  * [3. Signing messages](use-cases/js-client-implementation/signing-messages.md)
 * [NodeJS - Backend implementation](use-cases/nodejs-backend-implementation/README.md)
-  * [todo](use-cases/nodejs-backend-implementation/todo.md)
+  * [1. TODO](use-cases/nodejs-backend-implementation/todo.md)
 
 ## Extras
 
-* [Keyboard Shortcuts](extras/keyboard-shortcuts.md)
+* [To be defined](extras/keyboard-shortcuts.md)
