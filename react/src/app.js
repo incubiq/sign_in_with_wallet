@@ -11,9 +11,15 @@ class App extends Component {
             <div></div>
 
             <NavLink 
-                to="/doc"  
+                to="/"  
             >
-                <button id='btnAccessDoc'>Access Documentation...</button>
+            <button 
+                id='btnAccessDoc'
+                onClick={() => {
+                        window.open("https://eric-duneau.gitbook.io/siwc/", "_blank");
+                    }
+                }
+            >Access Documentation...</button>
             </NavLink>
 
             <br />

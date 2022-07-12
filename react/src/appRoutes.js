@@ -1,7 +1,6 @@
 import React, { Component, Suspense } from "react";
-import {Route, Routes} from 'react-router-dom';
+import {Route, Routes, useNavigate } from 'react-router-dom';
 
-const AppDoc  = React.lazy(() => import ("./appDoc"));
 const AppDemoAuth  = React.lazy(() => import ("./appAuth"));
 const App  = React.lazy(() => import ("./app"));
 
@@ -22,7 +21,6 @@ class AppRoutes extends Component {
 *     all for APP routes 
 */
 
-
   render() {
     return (
       <>
@@ -33,15 +31,6 @@ class AppRoutes extends Component {
                 <Suspense 
                     fallback={<div>Loading App...</div>}>
                     <App
-                        version={this.state.version}
-                    />
-                </Suspense> 
-                } exact />
-
-            <Route  path="/doc" element={
-                <Suspense 
-                    fallback={<div>Loading Documentation...</div>}>
-                    <AppDoc 
                         version={this.state.version}
                     />
                 </Suspense> 

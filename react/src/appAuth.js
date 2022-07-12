@@ -30,19 +30,17 @@ constructor(props) {
 
     siwc_registerCallbacks( ){
         // register all callbacks with SIWC
-        let that=this;
         this.siwc.async_initialize({
             onNotifyAccessibleWallets: function(_aWallet){
-                that.siwc_onNotifyWalletsAccessible(_aWallet);
-            },
+                this.siwc_onNotifyWalletsAccessible(_aWallet);
+            }.bind(this),
             onNotifyConnectedWallet: function(_wallet){
-                that.siwc_onNotifyWalletConnected(_wallet);
-            },
+                this.siwc_onNotifyWalletConnected(_wallet);
+            }.bind(this),
             onNotifySignedMessage: function(_wallet){
-                that.siwc_onNotifySignedMessage(_wallet);
-            },
-        });
-        
+                this.siwc_onNotifySignedMessage(_wallet);
+            }.bind(this),
+        });        
     }
 
     // called at init (what are those wallets?)
@@ -153,10 +151,10 @@ constructor(props) {
                         key={index}
                     >
                         <button 
-                            className="btn"
+                            className={item.isConnected? "btn disabled" : "btn"}
                             attr-id={item.id}
                             onClick={this.async_connectWallet.bind(this)}
-                        >Connect to {item.name}...</button>
+                        >{item.isConnected? "Connected to"+item.name: "Connect to "+item.name}...</button>
                         <ul>
                             <li>{"Status: " + (item.isConnected? "connected": "not connected")}</li>
                             <li className={item.isConnected?"" : "noshow"}>{"Address: "+this.getShortenAnonAddress(item.address)}</li>

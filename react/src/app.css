@@ -46,6 +46,11 @@ body {
   cursor: pointer;
 }
 
+.btn.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .connectContainer {
   display: block;
   margin:12px;
