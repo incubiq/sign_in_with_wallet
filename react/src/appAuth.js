@@ -60,9 +60,9 @@ constructor(props) {
 
         // replace an existing entry (case when we connected)
         let i=this.state.aWallet.findIndex(function (x) {return x.id===objParam.id});
-        if(i!==-1) {
+        if(i!==-1 && objParam.wasConnected) {
             let _aWallet=this.state.aWallet.slice();
-            _aWallet[i]=objParam;
+            _aWallet[i].address=objParam.address;
             this.setState({aWallet:_aWallet});
         }
 
@@ -114,7 +114,8 @@ constructor(props) {
 
         try {
             // not waiting for this to finish, it could wait too long
-            this.siwc.async_connectWallet(_id);
+            let _siwc=await this.siwc.async_connectWallet(_id);
+            return;
         }
         catch(err) {
             throw err;
@@ -126,23 +127,14 @@ constructor(props) {
         let idElt=event.target;
         let _id=idElt.getAttribute("attr-id");
         try {
-            let _host=window.location.hostname;
-            if(window.location.port!=="") {
-                _host=_host+":"+window.location.port;
-            }
-
-            let now = new Date(); 
-            let nowUtc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
 
             const objSiwcMsg = await this.siwc.async_createMessage(_id, {
                 message: "something i d like to say",
-                domain: _host,
-                issued_at: nowUtc,
-                valid_for: 300,                 // 5min validity
+                valid_for: 300,                 // 5min validity from when it is sent
             });
     
             // not waiting for this to finish, it could wait too long
-            this.siwc.async_signMessage(_id, objSiwcMsg);
+            this.siwc.async_signMessage(_id, objSiwcMsg, "authentication");
         }
         catch(err) {
             alert("Error when signning message ("+err.message+")");

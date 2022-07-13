@@ -107,9 +107,12 @@ export class siwc_connect {
             }
             
             that.aWallet.forEach(async function(item) {
-                if(item.isEnabled && that.fnOnNotifyConnectedWallet) {
+                if(item.isConnected && item.address && that.fnOnNotifyConnectedWallet) {
                     that.fnOnNotifyConnectedWallet({
                         wasConnected: true,
+                        id: item.id,
+                        chain: item.chain,
+                        networkId: item.networkId,
                         address: item.address
                     });
                 }
@@ -245,14 +248,17 @@ export class siwc_connect {
                 if (_objWallet.api) {
 
                     // get connection details
-                    let objRet=await this.async_getConnectedWalletInfo(_objWallet);
+                    let _obj=await this.async_getConnectedWalletInfo(_objWallet);
+                    let objRet={
+                        wasConnected: true,
+                        id: _idWallet,
+                        chain: _obj.chain,
+                        networkId: _obj.networkId,    
+                        address: _obj.address
+                    }
 
                     if(this.fnOnNotifyConnectedWallet) {
-                        this.fnOnNotifyConnectedWallet({
-                            wasConnected: true,
-                            id: _idWallet,
-                            address: objRet.address
-                        });
+                        this.fnOnNotifyConnectedWallet(objRet);
                     }
                     return objRet;
                 } else {
@@ -261,15 +267,18 @@ export class siwc_connect {
                     _objWallet.hasReplied=true;
                     _objWallet.alert= "Wallet connection refused by user";
 
+                    let objRet2={
+                        wasConnected: true,
+                        id: _idWallet,
+                        chain: _objWallet.chain,
+                        networkId: _objWallet.networkId,    
+                        address: _objWallet.address
+                }
                     if(this.fnOnNotifyConnectedWallet) {
-                        this.fnOnNotifyConnectedWallet({
-                            wasConnected: false,
-                            id: _idWallet,
-                            address: _objWallet.address
-                        });
+                        this.fnOnNotifyConnectedWallet(objRet2);
                     }
     
-                    return _objWallet;
+                    return objRet2;
                 }
             } else {
                 throw new Error("expected a wallet id, got null");
@@ -314,16 +323,26 @@ export class siwc_connect {
             // are we connected with a wallet?
             let _obj=this._getWalletFromList(_idWallet);
             if (_obj && _obj.wallet) {                
+                let _objWallet=_obj.wallet;
 
+                // who is caling?
+                let _host=window.location.hostname;
+                if(window.location.port!=="") {
+                    _host=_host+":"+window.location.port;
+                }
+
+                let now = new Date(); 
+                let nowUtc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+        
                 // full object filled with wallet info
                 let objMsg={
                     message: objParam.message? objParam.message: null,
-                    domain: objParam.domain? objParam.domain : null,                // who is calling?
-                    issued_at: objParam.issued_at? objParam.issued_at : null,
+                    domain: _host,
+                    issued_at: nowUtc,
                     valid_for: objParam.valid_for? objParam.valid_for : null,
-                    address: _obj.wallet.address,
-                    chain: _obj.wallet.chain,
-                    name: _obj.wallet.name,
+                    address: _objWallet.address,
+                    chain: _objWallet.chain,
+                    name: _objWallet.name,
                     version: "1.0",
                     nonce: generateNonce()
                 }
@@ -343,7 +362,11 @@ export class siwc_connect {
         }
     }
 
-    async async_signMessage(_idWallet, objSiwcMsg){
+    // type of signing:
+    //  "authentication" : for authenticating user
+    //  "revocation" : for revocating consent of data shared by user with domain
+    //
+    async async_signMessage(_idWallet, objSiwcMsg, type){
         let _obj=this._getWalletFromList(_idWallet);
         try{
             if (_obj && _obj.wallet) {                
@@ -363,11 +386,16 @@ export class siwc_connect {
                 let isSigned=getConfirmation(_str);
 
                 // let's assume the wallet signed the message
-                if(this.fnOnNotifySignedMessage) {
-                    objSiwcMsg.wasSigned= isSigned;
-                    objSiwcMsg.id=_idWallet;
-                    this.fnOnNotifySignedMessage(objSiwcMsg);
+                let objRet={
+                    wasSigned: isSigned,
+                    type: type,
+                    id:_idWallet,
+                    msg: objSiwcMsg
                 }
+                if(this.fnOnNotifySignedMessage) {
+                    this.fnOnNotifySignedMessage(objRet);
+                }
+                return objRet;
             }
             else {
                     throw new Error("expected a wallet id, got null");
@@ -376,7 +404,7 @@ export class siwc_connect {
             throw err;
         }    
     }
-
+    
     // format a message for showing in wallet
     _formatMessage(objMsg) {
         let _strValidFor=null;
@@ -389,13 +417,38 @@ export class siwc_connect {
         return _str;
     }
 
+//
+//      Misc access to wallet public info
+//
+
     async _async_getFirstAddress(_api) {
         try {
             const aRaw = await _api.getUsedAddresses();
-            const _firstAddress = Address.from_bytes(Buffer.from(aRaw[0], "hex")).to_bech32()
-            return _firstAddress
+            if(aRaw && aRaw.length>0) {
+                const _firstAddress = Address.from_bytes(Buffer.from(aRaw[0], "hex")).to_bech32()
+                return _firstAddress    
+            }
+            else {
+                throw {};
+            }
         } catch (err) {
             console.log ("Could not access first address of wallet")
+        }
+        return null;
+    }
+
+    async _async_getUnusedAddress(_api) {
+        try {
+            const aRaw = await _api.getUnusedAddresses();
+            if(aRaw && aRaw.length>0) {
+                const _firstAddress = Address.from_bytes(Buffer.from(aRaw[0], "hex")).to_bech32()
+                return _firstAddress
+            }
+            else {
+                throw {};
+            }
+        } catch (err) {
+            console.log ("Could not access any unused addresses of wallet")
         }
         return null;
     }
