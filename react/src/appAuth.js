@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import siwc_connect from "./connectCardano";
+import siwc_connect from "./siwc_connect";
 import "./app.css";
 
 class AppDemoAuth extends Component {
@@ -21,30 +21,30 @@ constructor(props) {
     }
 
     componentDidMount() {
-        this.siwc_registerCallbacks();
+        this.registerSIWCCallbacks();
     }
 
 /*
  *          SIWC callbacks
  */
 
-    siwc_registerCallbacks( ){
+    registerSIWCCallbacks( ){
         // register all callbacks with SIWC
         this.siwc.async_initialize({
             onNotifyAccessibleWallets: function(_aWallet){
-                this.siwc_onNotifyWalletsAccessible(_aWallet);
+                this.onSIWCNotify_WalletsAccessible(_aWallet);
             }.bind(this),
             onNotifyConnectedWallet: function(_wallet){
-                this.siwc_onNotifyWalletConnected(_wallet);
+                this.onSIWCNotify_WalletConnected(_wallet);
             }.bind(this),
             onNotifySignedMessage: function(_wallet){
-                this.siwc_onNotifySignedMessage(_wallet);
+                this.onSIWCNotify_SignedMessage(_wallet);
             }.bind(this),
         });        
     }
 
     // called at init (what are those wallets?)
-    siwc_onNotifyWalletsAccessible(_aWallet) {
+    onSIWCNotify_WalletsAccessible(_aWallet) {
         this.setState({aWallet:_aWallet});
 
         // show connection to those wallets which are connected
@@ -56,7 +56,7 @@ constructor(props) {
     }
 
     // processing the wallet connection request (did we really connect?)
-    siwc_onNotifyWalletConnected(objParam) {
+    onSIWCNotify_WalletConnected(objParam) {
 
         // replace an existing entry (case when we connected)
         let i=this.state.aWallet.findIndex(function (x) {return x.id===objParam.id});
@@ -76,10 +76,13 @@ constructor(props) {
     }
 
     // a message was signed by user
-    siwc_onNotifySignedMessage(objParam) {
+    onSIWCNotify_SignedMessage(objParam) {
         // todo...
         if(objParam.wasSigned) {
-            alert("Signed by "+objParam.id+" ("+objParam.message+")");
+            alert("User accepted authentication via "+objParam.id+" wallet");
+        }
+        else {
+            alert("User refused authentication!");
         }
         return;
     }
@@ -87,6 +90,14 @@ constructor(props) {
 /*
  *          implement page UI
  */
+
+    getWalletFromId(_id) {
+        let i=this.state.aWallet.findIndex(function (x) {return x.id===_id});
+        if(i!==-1) {
+            return this.state.aWallet[i];
+        }
+        return null;
+    }
 
     // from UI (close dialog requested)
     onCloseWallet() {
@@ -114,18 +125,27 @@ constructor(props) {
     async async_signMessage(event) {
         let idElt=event.target;
         let _id=idElt.getAttribute("attr-id");
-
         try {
+            let _host=window.location.hostname;
+            if(window.location.port!=="") {
+                _host=_host+":"+window.location.port;
+            }
+
+            let now = new Date(); 
+            let nowUtc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+
             const objSiwcMsg = await this.siwc.async_createMessage(_id, {
                 message: "something i d like to say",
-                domain: null            // todo : this and more....
+                domain: _host,
+                issued_at: nowUtc,
+                valid_for: 300,                 // 5min validity
             });
     
             // not waiting for this to finish, it could wait too long
             this.siwc.async_signMessage(_id, objSiwcMsg);
         }
         catch(err) {
-            throw err;
+            alert("Error when signning message ("+err.message+")");
         }
     }
 

@@ -1,28 +1,9 @@
 
 /*
- *      known supported wallet
- *       - Nami
- * 
- *      check those...
- *       - Yoroi
- *       - Eternl
- *       - Flint
- *       - Gero
-
- *      Cardano API:
- *       - getNetworkId
- *       - getBalance
- *       - getUtxos
- *       - getUsedAddresses
- *       - getUnusedAddresses
- *       - getRewardAddresses
- *       - getChangeAddress
- *       - signData
- *       - signTx
- *       - submitTx
- *     see: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030
- *     serializer: cardano-serialization-lib-browser obj
+ *      Sign-In With Cardano / wallet connect
  */
+
+import {replyFast, checkIsValidDomain, checkIsValidStatement, checkIsValidChain, checkIsDateValid, generateNonce}  from './siwc_utils'
 
 import cbor from 'cbor'
 import {
@@ -99,24 +80,6 @@ export class siwc_connect {
         })
     }
 
-    // to avoind being stuck in a request for an unresponsive wallet
-    _replyFast = async (_waitTimeMs, fn, ...args) => {        
-        let p=new Promise(function(resolve, reject) {
-            setTimeout(function(){
-                reject('timeout');
-            },_waitTimeMs)
-
-            fn(...args)
-                .then(function(data){
-                    resolve(data);
-                })
-                .catch(function(err){
-                    reject(err);
-                })                
-        });
-        return p;
-    }
-
 //
 //      Initialization
 //
@@ -168,7 +131,7 @@ export class siwc_connect {
 
                             // push info with address?
                             try {
-                                let objRetConnected=await this._replyFast(this.msKillSlow, this.async_getConnectedWalletInfo.bind(this), objWallet);
+                                let objRetConnected=await replyFast(this.msKillSlow, this.async_getConnectedWalletInfo.bind(this), objWallet);
                                 _aWallet.push(objRetConnected);    
                             }
                             catch(error) { 
@@ -228,7 +191,7 @@ export class siwc_connect {
 
                 // enable?
                 try {
-                    objWallet.isEnabled=await this._replyFast(this.msKillFast, this.async_isWalletEnabled.bind(this), _idWallet);
+                    objWallet.isEnabled=await replyFast(this.msKillFast, this.async_isWalletEnabled.bind(this), _idWallet);
                     objWallet.hasReplied=true;
                 }
                 catch(_err) {
@@ -320,21 +283,57 @@ export class siwc_connect {
         }
     }        
 
+//
+//      Messages
+//
+
+    // An input message must have all those params:
+    //
+    //  domain: string ; dns authority that is requesting the signing
+    //  address: string ; address performing the signing 
+    //  message: string ; message statement that the user will sign
+    //  version: string ; version of the message
+    //  chain: string ; chain that is being queried
+    //  name: string ; name of wallet being queried
+    //  issued_at: date ; when this message was issued
+    //  valid_for: number ; how many seconds the message is valid (after issued_at)
+    //  nonce: number ; randomized number used to prevent replay attacks
+    //
+    isMessageInputValid(objParam){
+        if(!checkIsValidDomain(objParam.domain)) {return false;}
+        if(!objParam.address) {return false;}
+        if(!checkIsValidStatement(objParam.message)) {return false;}
+        if(!checkIsValidChain(objParam.chain)) {return false;}
+        if(!checkIsDateValid(objParam.issued_at, objParam.valid_for)) {return false;}
+        return true;
+    }
+
     async async_createMessage(_idWallet, objParam){
-        let _obj=this._getWalletFromList(_idWallet);
         try{
+
+            // are we connected with a wallet?
+            let _obj=this._getWalletFromList(_idWallet);
             if (_obj && _obj.wallet) {                
 
-                // todo: for now we will return a basic object
-                let objRet=this._formatMessage({
-                    message: objParam.message? objParam.message : "TODO, some default message",
+                // full object filled with wallet info
+                let objMsg={
+                    message: objParam.message? objParam.message: null,
                     domain: objParam.domain? objParam.domain : null,                // who is calling?
+                    issued_at: objParam.issued_at? objParam.issued_at : null,
+                    valid_for: objParam.valid_for? objParam.valid_for : null,
                     address: _obj.wallet.address,
-                    networkId: _obj.wallet.networkId,
-                    name: _obj.wallet.name
-                });
-
-                return objRet;
+                    chain: _obj.wallet.chain,
+                    name: _obj.wallet.name,
+                    version: "1.0",
+                    nonce: generateNonce()
+                }
+                
+                if(!this.isMessageInputValid(objMsg)) {
+                    throw new Error("missing or incorrect params");
+                }
+                    
+                // message is OK to go
+                return objMsg;
             }
             else {
                 throw new Error("expected a wallet id, got null");
@@ -348,12 +347,24 @@ export class siwc_connect {
         let _obj=this._getWalletFromList(_idWallet);
         try{
             if (_obj && _obj.wallet) {                
-                // need to ask the wallet to sign this msg 
-                // TODO : missing this part right now
-                // let s pretend we signed OK
+                // need to ask the wallet to sign  this msg 
 
+                // TODO : missing this part right now (CIP008), so we will fake it via a dialog
+                function getConfirmation() {
+                    var retVal = window.confirm(_str);
+                    if( retVal == true ) {
+                       return true;
+                    } else {
+                       return false;
+                    }
+                }
+
+                let _str=this._formatMessage(objSiwcMsg);
+                let isSigned=getConfirmation(_str);
+
+                // let's assume the wallet signed the message
                 if(this.fnOnNotifySignedMessage) {
-                    objSiwcMsg.wasSigned= true;
+                    objSiwcMsg.wasSigned= isSigned;
                     objSiwcMsg.id=_idWallet;
                     this.fnOnNotifySignedMessage(objSiwcMsg);
                 }
@@ -368,8 +379,14 @@ export class siwc_connect {
 
     // format a message for showing in wallet
     _formatMessage(objMsg) {
-        // todo... need implement this
-        return objMsg;
+        let _strValidFor=null;
+        if(objMsg.valid_for<60) {_strValidFor=objMsg.valid_for+" seconds"} else {
+            if(objMsg.valid_for<3600) {_strValidFor=Math.floor(objMsg.valid_for/60)+" minutes"} else {
+                _strValidFor=Math.floor(objMsg.valid_for/3600)+" hours"
+            }
+        }
+        let _str=objMsg.message + "\n\nissued at "+objMsg.issued_at.toString()+" and valid for "+_strValidFor;
+        return _str;
     }
 
     async _async_getFirstAddress(_api) {

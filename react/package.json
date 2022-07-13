@@ -1,16 +1,16 @@
 {
-  "name": "SignIn With Cardano",
+  "name": "SIWC",
   "version": "0.1.0",
   "private": false,
   "license": "ISC",
   "dependencies": {
     "@emurgo/cardano-serialization-lib-asmjs": "^10.0.4-beta.4",
+    "@stablelib/random": "^1.0.1",
     "cbor": "^8.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^6.2.1",
-    "react-scripts": "4.0.3",
-    "underscore": "^1.13.4"
+    "react-scripts": "4.0.3" 
   },
   "scripts": {
     "start": "SET NODE_OPTIONS=\"--max-old-space-size=16384\" & react-scripts --openssl-legacy-provider start",
