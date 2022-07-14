@@ -1,0 +1,39 @@
+{
+  "name": "SIWC - Backend Test App",
+  "homepage": "",
+  "version": "0.0.1",
+  "private": false,
+  "dependencies": {
+    "body-parser": "1.18.3",
+    "cookie-parser": "1.4.4",
+    "cookie-session": "^1.4.0",
+    "cors": "^2.8.5",
+    "express": "4.16.4",
+    "express-handlebars": "3.0.2",
+    "express-handlebars-multi": "^0.1.0",
+    "express-session": "1.17.0",
+    "jsonwebtoken": "8.5.1",
+    "jwt-decode": "^3.0.0",
+    "node-cache": "5.1.0",
+    "node-html-parser": "^1.3.1",
+    "npm": "^6.14.13",
+    "passport": "^0.4.0",
+    "passport-custom": "^1.1.1",
+    "passport-http-bearer": "^1.0.1",
+    "passport-jwt": "4.0.0",
+    "passport-local": "^1.0.0",
+    "passport-oauth2": "^1.5.0",
+    "q": "1.5.1",
+    "request": "2.88.0"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-concat": "2.6.1",
+    "gulp-sourcemaps": "2.6.5",
+    "gulp-terser": "1.2.0",
+    "uglify-es": "3.3.9",
+    "uglify-js": "3.6.0",
+    "uglifyjs-webpack-plugin": "^1.1.2",
+    "webpack": "4.38.0"
+  }
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html class="no-js cl-preload" lang="en">
+<head>
+
+    <!--- basic page needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <title>{{metadata.title}}</title>
+    <link rel="canonical" href="{{config.prod}}{{metadata.pathname}}" />
+
+    <meta name="description" content="{{metadata.description}}" />
+    <meta name="keywords" content="{{metadata.keywords}}"/>
+    <meta name="robots" content="index, follow, all" />
+    <meta name="theme-color" content="#00bcd4" />
+
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="{{metadata.type}}" />
+    <meta property="og:author" content="{{metadata.author}}" />
+    <meta property="og:title" content="{{metadata.title}}" />
+    <meta property="og:description" content="{{metadata.description}}" />
+    <meta property="og:url" content="{{config.prod}}{{metadata.pathname}}" />
+    <meta property="og:site_name" content={{config.appName}} />
+    <meta property="og:image" content="{{metadata.image}}">
+    <meta property="fb:app_id" content="{{config.facebook.clientID}}" />
+
+
+    <!-- mobile specific metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+
+    <!-- script
+    ================================================== -->
+    
+    <!-- favicons
+    ================================================== -->
+    <link rel="shortcut icon" href="{{config.origin}}favicon.ico" type="image/x-icon">
+    <link rel="icon" href="{{config.origin}}favicon.ico" type="image/x-icon">
+
+</head>
+
+<body class="b-marketing landing is-preload">
+    <div id="page-wrapper">
+
+        {{>section_header}}
+
+        {{{body}}}
+
+        {{>section_footer}}
+
+    </div>
+
+</body>
+
+</html>
+
+

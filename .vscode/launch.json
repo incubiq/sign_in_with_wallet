@@ -8,11 +8,11 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "RUN BACKEND",
+            "name": "SAMPLE APP",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/backend/server.js",
+            "program": "${workspaceFolder}/backend_sample/server.js",
             "args": ["env="]            
         }
     ]
