@@ -1,3 +1,4 @@
+const authToken = require('./token');
 
 module.exports = {
     getAuthenticationTokenFromCookie,

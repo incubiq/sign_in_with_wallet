@@ -14,6 +14,17 @@
             ],
             "program": "${workspaceFolder}/backend_sample/server.js",
             "args": ["env="]            
+        },
+ 
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "SIWC oAuth",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/backend_siwc/server.js",
+            "args": ["env="]            
         }
     ]
 }

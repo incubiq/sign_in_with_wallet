@@ -22,16 +22,17 @@ global.gConfig={
     origin: "http://localhost:"+_port+"/",
 
     // cookie / auth
-    appName: "TestSIWC",                    // app Name used for naming the cookie
+    appName: "TestApp_LoginSIWC",       // app Name used for naming the cookie
     jwtKey: "somekey_1234567890",       // some basic key for encoding
     authentication_expire: "72h",       // 72 hours expiration of our cookie
 
     // params for the SIWC session (includes where SIWC is hosted)
     siwc: {
-        clientID: "UJgYZx2/1603198069654",
+        clientID: "23ijh23492u392u5",
         clientSecret: "aLongSecret!",
         callbackURL:"auth/siwc/callback",
-        host: "http://localhost:3003/"         // change this later... (will need https:// when on final server)
+        host: "http://localhost:3010/",         // change this later... (will need https:// when on final server)
+        domain: "localhost:3010"
     },
 
     // misc

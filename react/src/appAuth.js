@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import siwc_connect from "./siwc_connect";
+import siwc from "@incubiq/siwc";
 import "./app.css";
 
 class AppDemoAuth extends Component {
@@ -17,7 +17,7 @@ constructor(props) {
         }
 
         // let's use SIWC
-        this.siwc=new siwc_connect();
+        this.siwc=siwc;
     }
 
     componentDidMount() {
