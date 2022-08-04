@@ -55,34 +55,19 @@ const express = require('express');
         app.use(passport.initialize());
         app.use(passport.session());
 
-        initializeRedirections(app);
-        initializeRoutes(app);
-        initializeViews(app);
+        // ensure we are registered with SIWC for authentication sessions
+        
+        const regSIWC = require('./authenticate/register_siwc');
+        regSIWC.async_registerDomain(gConfig.siwc)
+            .then(function(_dataDomain){
+                gConfig.siwc.clientID=_dataDomain.data.client_id;
+                gConfig.siwc.asRegistered=_dataDomain.data;
 
-        // catch and forward specific error handler
-        app.use(function (req, res, next) {
-            var title = "Cracked!";
-            var message = "There's no page in this place!";
-            var status = "@#!";
-            res.status(404);
-            res.render("page_error", {
-                layout: 'marketing',
-                config: config,
-                metadata: {
-                    type: "article",
-                    pathname: req.url,
-                    author: config.email,
-                    keywords: "",
-                    description: "",
-                    title: "Error"
-                },
-                title: title,
-                background: '/assets/background_error.jpeg',
-                content: "<div>We have reached the deep seas...</div>" +
-                    "<div>" + message + "</div>" +
-                    "<div>Error code: " + status + "</div>"
+                // only register routes after reg with SIWC
+                initializeRedirections(app);
+                initializeRoutes(app);
+                initializeViews(app);        
             });
-        })        
     }
 
 /*
@@ -209,11 +194,10 @@ const express = require('express');
                 session: false,
             }),
             routePrivateAPI
-        );        
+        );
 
         // website
-        app.use('/', routeWebsite);
-        
+        app.use('/', routeWebsite);        
     }
 
     function initializeViews(app) {
@@ -276,4 +260,30 @@ const express = require('express');
 
         // static files..
         app.use(express.static(path.join(__dirname, root)));            
+
+        // catch and forward specific error handler
+        app.use(function (req, res, next) {
+            var title = "Cracked!";
+            var message = "There's no page in this place!";
+            var status = "@#!";
+            res.status(404);
+            res.render("page_error", {
+                layout: 'marketing',
+                config: config,
+                metadata: {
+                    type: "article",
+                    pathname: req.url,
+                    author: config.email,
+                    keywords: "",
+                    description: "",
+                    title: "Error"
+                },
+                title: title,
+                background: '/assets/background_error.jpeg',
+                content: "<div>We have reached the deep seas...</div>" +
+                    "<div>" + message + "</div>" +
+                    "<div>Error code: " + status + "</div>"
+            });
+        })        
+        
     }

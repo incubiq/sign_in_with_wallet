@@ -1,6 +1,10 @@
 import React, {Component} from "react";
-import siwc from "@incubiq/siwc";
 import "./app.css";
+
+//import siwc from "@incubiq/siwc";            // real prod
+import siwc_connect from "./siwc/siwc_connect";        // for test only
+const siwc=new siwc_connect();                         // for test only
+
 
 class AppDemoAuth extends Component {
 
@@ -114,7 +118,7 @@ constructor(props) {
 
         try {
             // not waiting for this to finish, it could wait too long
-            let _siwc=await this.siwc.async_connectWallet(_id);
+            await this.siwc.async_connectWallet(_id);
             return;
         }
         catch(err) {

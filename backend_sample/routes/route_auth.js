@@ -1,10 +1,12 @@
 
 const express = require('express');
 const router = express.Router();
+const routeBase = require('./utils');
 const authToken = require('../authenticate/token');
-const passportSIWC = require("../authenticate/siwc");
+const passportSIWC = require("../authenticate/passport_siwc");
+const regSIWC = require('../authenticate/register_siwc');
 const libCookie = require('../authenticate/user');              // Our User mgt minimal library
-
+const Q = require('q');
 /*
  *      Authentication routes
  */
@@ -49,6 +51,41 @@ const libCookie = require('../authenticate/user');              // Our User mgt 
 // ************************************************
 //      Real authentication starts here!
 // ************************************************
+    router.get('/prepare/siwc', function(req, res, next) {
+        
+        let fnReg=function() {
+            var deferred = Q.defer();
+            regSIWC.async_isRegisteredDomain(gConfig.siwc)
+                .then(_dataIsReg => {
+                    if(_dataIsReg.data && _dataIsReg.data.isRegistered===true) {
+                        deferred.resolve();
+                    }
+                    else {
+                        // need to register again!!
+                        regSIWC.async_registerDomain(gConfig.siwc)
+                            .then(_dataDomain => {
+                                
+                                // TODO !! restart the passport siwc
+
+                                // redirect
+                                deferred.resolve();
+                            })
+                            .catch(err => {
+                                deferred.reject();
+                            });
+                    }
+                })
+                .catch(err => {
+                    deferred.reject();
+                });
+            return deferred.promise;
+        }
+
+        // ensure we have connection with SIWC
+        fnReg().then(function(){
+            res.redirect("/auth/siwc");
+        })
+    });
 
     router.get('/siwc', passportSIWC.authenticate('SIWC', {session: false}));
     router.get('/siwc/callback', passportSIWC.authenticate('SIWC', {

@@ -10,7 +10,7 @@
  * Module dependencies.
  */
 
-const {siwc_connect} = require('./libs/siwc_connect')
+const {siwc_connect} = require('./libs/siwc_connect');
 
 /**
  * Module exports.

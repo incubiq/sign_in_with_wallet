@@ -28,7 +28,7 @@ global.gConfig={
 
     // params for the SIWC session (includes where SIWC is hosted)
     siwc: {
-        clientID: "23ijh23492u392u5",
+        clientID: "11111111111111111111",
         clientSecret: "aLongSecret!",
         callbackURL:"auth/siwc/callback",
         host: "http://localhost:3010/",         // change this later... (will need https:// when on final server)

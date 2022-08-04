@@ -5,7 +5,7 @@
 
 import {replyFast, checkIsValidDomain, checkIsValidStatement, checkIsValidChain, checkIsDateValid, generateNonce}  from './siwc_utils'
 
-import cbor from 'cbor'
+// import cbor from 'cbor'
 import {
   Address,
   BaseAddress,
