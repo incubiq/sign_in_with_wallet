@@ -1,6 +1,10 @@
 # siwc
 
-Sign-In With Cardano (still draft and in development...)
+Sign-In With Cardano (still draft and in development...).
+
+This package is in development and is not guaranteed stable yet. You can find the broader context on this repo : https://github.com/Yeepeekoo/sign_in_with_cardano and a documentation, also in progress, here: https://eric-duneau.gitbook.io/siwc/ 
+
+A full NodeJS backend is being developped with a compatible Passport library for signing a user via a wallet into web2 apps. This will be shared publicly nearer to completion, planned for mid Q4 2022.
 
 ## Install
 
