@@ -1,4 +1,11 @@
-const authToken = require('./token');
+
+/*
+ *      Extract info from Cookie
+ */
+
+const authToken = require("./token");
+const Q = require('q');
+const jsonwebtoken = require("jsonwebtoken");
 
 module.exports = {
     getAuthenticationTokenFromCookie,
@@ -21,41 +28,36 @@ module.exports = {
     // read the User details inside the cookie
     async function async_getUserInfoFromCookie(req, secret) {
         var deferred = Q.defer();
-        try {    
-            var token = getAuthenticationTokenFromCookie(req);
-            if (token) {
-                jsonwebtoken.verify(token, secret, function(err, decoded){
-                    if(err) {
-                        deferred.resolve({
-                            data: {
-                                isAuthenticated: false,
-                                isExpired: false,
-                                user: null
-                            }
-                        });
-                    }
-                    else {
-                        // here we could check user against DB and possibly retrieve extra info...
-                        deferred.resolve({
-                            data: {
-                                isAuthenticated: true,
-                                isExpired: false,
-                                user: decoded.username    
-                            }
-                        });
-                    }
-                });
-            }
-            else {
-                deferred.resolve({
-                    data: null,
-                    status: 401,
-                    message: "no cookie found"
-                });
-            }
-            return deferred.promise;
+        var token = getAuthenticationTokenFromCookie(req);
+        if (token) {
+            jsonwebtoken.verify(token, secret, function(err, decoded){
+                if(err) {
+                    deferred.resolve({
+                        data: {
+                            isAuthenticated: false,
+                            isExpired: false,
+                            user: null
+                        }
+                    });
+                }
+                else {
+                    // here we could check user against DB and possibly retrieve extra info...
+                    deferred.resolve({
+                        data: {
+                            isAuthenticated: true,
+                            isExpired: false,
+                            username: decoded.username    
+                        }
+                    });
+                }
+            });
         }
-        catch(err) {
-            throw err;
+        else {
+            deferred.resolve({
+                data: null,
+                status: 401,
+                message: "no cookie found"
+            });
         }
+        return deferred.promise;
     }

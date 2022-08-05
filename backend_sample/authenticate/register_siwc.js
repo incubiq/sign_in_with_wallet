@@ -33,9 +33,21 @@ module.exports = {
         request.post(
             configSIWC.host+"web3/domain", { 
                 json: { 
+                    // who are we?
                     domain: gConfig.origin,
+
+                    // display
                     display_name: "test app",
-                    onSuccess: configSIWC.callbackURL
+                    background: null,           // overload later...
+                    logo: null,                 // overload later...
+
+                    // callbacks
+                    onSuccess: configSIWC.callbackURL,
+                    onError: function(){},
+                    
+                    // token
+                    token_lifespan:  3*24*60*60*1000,  // 3 day default
+                    scope: "username wallet_address"
                 } 
             },
             function (error, response, body) {

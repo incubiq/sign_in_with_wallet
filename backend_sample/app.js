@@ -174,6 +174,7 @@ const express = require('express');
         const routePublicAPI = require(sampleApp+'routes/route_public');
         const routePrivateAPI = require(sampleApp+'routes/route_private');
         const routeWebsite = require(sampleApp+'routes/route_website');
+        const routeApp = require(sampleApp+'routes/route_app');
 
         // If we don't want to redirect on authentication error...
         const fnNoRedirect = function (req, res, next) {
@@ -196,8 +197,17 @@ const express = require('express');
             routePrivateAPI
         );
 
+        // app after login
+        app.use('/app', 
+            passportJwt.authenticate('jwt', {
+                session: false,
+                failureRedirect: '/auth/unauthorized'
+            }), 
+            routeApp
+        );
+
         // website
-        app.use('/', routeWebsite);        
+        app.use('/', routeWebsite);
     }
 
     function initializeViews(app) {
@@ -269,11 +279,11 @@ const express = require('express');
             res.status(404);
             res.render("page_error", {
                 layout: 'marketing',
-                config: config,
+                config: gConfig,
                 metadata: {
                     type: "article",
                     pathname: req.url,
-                    author: config.email,
+                    author: gConfig.email,
                     keywords: "",
                     description: "",
                     title: "Error"

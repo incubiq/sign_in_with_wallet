@@ -25,14 +25,16 @@ const libUser = require('./user');              // Our User mgt minimal library
             var email=profile && profile.emails && profile.emails.length>0 ? (profile.emails[0] ? profile.emails[0].value : null) : null;
             var picture=profile && profile.photos && profile.photos.length>0 ? (profile.photos[0] ? profile.photos[0].value : null) : null;
 
-            // no email??  do not bother creating this user
+            // TODO define what to validate here
+            /*
             if(!email || email.indexOf("@")===-1) {
                 throw {
                     data: null,
                     status: 400,
-                    message: "no email"
+                    statusText: "no email"
                 };
             }
+            */
 
             libUser.async_createUser({
                 username: profile.id, // note: profile id  already contains an "authenly_" prefix
@@ -49,7 +51,7 @@ const libUser = require('./user');              // Our User mgt minimal library
                     });
                 })
                 .catch(function(obj){
-                    return done(null, false, obj.data.message);
+                    return done(null, false, obj.statusText);
                 });
         }
         catch (err) {

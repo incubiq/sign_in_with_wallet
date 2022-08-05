@@ -5,8 +5,9 @@ const routeBase = require('./utils');
 const authToken = require('../authenticate/token');
 const passportSIWC = require("../authenticate/passport_siwc");
 const regSIWC = require('../authenticate/register_siwc');
-const libCookie = require('../authenticate/user');              // Our User mgt minimal library
+const libUser = require('../authenticate/user');              // Our User mgt minimal library
 const Q = require('q');
+
 /*
  *      Authentication routes
  */
@@ -99,7 +100,7 @@ const Q = require('q');
     //
     router.get('/isauthorized', function (req, res, next) {
         // return object indicating user authorization
-        libCookie.async_getUserInfoFromCookie(req, gConfig.jwtKey)
+        libUser.async_getUserInfoFromCookie(req, gConfig.jwtKey)
             .then(function(objInfo){
                 res.json(objInfo);
                 res.end();
@@ -121,11 +122,12 @@ const Q = require('q');
                 keywords: gConfig.appName +", unauthorized",
                 description: "",
                 title: gConfig.appName+" - sorry, unauthorized!",
-                image: "/images/logo_256x256.jpg"
+                image: "/assets/images/logo.jpg"
             },
             title: "Oh dear!",
+            background: "/assets/background_error.jpeg",
             content: "<div>Looks like you were not authorized to access this page!</div>" +
-                "<div>Try <a href='/login'>login</a> again?</div>"
+                '<a href="/auth/prepare/siwc"><button class="signin-btn btn social-btn btn-primary" style="background-color: #28c4cc;" tabindex="5">Sign In With Cardano</button></a>'
         });
     });
 
