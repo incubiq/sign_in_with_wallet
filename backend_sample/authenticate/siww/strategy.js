@@ -10,8 +10,8 @@ var OAuth2Strategy = require('passport-oauth2')
 /**
  * `Strategy` constructor.
  *
- * The SIWC authentication strategy authenticates requests by delegating to
- * SIWC using the OAuth 2.0 protocol.
+ * The SIWW authentication strategy authenticates requests by delegating to
+ * SIWW using the OAuth 2.0 protocol.
  *
  * Applications must supply a `verify` callback which accepts an `accessToken`,
  * `refreshToken` and service-specific `profile`, and then calls the `cb`
@@ -19,16 +19,16 @@ var OAuth2Strategy = require('passport-oauth2')
  * credentials are not valid.  If an exception occurred, `err` should be set.
  *
  * Options:
- *   - `clientID`      your SIWC application's App ID
- *   - `clientSecret`  your SIWC application's App Secret
- *   - `callbackURL`   URL to which SIWC will redirect the user after granting authorization
+ *   - `clientID`      your SIWW application's App ID
+ *   - `clientSecret`  your SIWW application's App Secret
+ *   - `callbackURL`   URL to which SIWW will redirect the user after granting authorization
  *
  * Examples:
  *
- *     passport.use(new SIWCStrategy({
+ *     passport.use(new SIWWStrategy({
  *         clientID: '123-456-789',
  *         clientSecret: 'shhh-its-a-secret'
- *         callbackURL: 'https://www.example.net/auth/siwc/callback'
+ *         callbackURL: 'https://www.example.net/auth/siww/callback'
  *       },
  *       function(accessToken, refreshToken, profile, cb) {
  *         User.findOrCreate(..., function (err, user) {
@@ -51,7 +51,7 @@ var OAuth2Strategy = require('passport-oauth2')
         options.scopeSeparator = options.scopeSeparator || ',';
 
         OAuth2Strategy.call(this, options, verify);
-        this.name = 'SIWC';
+        this.name = 'SIWW';
         this._profileURL = options.profileURL || 'https://siwc.com/oauth/resources/profile';
         this._profileFields = options.profileFields || null;
         this._enableProof = options.enableProof;
@@ -62,7 +62,7 @@ var OAuth2Strategy = require('passport-oauth2')
     util.inherits(Strategy, OAuth2Strategy);
 
 /**
- * Authenticate request by delegating to SIWC using OAuth 2.0.
+ * Authenticate request by delegating to SIWW using OAuth 2.0.
  *
  * @param {http.IncomingMessage} req
  * @param {object} options
@@ -82,12 +82,12 @@ var OAuth2Strategy = require('passport-oauth2')
         }
 
         // call SIWC to authenticate
-        // this will call a POST /oauth/token in SIWC to exchange the authorization token by an access token
+        // this will call a POST /oauth/token in SIWW to exchange the authorization token by an access token
         OAuth2Strategy.prototype.authenticate.call(this, req, options);
     };
 
 /**
- * Return extra SIWC-specific parameters to be included in the authorization
+ * Return extra SIWW-specific parameters to be included in the authorization
  * request.
  *
  * Options:
@@ -112,13 +112,16 @@ var OAuth2Strategy = require('passport-oauth2')
     };
 
 /**
- * Retrieve user profile from SIWC.
+ * Retrieve user profile from SIWW.
  *
  * This function constructs a normalized profile, with the following properties:
  *
- *   - `provider`         always set to `SIWC`
- *   - `id`               the user's SIWC ID
- *   - `username`         the user's SIWC username
+ *   - `provider`         always set to `SIWW`
+ *   - `wallet_chain`     the signing wallet's chain (eg "cardano")
+ *   - `wallet_id`        the signing wallet's name (eg "nami")
+ *   - `wallet_address`   the signing wallet's address (eg "addr123....")
+ *   - `id`               the user's SIWW ID
+ *   - `username`         the user's SIWW username
  *   - `displayName`      the user's full name
  *   - `name.familyName`  the user's last name
  *   - `name.givenName`   the user's first name
@@ -178,7 +181,7 @@ var OAuth2Strategy = require('passport-oauth2')
     };
 
 /**
- * Parse error response from SIWC OAuth 2.0 token endpoint.
+ * Parse error response from SIWW OAuth 2.0 token endpoint.
  *
  * @param {string} body
  * @param {number} status
@@ -198,7 +201,7 @@ var OAuth2Strategy = require('passport-oauth2')
     };
 
 /**
- * Convert SIWC profile to a normalized profile.
+ * Convert SIWW profile to a normalized profile.
  *
  * @param {object} profileFields
  * @return {string}
@@ -208,6 +211,9 @@ var OAuth2Strategy = require('passport-oauth2')
         var map = {
             'id':          'id',
             'username':    'username',
+            'wallet_chain':    'wallet_chain',
+            'wallet_id':       'wallet_id',
+            'wallet_address':  'wallet_address',
             'displayName': 'name',
             'name':        ['last_name', 'first_name', 'middle_name'],
             'gender':      'gender',

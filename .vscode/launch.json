@@ -19,11 +19,11 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "SIWC oAuth",
+            "name": "SIWW oAuth",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/backend_siwc/server.js",
+            "program": "${workspaceFolder}/backend_siww/server.js",
             "args": ["env="]            
         }
     ]

@@ -27,7 +27,7 @@ global.gConfig={
     authentication_expire: "72h",       // 72 hours expiration of our cookie
 
     // params for the SIWC session (includes where SIWC is hosted)
-    siwc: {
+    siww: {
         clientID: "11111111111111111111",
         clientSecret: "aLongSecret!",
         callbackURL:"auth/siwc/callback",

@@ -57,16 +57,18 @@ const express = require('express');
 
         // ensure we are registered with SIWC for authentication sessions
         
-        const regSIWC = require('./authenticate/register_siwc');
-        regSIWC.async_registerDomain(gConfig.siwc)
+        const regSIWW = require('./authenticate/register_siww');
+        regSIWW.async_registerDomain(gConfig.siww)
             .then(function(_dataDomain){
-                gConfig.siwc.clientID=_dataDomain.data.client_id;
-                gConfig.siwc.asRegistered=_dataDomain.data;
 
                 // only register routes after reg with SIWC
                 initializeRedirections(app);
                 initializeRoutes(app);
                 initializeViews(app);        
+            })
+            .catch(function(err) {
+                console.log(err.statusText);
+                console.log("Stopping init...");
             });
     }
 

@@ -3,8 +3,9 @@ const express = require('express');
 const router = express.Router();
 const routeBase = require('./utils');
 const authToken = require('../authenticate/token');
-const passportSIWC = require("../authenticate/passport_siwc");
-const regSIWC = require('../authenticate/register_siwc');
+const passportSIWW = require("../authenticate/passport_siww");    
+//const passport = require('passport');
+const regSIWW = require('../authenticate/register_siww');
 const libUser = require('../authenticate/user');              // Our User mgt minimal library
 const Q = require('q');
 
@@ -56,17 +57,19 @@ const Q = require('q');
         
         let fnReg=function() {
             var deferred = Q.defer();
-            regSIWC.async_isRegisteredDomain(gConfig.siwc)
+            regSIWW.async_isRegisteredDomain(gConfig.siww)
                 .then(_dataIsReg => {
                     if(_dataIsReg.data && _dataIsReg.data.isRegistered===true) {
                         deferred.resolve();
                     }
                     else {
                         // need to register again!!
-                        regSIWC.async_registerDomain(gConfig.siwc)
+                        regSIWW.async_registerDomain(gConfig.siww)
                             .then(_dataDomain => {
                                 
-                                // TODO !! restart the passport siwc
+                                // TODO !! restart the passport siww
+//                                const StrategySIWW = require("./passport_siww_strategy");
+//                                passportSIWW.use(StrategySIWW.getNewStrategy());
 
                                 // redirect
                                 deferred.resolve();
@@ -88,8 +91,10 @@ const Q = require('q');
         })
     });
 
-    router.get('/siwc', passportSIWC.authenticate('SIWC', {session: false}));
-    router.get('/siwc/callback', passportSIWC.authenticate('SIWC', {
+//    router.get('/siwc',_loginSIWW);
+//    router.get('/siwc/callback',_loginSIWW);
+    router.get('/siwc',passport.authenticate('SIWW', {session: false}));
+    router.get('/siwc/callback', passportSIWW.authenticate('SIWW', {
         failureRedirect: '/auth/unauthorized',
         session: false
     }), function (req, res) {
@@ -127,7 +132,7 @@ const Q = require('q');
             title: "Oh dear!",
             background: "/assets/background_error.jpeg",
             content: "<div>Looks like you were not authorized to access this page!</div>" +
-                '<a href="/auth/prepare/siwc"><button class="signin-btn btn social-btn btn-primary" style="background-color: #28c4cc;" tabindex="5">Sign In With Cardano</button></a>'
+                '<a href="/auth/prepare/siwc"><div class="signin-btn btn social-btn btn-primary" style="background-color: #28c4cc;" tabindex="5">Sign In With Cardano</div></a>'
         });
     });
 

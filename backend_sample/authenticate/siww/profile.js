@@ -18,8 +18,10 @@
         let profile = {};
         let user = json.data;
         if (user) { // Populate the profile fields using a standard format
-            profile.provider = 'SIWC';
+            profile.provider = 'SIWW';
             profile.id = user.username;
+            profile.chain = user.chain;
+            profile.address = user.address;
             profile.username = user.username;
             profile.displayName = user.firstName +' '+user.lastName;
             profile.name = {

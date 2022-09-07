@@ -1,22 +1,17 @@
-
 const passport = require('passport');
-const SIWCStrategy = require("./siwc/index").Strategy;
+const SIWWStrategy = require("./siww/index").Strategy;
 const libUser = require('./user');              // Our User mgt minimal library
 
-/*
- *  
- */
-
-    var cSIWC = gConfig.siwc;
+    let cSIWW = gConfig.siww;
 
     // register strategy
-    passport.use(new SIWCStrategy({
-        clientID: cSIWC.clientID,
-        clientSecret: cSIWC.clientSecret,
-        callbackURL: gConfig.origin+cSIWC.callbackURL,
-        authorizationURL: cSIWC.host+ "oauth/dialog/authorize",
-        tokenURL: cSIWC.host+"oauth/token",
-        profileURL: cSIWC.host+"oauth/resources/profile"
+    passport.use(new SIWWStrategy({
+        clientID: cSIWW.clientID,
+        clientSecret: cSIWW.clientSecret,
+        callbackURL: gConfig.origin+cSIWW.callbackURL,
+        authorizationURL: cSIWW.host+ "oauth/dialog/authorize",
+        tokenURL: cSIWW.host+"oauth/token",
+        profileURL: cSIWW.host+"oauth/resources/profile"
     },
     function(accessToken, refreshToken, profile, done) {
         try {
@@ -37,12 +32,12 @@ const libUser = require('./user');              // Our User mgt minimal library
             */
 
             libUser.async_createUser({
-                username: profile.id, // note: profile id  already contains an "authenly_" prefix
+                username: profile.id, // note: profile id  already contains an "SIWW_" prefix
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
                 picture: picture,
-                identity_provider: "SIWC",
+                identity_provider: "SIWW",
                 isValidated: true
             })
                 .then(function(obj){
@@ -58,5 +53,6 @@ const libUser = require('./user');              // Our User mgt minimal library
             return done(null, false, err);
         }
     }));
+
 
 module.exports = passport;
