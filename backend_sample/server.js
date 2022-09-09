@@ -45,7 +45,7 @@ global.gConfig={
  */
 
 const http = require('http');
-const module_app = require('./app');       // to start the app in debug or prod...
+const module_app = require('./node/app');       // to start the app in debug or prod...
 
 let app = module_app.createApp();
 app.set('port', gConfig.port);

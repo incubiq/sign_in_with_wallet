@@ -221,7 +221,8 @@ const express = require('express');
 
         let indexProd="../../react/build/"         // this is where we get all static files from REACT app (if want to debug app with backend calls, run it from localhost:3000, not from here)
         let dirApp=path.join(__dirname, sampleApp);        
-        app.use('/assets', express.static(path.join(dirApp, 'assets')));
+        let dirASsets=path.join(__dirname, "../");        
+        app.use('/assets', express.static(path.join(dirASsets, 'assets')));
 
         let tmpPath=path.join(__dirname, indexProd);        
         app.use('/app', express.static(tmpPath));

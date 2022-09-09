@@ -93,7 +93,7 @@ const Q = require('q');
 
 //    router.get('/siwc',_loginSIWW);
 //    router.get('/siwc/callback',_loginSIWW);
-    router.get('/siwc',passport.authenticate('SIWW', {session: false}));
+    router.get('/siwc',passport.authenticate('SIWW', {session: false}));        // will call SIWC /oauth/dialog/authorize
     router.get('/siwc/callback', passportSIWW.authenticate('SIWW', {
         failureRedirect: '/auth/unauthorized',
         session: false

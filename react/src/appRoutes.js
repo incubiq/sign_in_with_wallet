@@ -1,7 +1,9 @@
 import React, { Component, Suspense } from "react";
 import {Route, Routes, useNavigate } from 'react-router-dom';
 
-const AppDemoAuth  = React.lazy(() => import ("./appAuth"));
+const AppConnect  = React.lazy(() => import ("./components/appConnect"));
+const AppAuth  = React.lazy(() => import ("./components/appAuth"));
+const AppAuthApi  = React.lazy(() => import ("./api/appAuthApi"));
 const App  = React.lazy(() => import ("./app"));
 
 /* 
@@ -26,24 +28,42 @@ class AppRoutes extends Component {
       <>
 
         <Routes>            
-
             <Route  path="/" element={
                 <Suspense 
-                    fallback={<div>Loading App...</div>}>
+                    fallback={<div>Loading React home...</div>}>
                     <App
                         version={this.state.version}
                     />
                 </Suspense> 
                 } exact />
 
-            <Route  path="/connect" element={
+            <Route  path="app/connect" element={
                 <Suspense 
-                    fallback={<div>Loading Auth...</div>}>
-                    <AppDemoAuth
+                    fallback={<div>Loading Connector...</div>}>
+                    <AppConnect
                         version={this.state.version}
                     />
                 </Suspense> 
                 } exact />
+
+            <Route  path="/app/auth" element={
+                <Suspense 
+                    fallback={<div>Loading Auth...</div>}>
+                    <AppAuth
+                        version={this.state.version}
+                    />
+                </Suspense> 
+                } exact />
+
+            <Route  path="/api" element={
+                <Suspense 
+                    fallback={<div>Loading APIs...</div>}>
+                    <AppAuthApi
+                        version={this.state.version}
+                    />
+                </Suspense> 
+                } exact />
+
         </Routes>
 
   </>

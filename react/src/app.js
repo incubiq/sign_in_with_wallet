@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {NavLink} from 'react-router-dom';
-import "./app.css";
+import "./assets/css/app.css";
 
 class App extends Component {
 
@@ -26,16 +26,34 @@ class App extends Component {
             <br />
 
             <NavLink 
-                to="/connect"  
+                to="/app/connect"  
             >
                 <button id='btnConnectWallet'>Connect Wallet...</button>
             </NavLink>
 
             <br />
             <br />
+            
+            <NavLink 
+                to="/app/auth?client_id=123456"  
+            >
+                <button id='btnAuthWallet'>Authenticate with Wallet...</button>
+            </NavLink>
+
+            <br />
+            <br />
 
             <NavLink 
-                to="/authenticate"  
+                to="/api"  
+            >
+                <button id='btnApi'>APIs...</button>
+            </NavLink>
+
+            <br />
+            <br />
+
+            <NavLink 
+                to="/app/sign"  
             >
                 <button id='btnSignMessage'>Sign Message...</button>
             </NavLink>

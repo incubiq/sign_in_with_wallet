@@ -1,12 +1,16 @@
 import React, {Component} from "react";
-import "./app.css";
+import AppAuthHeader from "./appAuthHeader";
+import AppAuthFooter from "./appAuthFooter";
+import AppAuthWalletConnect from "./appAuthWalletConnect";
+
+import "../assets/css/app.css";
+import "../assets/css/siww.css";
 
 //import siwc from "@incubiq/siwc";            // real prod
-import siwc_connect from "./siwc/siwc_connect";        // for test only
+import siwc_connect from "../siwc/siwc_connect";        // for test only
 const siwc=new siwc_connect();                         // for test only
 
-
-class AppDemoAuth extends Component {
+class AppConnect extends Component {
 
 /*
  *          page inits
@@ -17,17 +21,21 @@ constructor(props) {
     
         this.state={
             aWallet: [],                // all available wallets to connect to  (gathered from connect engine)
-            idWallet : null             // the idWallet requested to connect to
+            idWallet : null,             // the idWallet requested to connect to
+
+            didAccessWallets: false
         }
+
 
         // let's use SIWC
         this.siwc=siwc;
+        
     }
 
     componentDidMount() {
         this.registerSIWCCallbacks();
     }
-
+    
 /*
  *          SIWC callbacks
  */
@@ -49,7 +57,10 @@ constructor(props) {
 
     // called at init (what are those wallets?)
     onSIWCNotify_WalletsAccessible(_aWallet) {
-        this.setState({aWallet:_aWallet});
+        this.setState({
+            aWallet:_aWallet,
+            didAccessWallets: true
+        });        
 
         // show connection to those wallets which are connected
         if(this.props.onConnect) {
@@ -113,7 +124,7 @@ constructor(props) {
     async async_connectWallet(event) {
 
         // who's there?
-        let idElt=event.target;
+        let idElt=event.currentTarget;
         let _id=idElt.getAttribute("attr-id");
 
         try {
@@ -152,41 +163,55 @@ constructor(props) {
     }
 
     render() {
-        return (
-            <div>
-                in route Auth ....
-                <br />
-                <br />
-                <span>
-                    {this.state.aWallet.length + " wallets found!"}
-                </span>
+        const styleContainer = {}
+        const styleColor = {}
+        if (this.state.theme && this.state.theme.background) {
+            styleContainer.backgroundImage="url("+this.state.theme.background+")";
+        }
+        if (this.state.theme && this.state.theme.color.text) {
+            styleColor.color=this.state.theme.color.text;
+        }
 
-                {this.state.aWallet.map((item, index) => (
-                    <div
-                        className = "connectContainer"
-                        key={index}
-                    >
-                        <button 
-                            className={item.isConnected? "btn disabled" : "btn"}
-                            attr-id={item.id}
-                            onClick={this.async_connectWallet.bind(this)}
-                        >{item.isConnected? "Connected to"+item.name: "Connect to "+item.name}...</button>
-                        <ul>
-                            <li>{"Status: " + (item.isConnected? "connected": "not connected")}</li>
-                            <li className={item.isConnected?"" : "noshow"}>{"Address: "+this.getShortenAnonAddress(item.address)}</li>
-                            <li className={item.isConnected?"" : "noshow"}>
-                                <button
-                                    className="btn"
+        return( 
+            <div>
+                {this.state.didAccessWallets===false ? 
+                    <span>Please wait... Looking for Cardano Wallets...</span>  
+                :   
+                    this.state.aWallet.length>0 ? 
+                    <>
+                        <div>
+                            {this.state.aWallet.length + " wallets found!"}
+                        </div>
+                        {this.state.aWallet.map((item, index) => (
+                            <div
+                                className = "connectContainer"
+                                key={index}
+                            >
+                                <button 
+                                    className={item.isConnected? "btn disabled" : "btn"}
                                     attr-id={item.id}
-                                    onClick={this.async_signMessage.bind(this)}
-                                >Sign-in with Cardano</button>
-                            </li>
-                        </ul>
-                    </div>
-                ))}
-            </div>
+                                    onClick={this.async_connectWallet.bind(this)}
+                                >{item.isConnected? "Connected to"+item.name: "Connect to "+item.name}...</button>
+                                <ul>
+                                    <li>{"Status: " + (item.isConnected? "connected": "not connected")}</li>
+                                    <li className={item.isConnected?"" : "noshow"}>{"Address: "+this.getShortenAnonAddress(item.address)}</li>
+                                    <li className={item.isConnected?"" : "noshow"}>
+                                        <button
+                                            className="btn"
+                                            attr-id={item.id}
+                                            onClick={this.async_signMessage.bind(this)}
+                                        >Sign-in with Cardano</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        ))}
+                    </>
+                    : 
+                    <span>Huhhh! No cardano wallet found!!!</span>
+                }
+            </div>                               
         )
     }
 }
 
-export default AppDemoAuth;
+export default AppConnect;

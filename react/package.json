@@ -11,7 +11,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^6.2.1",
-    "react-scripts": "4.0.3"
+    "react-scripts": "4.0.3",
+    "socket.io-client": "^4.5.2"
   },
   "scripts": {
     "start": "SET NODE_OPTIONS=\"--max-old-space-size=16384\" & react-scripts --openssl-legacy-provider start",
@@ -21,7 +22,7 @@
     "predeploy": "yarn run build",
     "deploy": "gh-pages -d build"
   },
-  "proxy": "http://localhost:3999",
+  "proxy": "http://localhost:3010",
   "secure": false,
   "eslintConfig": {
     "extends": "react-app"
