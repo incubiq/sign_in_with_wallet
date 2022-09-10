@@ -17,8 +17,8 @@ constructor(props) {
         super(props);    
 
         // Receive the authentication cookie
-        const socket = io("/client");        
-        socket.on('auth_cookie', cookie => {        
+        this.socket = io("/client");        
+        this.socket.on('auth_cookie', cookie => {        
             // normal page... authenticate with the server using our new token
             document.cookie = cookie.name + "=" + cookie.token + ";path=/";
             document.getElementById('form-login').submit();      // Normal redirect
@@ -68,7 +68,7 @@ constructor(props) {
             srv_prepare({
                 wallet_id: objParam.id,
                 wallet_addr: objParam.address,
-                socket_id: "auth_cookie",
+                socket_id: this.socket.id,
                 client_id: this.state.client_id
             })
                 .then(res => {

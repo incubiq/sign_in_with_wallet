@@ -10,24 +10,35 @@ class AppAuthProgressBar extends Component {
         super(props);   
 
         this.state={
-            downloadTimer: null
+            downloadTimer: null,
+            isVisible: false
         }        
     }
 
     componentDidMount() {
+        this.state.isVisible=true;
         let eltBar=document.getElementById("myLoginProgressBar");
         this.go({
             delay: 4000,
             eltCancel: null, 
             eltBar: eltBar,
             onElapsed: function() {
-                if(this.props.idMessage) {
+                if(this.props.idMessage && this.state.isVisible) {
                     let eltMsg=document.getElementById(this.props.idMessage);
-                    eltMsg.innerHTML="A few more seconds..."    
+                    if(eltMsg) {
+                        eltMsg.innerHTML="A few more seconds..."    
+                    }
                 }
             }.bind(this)
-        });
-        
+        });        
+    }
+
+    componentWillUnmount() {
+        this.state.isVisible=false;
+        if(this.state.downloadTimer) {
+            clearInterval(this.state.downloadTimer);
+            this.state.downloadTimer=null;
+        }
     }
 
 /*

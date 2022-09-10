@@ -7,7 +7,7 @@ const srv_prepare = async(obj) => {
   try {
     let jsonStr=JSON.stringify({
       wallet_id: obj.wallet_id,
-      wallet_addr: obj.address,
+      wallet_addr: obj.wallet_addr,
       socket_id: obj.socket_id,
       client_id: obj.client_id
     });
