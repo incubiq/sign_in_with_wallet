@@ -32,7 +32,15 @@ module.exports = {
 
     // JWT signed payload 
     function createToken(req) {
-        let payload = {username: (req!=null && req.user!=null && req.user.username!=null) ? req.user.username.toString() : null};
+        let payload = {
+            username: (req!=null && req.user!=null && req.user.username!=null) ? req.user.username.toString() : null,
+            provider: (req!=null && req.user!=null && req.user.provider_id!=null) ? req.user.provider_id : null,
+            provider_wallet: (req!=null && req.user!=null && req.user.provider_wallet!=null) ? req.user.provider_wallet : null,
+            wallet_address: (req!=null && req.user!=null && req.user.wallet_address!=null) ? req.user.wallet_address : null,
+            firstName: (req!=null && req.user!=null && req.user.firstName!=null) ? req.user.firstName : null,
+            lastName: (req!=null && req.user!=null && req.user.lastName!=null) ? req.user.lastName : null,
+            email: (req!=null && req.user!=null && req.user.email!=null) ? req.user.email : null,
+        };
         return jsonwebtoken.sign(payload, gConfig.jwtKey, {
             expiresIn: gConfig.authentication_expire
         });

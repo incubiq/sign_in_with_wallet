@@ -20,7 +20,9 @@ router.get('/', function(req, res, next) {
                 theme_color: gConfig.theme_color
             },
             param: {
-                username: dataUser.data.username
+                username: dataUser.data.username,
+                provider: dataUser.data.provider,
+                wallet_id: dataUser.data.wallet_id,
             }
         });    
     })

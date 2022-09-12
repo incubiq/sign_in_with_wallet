@@ -6,6 +6,7 @@ const API_WEB3ROUTE= "/web3/";
 const srv_prepare = async(obj) => {
   try {
     let jsonStr=JSON.stringify({
+      provider: "SIWC",
       wallet_id: obj.wallet_id,
       wallet_addr: obj.wallet_addr,
       socket_id: obj.socket_id,

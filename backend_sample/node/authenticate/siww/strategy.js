@@ -152,6 +152,7 @@ var OAuth2Strategy = require('passport-oauth2')
             let json;
 
             if (err) {
+
                 if (err.data) {
                     try {
                         json = JSON.parse(err.data);
@@ -160,11 +161,13 @@ var OAuth2Strategy = require('passport-oauth2')
 
                 if (json) {
                     if(json.error && typeof json.error == 'object') {
-                        return done(new Error(json.error.message));
+                        console.log(new Error(json.error.message));
                     }
-                    return done(new Error(json.statusText));
+                    console.log(new Error(json.statusText));
                 }
-                return done(new InternalOAuthError("Failed to fetch user profile", err));
+                console.log(new InternalOAuthError("Failed to fetch user profile", err));
+
+                return done(null, null);
             }
 
             try {

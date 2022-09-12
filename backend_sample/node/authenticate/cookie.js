@@ -41,13 +41,19 @@ module.exports = {
                     });
                 }
                 else {
-                    // here we could check user against DB and possibly retrieve extra info...
+                    // here we could check user against this app's DB and possibly retrieve extra info...
+
+                    let _objUser={
+                        isAuthenticated: true,
+                        isExpired: false,
+                        username: decoded.username,
+                        provider: decoded.provider,
+                        wallet_id: decoded.provider_wallet,
+                        wallet_address:  decoded.wallet_address,
+                    }
+
                     deferred.resolve({
-                        data: {
-                            isAuthenticated: true,
-                            isExpired: false,
-                            username: decoded.username    
-                        }
+                        data: _objUser                        
                     });
                 }
             });

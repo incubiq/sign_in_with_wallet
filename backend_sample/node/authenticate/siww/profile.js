@@ -18,17 +18,17 @@
         let profile = {};
         let user = json.data;
         if (user) { // Populate the profile fields using a standard format
-            profile.provider = 'SIWW';
+            profile.provider = user.provider? user.provider.id: null;
+            profile.wallet = user.provider? user.provider.wallet_id: null;
             profile.id = user.username;
-            profile.chain = user.chain;
-            profile.address = user.address;
-            profile.username = user.username;
-            profile.displayName = user.firstName +' '+user.lastName;
+            profile.wallet_address = user.data? user.data.wallet_address: null;
+            profile.username = user.data? user.data.username : null;
+            profile.displayName = user.data && user.data.firstName && user.data.lastName?  user.data.firstName +' '+user.data.lastName : ""
             profile.name = {
-                familyName: user.lastName,
-                givenName: user.firstName
+                familyName: user.data && user.data.lastName?  user.data.lastName : null,
+                givenName: user.data && user.data.firstName ? user.data.firstName : null
             };
-            profile.emails = [{value: user.email}];
+            profile.emails = user.data && user.data.email? [{value: user.data.email}] : [];
         }
         return profile;
     };

@@ -15,6 +15,10 @@ const libUser = require('./user');              // Our User mgt minimal library
     },
     function(accessToken, refreshToken, profile, done) {
         try {
+            if(!profile) {
+                return done(null, false, {});       // got in error...
+            }
+
             var firstName= profile && profile.name && profile.name.givenName ? profile.name.givenName : profile.displayName.substr(0,profile.displayName.indexOf(" "));
             var lastName= profile && profile.name && profile.name.familyName ? profile.name.familyName : profile.displayName.substr(1+profile.displayName.lastIndexOf(" "), profile.displayName.length);
             var email=profile && profile.emails && profile.emails.length>0 ? (profile.emails[0] ? profile.emails[0].value : null) : null;
@@ -32,12 +36,14 @@ const libUser = require('./user');              // Our User mgt minimal library
             */
 
             libUser.async_createUser({
-                username: profile.id, // note: profile id  already contains an "SIWW_" prefix
+                username: profile.username, 
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
                 picture: picture,
-                identity_provider: "SIWW",
+                provider_id: profile.provider,
+                provider_wallet: profile.wallet,
+                wallet_address: profile.wallet_address,
                 isValidated: true
             })
                 .then(function(obj){
