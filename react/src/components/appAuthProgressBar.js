@@ -47,8 +47,8 @@ class AppAuthProgressBar extends Component {
 
     go(objOptions) {
         let timer=window.setTimeout(() => {
-            console.log("continuing!");
             if(objOptions.onElapsed)  {
+                console.log("continuing!");
                 objOptions.onElapsed();
             }
         }, objOptions.delay);

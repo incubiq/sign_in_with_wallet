@@ -39,7 +39,7 @@ class AppAuthHeader extends Component {
 
                     <div className="display-app-logo">
                         <img className="client-login-logo" src={this.props.SIWCLogo} />
-                        <div className="login-subtitle">Sign-in with<br />Cardano</div>
+                        <div className="login-subtitle">Sign-in with<br />{this.props.theme.name}</div>
                     </div>
                 </div>
             </div>

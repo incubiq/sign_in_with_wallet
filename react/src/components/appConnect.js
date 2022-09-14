@@ -2,13 +2,16 @@ import React, {Component} from "react";
 import AppAuthHeader from "./appAuthHeader";
 import AppAuthFooter from "./appAuthFooter";
 import AppAuthWalletConnect from "./appAuthWalletConnect";
+import {setCacheEncryption} from "../services/cache";
+
+import io from 'socket.io-client';
+//import siwc from "@incubiq/siwc";                     // real prod
+import siwc_connect from "../siwc/siwc_connect";        // for test only
+
+import {getTheme} from "../assets/themes/cardano"; 
 
 import "../assets/css/app.css";
 import "../assets/css/siww.css";
-
-//import siwc from "@incubiq/siwc";            // real prod
-import siwc_connect from "../siwc/siwc_connect";        // for test only
-const siwc=new siwc_connect();                         // for test only
 
 class AppConnect extends Component {
 
@@ -19,23 +22,58 @@ class AppConnect extends Component {
 constructor(props) {
         super(props);    
     
-        this.state={
-            aWallet: [],                // all available wallets to connect to  (gathered from connect engine)
-            idWallet : null,             // the idWallet requested to connect to
+        // TODO : we need to pass the key from server (DO NOT KEEP this into prod)
+        let _localSecret="cacheEncryptionKey_1234567890";              // encryption key for localstore ; 
+        let _cookieSecret="somekey_1234567890";
 
-            didAccessWallets: false
+        setCacheEncryption(_localSecret);
+
+        let objTheme=getTheme();
+        this.state={
+            // connected wallets
+            aWallet: [],                 // all available wallets to connect to  (gathered from connect engine)
+
+            cacheSecret: _localSecret,   // secret to encode localstore
+            cookieSecret: _cookieSecret, // secret to decode cookie
+
+            // init vars
+            didOpenSocket: false,
+            didInitSIWC: false,
+            didAccessWallets: false,
+
+            // chain theme
+            theme: objTheme
         }
 
+        // Receive the authentication cookie
+        let that=this;
+        if(!this.state.didOpenSocket) {
+            this.setState({didOpenSocket: true});
 
-        // let's use SIWC
-        this.siwc=siwc;
-        
+            this.socket = io("/client");        
+            this.socket.on("connect", socket => { 
+
+                // socket ready... let's use SIWC
+                if(!this.state.didInitSIWC) {
+                    that.setState({didInitSIWC: true});
+                    that.siwc=new siwc_connect();
+                    that.registerSIWCCallbacks();
+                }
+            });
+
+            this.socket.on('auth_cookie', cookie => {
+                that.onAuthCookieReceived(cookie);
+            })    
+        }        
     }
 
     componentDidMount() {
-        this.registerSIWCCallbacks();
+//        this.registerSIWCCallbacks();
     }
     
+    onAuthCookieReceived(cookie){
+    }
+
 /*
  *          SIWC callbacks
  */
@@ -75,7 +113,7 @@ constructor(props) {
 
         // replace an existing entry (case when we connected)
         let i=this.state.aWallet.findIndex(function (x) {return x.id===objParam.id});
-        if(i!==-1 && objParam.wasConnected) {
+        if(i!==-1 && objParam.didUserAccept) {
             let _aWallet=this.state.aWallet.slice();
             _aWallet[i].address=objParam.address;
             this.setState({aWallet:_aWallet});
@@ -116,7 +154,6 @@ constructor(props) {
 
     // from UI (close dialog requested)
     onCloseWallet() {
-        this.setState ({idWallet:null});                       // also to make sure we can reconnect again on same later on
         if(this.props.onClose) {this.props.onClose()}          // notify the listening page 
     }
 
@@ -162,7 +199,7 @@ constructor(props) {
         return _address.substr(0,4)+"..."+_address.substr(_address.length-6,6)
     }
 
-    render() {
+    getStyles() {
         const styleContainer = {}
         const styleColor = {}
         if (this.state.theme && this.state.theme.background) {
@@ -171,7 +208,14 @@ constructor(props) {
         if (this.state.theme && this.state.theme.color.text) {
             styleColor.color=this.state.theme.color.text;
         }
+        return {
+            container: styleContainer,
+            color: styleColor
+        }
+    }
 
+    render() {
+        let objStyles=this.getStyles();
         return( 
             <div>
                 {this.state.didAccessWallets===false ? 

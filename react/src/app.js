@@ -35,7 +35,7 @@ class App extends Component {
             <br />
             
             <NavLink 
-                to="/app/auth?client_id=123456"  
+                to="/app/authenticate?client_id=pCHF8hIr1662570091000"  
             >
                 <button id='btnAuthWallet'>Authenticate with Wallet...</button>
             </NavLink>

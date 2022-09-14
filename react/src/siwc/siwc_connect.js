@@ -108,7 +108,9 @@ export class siwc_connect {
             that.aWallet.forEach(async function(item) {
                 if(item.isConnected && item.address && that.fnOnNotifyConnectedWallet) {
                     that.fnOnNotifyConnectedWallet({
-                        wasConnected: true,
+                        didUserAccept: true,
+                        didUserClick: false,
+                        didShowWallet: true,
                         id: item.id,
                         chain: item.chain,
                         networkId: item.networkId,
@@ -249,7 +251,9 @@ export class siwc_connect {
                     // get connection details
                     let _obj=await this.async_getConnectedWalletInfo(_objWallet);
                     let objRet={
-                        wasConnected: true,
+                        didUserAccept: true,
+                        didUserClick: true,
+                        didShowWallet: true,
                         id: _idWallet,
                         chain: _obj.chain,
                         networkId: _obj.networkId,    
@@ -267,7 +271,9 @@ export class siwc_connect {
                     _objWallet.alert= "Wallet connection refused by user";
 
                     let objRet2={
-                        wasConnected: true,
+                        didUserAccept: false,
+                        didUserClick: true,
+                        didShowWallet: true,
                         id: _idWallet,
                         chain: _objWallet.chain,
                         networkId: _objWallet.networkId,    

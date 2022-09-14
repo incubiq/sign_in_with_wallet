@@ -5,9 +5,10 @@ import AppAuthProgressBar from "./appAuthProgressBar";
 import AppAuthWalletConnect from "./appAuthWalletConnect";
 
 import {srv_prepare} from "../services/authenticate";
-import io from 'socket.io-client';
+import {ensureIdentity, updateIdentity} from "../services/me";
+import jsonwebtoken from "jsonwebtoken";
 
-class AppAuth extends AppConnect {
+class AppAuthenticate extends AppConnect {
 
 /*
  *          page inits
@@ -16,36 +17,21 @@ class AppAuth extends AppConnect {
 constructor(props) {
         super(props);    
 
-        // Receive the authentication cookie
-        this.socket = io("/client");        
-        this.socket.on('auth_cookie', cookie => {        
-            // normal page... authenticate with the server using our new token
-            document.cookie = cookie.name + "=" + cookie.token + ";path=/";
-            document.getElementById('form-login').submit();      // Normal redirect
-        });
-
         // params?
         let _search=window.location.search;
         let _client_id=decodeURIComponent(decodeURIComponent(this.getmyuri("client_id", _search)));
         let _oauthDomain=decodeURIComponent(decodeURIComponent(this.getmyuri("domain", _search))).toLowerCase();
         let _oauthClientName=decodeURIComponent(decodeURIComponent(this.getmyuri("name", _search)));
-    
+        
         this.state= Object.assign({}, this.state, {
 
             client_id: _client_id? _client_id : null,
             oauthClientName: _oauthClientName? _oauthClientName : "???",
             oauthDomain: _oauthDomain? _oauthDomain : "unknown",
 
-            theme:{
-                dark_mode: false,
-                background:  "/assets/images/siwc_background.jpg",
-                logo: "/assets/images/www_logo.png",
-                color: {
-                    text: "#333",
-                    button: "#003366",
-                    button_text: "#f0f0f0"
-                }
-            }
+            wallet_id: null,
+            wallet_address: null,
+
         });
     }
 
@@ -55,24 +41,47 @@ constructor(props) {
         return (p===null) ? "" : p[1];
       }
     
+    onAuthCookieReceived(cookie) {
+        let eltMe=document.getElementById("me");
+        if(eltMe) {
+            eltMe.value="";
+        }
+
+        jsonwebtoken.verify(cookie.token, this.state.cookieSecret, function(err, decoded){
+            if(err) {
+                console.log("Error decoding Cookie in REACT");
+            }
+            else {
+                // cookie contains new username (created by backend) => store it
+                updateIdentity(decoded.wallet_address, {
+                    username: decoded.username
+                });
+
+                // check if we agreed to grant our data
+
+                // normal page... authenticate with the server using our new token
+                document.cookie = cookie.name + "=" + cookie.token + ";path=/";
+                document.getElementById('form-login').submit();      // Normal redirect
+
+            }
+        })
+    }
 /*
  *          Wallet interaction
  */
 
-    onSIWCNotify_WalletConnected(objParam) {
-        super.onSIWCNotify_WalletConnected(objParam);
+    _prepareSIWC(objIdentityForAuth){
+        // can we authenticate with SIWC??
+        if(objIdentityForAuth) {
 
-        // notify 
-        // now pass details to server, so we get a cookie
-        if(objParam.wasConnected) {
+            // now pass details to server, so we get a cookie
             srv_prepare({
-                wallet_id: objParam.id,
-                wallet_addr: objParam.address,
+                wallet_id: objIdentityForAuth.wallet_id,
+                wallet_addr: objIdentityForAuth.wallet_address,    
                 socket_id: this.socket.id,
                 client_id: this.state.client_id
             })
                 .then(res => {
-    
                     // ok??
                     if(!res.ok) {
                         throw {
@@ -87,11 +96,50 @@ constructor(props) {
                         // we wait to be called back on sockets...
 
                     }
-    
+
                 }).catch(err =>{
                     // log/display an error 
-    
+
                 });    
+        }
+    }
+
+    // called at init (what are those wallets?)
+    onSIWCNotify_WalletsAccessible(_aWallet) {
+        super.onSIWCNotify_WalletsAccessible(_aWallet);
+
+        let didRequestAuthSIWC=false;
+        _aWallet.forEach((item) => {
+
+            if(item.isConnected && item.address) {
+
+                // make sure we have this user's identity in storage
+                ensureIdentity({
+                    wallet_address: item.address,
+                    wallet_id: item.id
+                });
+
+                // use the first wallet to authenticate user with SIWC
+                if(!didRequestAuthSIWC) {
+                    didRequestAuthSIWC=true;
+                    this._prepareSIWC({
+                        wallet_address: item.address,
+                        wallet_id: item.id,
+                    });        
+                }
+            }
+        }); 
+    }
+    
+    onSIWCNotify_WalletConnected(objParam) {
+        super.onSIWCNotify_WalletConnected(objParam);
+
+        // did user just click to accept? we use this as Identity
+        if(objParam.didUserClick && objParam.didUserAccept) {
+            this._prepareSIWC({
+                wallet_address: objParam.address,
+                wallet_id: objParam.id,
+            });    
         }
     }
 
@@ -100,18 +148,10 @@ constructor(props) {
  */
 
     render() {
-        const styleContainer = {}
-        const styleColor = {}
-        if (this.state.theme && this.state.theme.background) {
-            styleContainer.backgroundImage="url("+this.state.theme.background+")";
-        }
-        if (this.state.theme && this.state.theme.color.text) {
-            styleColor.color=this.state.theme.color.text;
-        }
-
+        let objStyles=this.getStyles();
         return(
-            <div id="siwc-login-container" style={styleContainer}>
-                <div className={"modal-login center-vh" + (this.state.theme.dark_mode ? "dark-mode": "")} style={styleColor}>
+            <div id="siwc-login-container" style={objStyles.container}>
+                <div className={"modal-login center-vh" + (this.state.theme.dark_mode ? "dark-mode": "")} style={objStyles.color}>
 
                     <AppAuthHeader 
                         client_id= {this.state.client_id}
@@ -123,7 +163,9 @@ constructor(props) {
                     />
 
                     <div id="idBeforeLogin" className="siwc_before">
-                        <form className="hidden" id="form-login" action="/oauth/login" method="POST"></form>
+                        <form className="hidden" id="form-login" action="/oauth/login" method="POST">
+                            <input type="text" id="me" />
+                        </form>
                         {
 
                         this.state.didAccessWallets===false? 
@@ -167,4 +209,4 @@ constructor(props) {
     }
 }
 
-export default AppAuth;
+export default AppAuthenticate;
