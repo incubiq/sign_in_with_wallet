@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import {NavLink} from 'react-router-dom';
-import "./assets/css/app.css";
 
 class App extends Component {
 
@@ -35,7 +34,7 @@ class App extends Component {
             <br />
             
             <NavLink 
-                to="/app/authenticate?client_id=pCHF8hIr1662570091000"  
+                to="/app/authenticate?client_id=7TdKmdPQ1663168239000"  
             >
                 <button id='btnAuthWallet'>Authenticate with Wallet...</button>
             </NavLink>

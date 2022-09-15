@@ -14,6 +14,24 @@ const getTheme = () => {
   }
 }
 
+const getStyles = () => {
+  const styleContainer = {}
+  const styleColor = {}
+
+  let theme=getTheme()
+  if (theme && theme.background) {
+      styleContainer.backgroundImage="url("+theme.background+")";
+  }
+  if (theme && theme.color.text) {
+      styleColor.color=theme.color.text;
+  }
+  return {
+      container: styleContainer,
+      color: styleColor
+  }
+}
+
 export {
-  getTheme
+  getTheme,
+  getStyles
 };

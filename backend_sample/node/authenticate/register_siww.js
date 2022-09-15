@@ -52,7 +52,13 @@ module.exports = {
                     
                     // token
                     token_lifespan:  3*24*60*60*1000,  // 3 day default
-                    scope: "username wallet_address"
+                    scope: [{
+                        text: "Username",
+                        value: "username"
+                    }, {
+                        text: "Wallet Address",
+                        value: "wallet_address"
+                    }]
                 } 
             },
             function (error, response, body) {

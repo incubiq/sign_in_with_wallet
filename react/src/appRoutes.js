@@ -1,11 +1,18 @@
 import React, { Component, Suspense } from "react";
 import {Route, Routes, useNavigate } from 'react-router-dom';
+import io from 'socket.io-client';
+
+// default theming
+import {getTheme, getStyles} from "./assets/themes/cardano"; 
+import {WidgetLoading} from "./utils/widgetLoading"; 
 
 const AppConnect  = React.lazy(() => import ("./components/appConnect"));
 const AppAuthenticate  = React.lazy(() => import ("./components/appAuthenticate"));
 const AppAuthorize  = React.lazy(() => import ("./components/appAuthorize"));
 const AppAuthApi  = React.lazy(() => import ("./api/appAuthApi"));
 const App  = React.lazy(() => import ("./app"));
+
+const socket = io("/client");        
 
 /* 
  *      Routing class
@@ -16,13 +23,36 @@ class AppRoutes extends Component {
   constructor(props) {
     super(props);
     this.state={
-      version: ""
+        version: "",
+        didSocketConnect:false
     }
+
+    socket.on("connect", _socket => { 
+        this.setState({didSocketConnect: true});
+    });        
+
+  }
+
+  getSocket( ){
+    return socket;
   }
 
 /*
 *     all for APP routes 
 */
+
+  renderBackground() {
+    let styles=getStyles();
+    return (
+        <div id="siwc-login-container" style={styles.container}>
+            <WidgetLoading 
+                isVisible = {true}
+                fullHeight = {true}
+                text = "Loading page, just a moment..."
+            />
+        </div>
+    )
+  }
 
   render() {
     return (
@@ -40,27 +70,34 @@ class AppRoutes extends Component {
 
             <Route  path="app/connect" element={
                 <Suspense 
-                    fallback={<div>Loading Connector...</div>}>
+                    fallback={this.renderBackground()}>
                     <AppConnect
                         version={this.state.version}
+                        didSocketConnect={this.state.didSocketConnect}
+                        getSocket={this.getSocket}
                     />
                 </Suspense> 
                 } exact />
 
             <Route  path="/app/authenticate" element={
                 <Suspense 
-                    fallback={<div>Loading Authentication page...</div>}>
+                    fallback={this.renderBackground()}>
                     <AppAuthenticate
                         version={this.state.version}
+                        didSocketConnect={this.state.didSocketConnect}
+                        getSocket={this.getSocket}
                     />
                 </Suspense> 
                 } exact />
 
             <Route  path="/app/authorize" element={
                 <Suspense 
-                    fallback={<div>Loading Authorization page...</div>}>
+                    fallback={this.renderBackground()}>
                     <AppAuthorize
                         version={this.state.version}
+                        didSocketConnect={this.state.didSocketConnect}
+                        getSocket={this.getSocket}
+                        onRedirect={this.props.onSoftRedirect}
                     />
                 </Suspense> 
                 } exact />

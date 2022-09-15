@@ -1,0 +1,37 @@
+
+.loading {
+    text-align: center;
+}
+
+.loading.fullHeight {
+    margin-top: 40vh;
+}
+
+.loading.fullHeight.withImage {
+    margin-top: 20vh;
+}
+
+.loading .loadingText {
+    font-size: 16px;
+    padding: 0 16px;
+    padding: 0 16px;
+    color: #666;
+}
+
+.loading.fullHeight .loadingText {
+    font-size: 24px;
+}
+
+.loading.withImage .loadingText {
+    margin-top: 24px;
+    font-size: 20px;
+}
+
+.loading.withImage img {
+    border-radius: 6px;
+    max-width: 100%;
+}
+
+.visually-hidden {
+    display: none;
+}

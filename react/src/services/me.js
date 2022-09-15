@@ -19,18 +19,28 @@ const _findIdentityFromWalletAddress = (_wallet_address) => {
   return null;
 }
 
-const getIdentityFromWalletAddress = (_wallet_address) => {
-  let objMe=getCache(CACHE_ME);
-  if(objMe && objMe.identities && objMe.identities.length>0) {
-    return _findIdentityFromWalletAddress(_wallet_address);
+const _findIdentityFromUsername = (_id) => {
+  let aId=getMyIdentities();
+  if(_id && aId && aId.length>0) {
+    for (var i=0; i<aId.length; i++) {
+      if (aId[i].username===_id) {
+        return aId[i];
+      }
+    }
   }
   return null;
 }
 
-const ensureIdentity = (_objIdentity) => {
+const getIdentityFromUsername = (_username) => {
+  return _findIdentityFromUsername(_username);
+}
+
+const createPartialIdentity = (_objIdentity) => {
   let objMe=getCache(CACHE_ME);
   if(!objMe) {
-    objMe={identities: []};
+    objMe={
+      identities: []
+    };
   }
   if(_findIdentityFromWalletAddress(_objIdentity.wallet_address)===null) {
     objMe.identities.push(_objIdentity);
@@ -39,7 +49,7 @@ const ensureIdentity = (_objIdentity) => {
   return objMe;
 }
 
-const updateIdentity = (_wallet_address, _objUpdate) => {
+const updatePartialIdentity = (_wallet_address, _objUpdate) => {
   let objIdentity=_findIdentityFromWalletAddress(_wallet_address);
   if(objIdentity) {
     for (const key in _objUpdate) {
@@ -52,14 +62,72 @@ const updateIdentity = (_wallet_address, _objUpdate) => {
       }
     }
     setCache(CACHE_ME, {identities: aId});
+    return true;
   }
+  return false;
+}
+
+const updateIdentity = (_username, _objUpdate) => {
+  let objIdentity=_findIdentityFromUsername(_username);
+  if(objIdentity) {
+    for (const key in _objUpdate) {
+      objIdentity[key]=_objUpdate[key];
+    }
+    let aId=getMyIdentities();
+    for (var i=0; i<aId.length; i++) {
+      if(aId[i].username===_username) {
+        aId[i]=objIdentity;
+      }
+    }
+    setCache(CACHE_ME, {identities: aId});
+    return true;
+  }
+  return false;
+}
+
+const registerWebAppWithIdentity = (_username, _objWebApp) => {
+  let objIdentity=_findIdentityFromUsername(_username);
+  if(!objIdentity) {
+    return null;
+  }
+  
+  // update this identity with WebApp
+  if(!objIdentity.aWebApp) {objIdentity.aWebApp=[]}
+  if(_objWebApp && _objWebApp.client_id) {
+    let i=objIdentity.aWebApp.findIndex(function (x) {return x.client_id===_objWebApp.client_id});
+    let newScope=_objWebApp.scope? _objWebApp.scope : "";
+    if(i===-1) {
+      objIdentity.aWebApp.push({
+        client_id: _objWebApp.client_id,
+        scope: newScope,
+        didGrant: false
+      })
+    }
+    else {
+      // changed scope?
+      if(objIdentity.aWebApp[i].scope!==newScope) {
+        objIdentity.aWebApp[i].scope=newScope;
+        objIdentity.didGrant= false;
+      }
+    }
+
+    updateIdentity(objIdentity.username, {
+      aWebApp: objIdentity.aWebApp
+    });
+
+    return objIdentity;
+  }
+
+  return null;
 }
 
 
 export {
   CACHE_ME,
   getMyIdentities,
-  getIdentityFromWalletAddress,
-  ensureIdentity,
-  updateIdentity
+  getIdentityFromUsername,
+  createPartialIdentity,
+  updatePartialIdentity,
+  updateIdentity,
+  registerWebAppWithIdentity
 };

@@ -28,34 +28,19 @@ class AppAuthWalletConnect extends Component {
         }
 
         return (    
-                
-            <div className="login-line login-line-emph">
-            {this.props.client_id?
-
-                <button 
-                    id={"btnLoginWithWallet_"+ this.props.wallet_id}
-                    attr-id={this.props.wallet_id}
-                    className={"btn btn-quiet" + (this.props.isConnected? "": "")} 
-                    style={style} 
-                    onClick={function(evt) {this.onConnect(evt)}.bind(this) }
-                >
-                    {this.props.logo ? <img className="connectWalletLogo" src={this.props.logo} /> : ""}                    
-                    <span>Sign in with </span>
-                    &nbsp;
-                    <span id="loginWithWallet">{this.props.wallet_id}</span>
-                </button>
-
-            :
-                <>
-                    <div className="transitoryMessage">
-                        Could not identify caller!
-                        <br />
-                        Please <b>Login</b> again from the application.
-                    </div>
-                </>
-            }
+            <div 
+                id={"btnLoginWithWallet_"+ this.props.wallet_id}
+                attr-id={this.props.wallet_id}
+                key={this.props.key}
+                className={"wallet-sign" + (this.props.isConnected? " connected": " disconnected")} 
+                style={style} 
+                onClick={function(evt) {this.onConnect(evt)}.bind(this) }
+            >
+                <div className="connectWalletLogoContainer"> 
+                    <img className="connectWalletLogo" src={this.props.logo ? this.props.logo : ""} />  
+                </div>
+                <div className="connectWalletTitle" id="loginWithWallet">{this.props.wallet_id}</div>
             </div>
-
         )
     }
 }

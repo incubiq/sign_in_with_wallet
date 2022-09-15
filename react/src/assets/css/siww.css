@@ -39,7 +39,12 @@ a {
 
 .siwc-oauth-login {
     font-size: 85%;
+}
 
+.siwc-oauth-section {
+    font-size: 85%;
+    padding-top:12px;
+    text-align: left;
 }
 
 #appAuthByQRCode {
@@ -71,7 +76,7 @@ a {
 .siwc_before, .siwc_after {
     padding: 0;
     margin: 0;
-    height: 80px;
+    min-height: 80px;
     position: relative;
 }
 .transitoryMessage {
@@ -81,12 +86,44 @@ a {
     line-height: 24px;
 }
 .connectCont{
-    display: inline;
+    height: 80px;
+    margin: 6px;
 }
 
+.wallet-sign {
+    float: left;
+    margin-right: 12px;
+    border: 1px solid #e0e0e0;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.wallet-sign.connected {
+    border: 1px solid #333;
+    background-color: #c0c0f0;
+}
+
+.wallet-sign.connected.selected {
+    box-shadow: 0px 6px 22px var(--shadow);
+}
+
+.connectWalletLogoContainer {
+    height: 50px;
+    width: 64px;
+}
 .connectWalletLogo{
     max-height:40px;
-    padding-right: 8px;
+    max-width:40px;
+    padding: 6px 12px;
+}
+
+.connectWalletTitle{
+    font-size: 16px;
+    padding: 0 8px;
+}
+
+.wallet-sign.connected .connectWalletTitle {
+    font-weight: bold;
 }
 
 .modal-login {
@@ -163,14 +200,25 @@ a {
     font-size: 0.8em;
     margin: auto;
     margin-top: 10px;
-    width: fit-content;
+    width: 90%;
     text-align: left;
+    list-style: none;
+    display: table;
+    padding-inline-start: 20px;
 }
 .scopes-list li {
     margin-bottom: 0;
+    display: table-row;
 }
 
-.scopes-list .permission{
+.scopes-list .scope-name{
+    display: table-cell;
+    min-width: 120px;
+    color: #555;
+}
+
+.scopes-list .scope-value{
+    display: table-cell;
     color: #aaa;
     font-size: 12px;
 }
@@ -187,6 +235,25 @@ a {
     top: 0;
     left: 0;
     width: 100%;
+}
+
+.identitySelection_container {
+    text-align: left;
+    margin: 6px 0 18px 24px;
+}
+
+.identity_image {
+    width:32px;
+    padding: 0 16px 0 0;
+    vertical-align: bottom;
+}
+
+.identity_list {
+    font-size: 20px;
+}
+
+.identity_action {
+    display: inline-flex;
 }
 
 /* Buttons */
@@ -273,13 +340,17 @@ a {
     .footer {
         display:none;
     }
+
+    .modal-login {
+        width: 90%;
+    }
 }
 
 /* on mobile devices */
-@media screen and (max-height: 812px) and (max-width: 414px) {
+@media screen and (max-width: 414px) {
     .center-vh {
         width:100%;
-        top: 0;
+        top: 8%;
         left: 0;
         transform: none;
         border-radius: 0;

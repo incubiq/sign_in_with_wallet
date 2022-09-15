@@ -4,14 +4,10 @@ import AppAuthFooter from "./appAuthFooter";
 import AppAuthWalletConnect from "./appAuthWalletConnect";
 import {setCacheEncryption} from "../services/cache";
 
-import io from 'socket.io-client';
 //import siwc from "@incubiq/siwc";                     // real prod
 import siwc_connect from "../siwc/siwc_connect";        // for test only
 
-import {getTheme} from "../assets/themes/cardano"; 
-
-import "../assets/css/app.css";
-import "../assets/css/siww.css";
+import {getTheme, getStyles} from "../assets/themes/cardano"; 
 
 class AppConnect extends Component {
 
@@ -28,7 +24,6 @@ constructor(props) {
 
         setCacheEncryption(_localSecret);
 
-        let objTheme=getTheme();
         this.state={
             // connected wallets
             aWallet: [],                 // all available wallets to connect to  (gathered from connect engine)
@@ -37,41 +32,44 @@ constructor(props) {
             cookieSecret: _cookieSecret, // secret to decode cookie
 
             // init vars
-            didOpenSocket: false,
             didInitSIWC: false,
             didAccessWallets: false,
 
             // chain theme
-            theme: objTheme
+            theme: getTheme(),
+            styles: getStyles()
         }
-
-        // Receive the authentication cookie
-        let that=this;
-        if(!this.state.didOpenSocket) {
-            this.setState({didOpenSocket: true});
-
-            this.socket = io("/client");        
-            this.socket.on("connect", socket => { 
-
-                // socket ready... let's use SIWC
-                if(!this.state.didInitSIWC) {
-                    that.setState({didInitSIWC: true});
-                    that.siwc=new siwc_connect();
-                    that.registerSIWCCallbacks();
-                }
-            });
-
-            this.socket.on('auth_cookie', cookie => {
-                that.onAuthCookieReceived(cookie);
-            })    
-        }        
     }
 
-    componentDidMount() {
-//        this.registerSIWCCallbacks();
+    getmyuri(n,s){
+        n = n.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");
+        var p = (new RegExp("[\\?&]"+n+"=([^&#]*)")).exec(s);
+        return (p===null) ? "" : p[1];
     }
     
-    onAuthCookieReceived(cookie){
+    componentDidMount() {
+
+        // socket ready? let's use SIWC
+        if(this.props.didSocketConnect && !this.state.didInitSIWC) {
+            this.setState({didInitSIWC: true});
+            this.siwc=new siwc_connect();
+            this.registerSIWCCallbacks();
+
+            // Receive the authentication cookie
+            let _socket=this.props.getSocket();
+            if(!_socket) {
+                console.log("Socket not initialized!!");
+            }
+            else {
+                _socket.on('auth_cookie', cookie => {
+                    this.async_onAuthCookieReceived(cookie);
+                })       
+            }
+        }        
+    }
+    
+    async_onAuthCookieReceived(cookie){
+        return;
     }
 
 /*
@@ -199,23 +197,7 @@ constructor(props) {
         return _address.substr(0,4)+"..."+_address.substr(_address.length-6,6)
     }
 
-    getStyles() {
-        const styleContainer = {}
-        const styleColor = {}
-        if (this.state.theme && this.state.theme.background) {
-            styleContainer.backgroundImage="url("+this.state.theme.background+")";
-        }
-        if (this.state.theme && this.state.theme.color.text) {
-            styleColor.color=this.state.theme.color.text;
-        }
-        return {
-            container: styleContainer,
-            color: styleColor
-        }
-    }
-
     render() {
-        let objStyles=this.getStyles();
         return( 
             <div>
                 {this.state.didAccessWallets===false ? 
