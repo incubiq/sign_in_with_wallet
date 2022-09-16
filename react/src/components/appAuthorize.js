@@ -5,6 +5,9 @@ import AppAuthWalletConnect from "./appAuthWalletConnect";
 
 import {registerWebAppWithIdentity, getMyIdentities} from "../services/me";
 
+const VIEWMODE_IDENTITY="identity";
+const VIEWMODE_DATASHARE="datashare";
+
 class AppAuthorize extends AppAuthenticate {
 
 /*
@@ -24,12 +27,13 @@ class AppAuthorize extends AppAuthenticate {
                 client_id: this.state.client_id,
                 scope: aScope
             });    
-        })
+        });
 
         this.state= Object.assign({}, this.state, {
             aScope: aScope,
             aIdentity: aId,
-            iSelectedIdentity: 0
+            iSelectedIdentity: 0,
+            viewMode: VIEWMODE_DATASHARE
         });
 
         this._setSharedIdentity(0);
@@ -114,6 +118,20 @@ class AppAuthorize extends AppAuthenticate {
 
         let _iSel=this.state.aIdentity.findIndex(function (x) {return x.wallet_id===_id});
         this._setSharedIdentity(_iSel);
+        this.onToggleView();
+    }
+
+    onBackToAddIdentity() {
+        this.props.onRedirect("/app/authenticate?client_id="+this.state.client_id+"&confirm=true");
+    }
+
+    onToggleView() {
+        if(this.state.viewMode===VIEWMODE_DATASHARE) {
+            this.setState({viewMode: VIEWMODE_IDENTITY});
+        }
+        else {
+            this.setState({viewMode: VIEWMODE_DATASHARE});
+        }
     }
 
     // Params: aIdentity: [], selWallet_id: <> , onSelect: fn...
@@ -131,7 +149,7 @@ class AppAuthorize extends AppAuthenticate {
                     <ul className = "connectWallets">
                         {objParam.aIdentity.map((item, index) => (
                             <AppAuthWalletConnect 
-                                theme = {this.state.theme}
+                                theme = {this.props.theme}
                                 client_id = {this.state.client_id}
                                 wallet_id = {item.wallet_id}
                                 isConnected = {true}
@@ -152,8 +170,8 @@ class AppAuthorize extends AppAuthenticate {
 
     render() {
         return(
-            <div id="siwc-login-container" style={this.state.styles.container}>
-                <div className={"modal-login center-vh" + (this.state.theme.dark_mode ? "dark-mode": "")} style={this.state.styles.color}>
+            <div id="siwc-login-container" style={this.props.styles.container}>
+                <div className={"modal-login center-vh" + (this.props.theme.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                     <AppAuthHeader 
                         client_id= {this.state.client_id}
@@ -161,38 +179,51 @@ class AppAuthorize extends AppAuthenticate {
                         oauthDomain = {this.state.oauthDomain}
                         isOauth = {true}
                         SIWCLogo = "/assets/images/siwc_logo.png"
-                        theme = {this.state.theme}
+                        theme = {this.props.theme}
                     />
 
                     {this.state.aIdentity.length>0?
-                        <div className={"login-line login-line-emph" + (this.state.theme.dark_mode ? "dark-mode": "")}>
+                        <div className={"login-line login-line-emph" + (this.props.theme.dark_mode ? "dark-mode": "")}>
 
-                            <div className="siwc-oauth-section">
-                                <strong>{this.state.oauthClientName}</strong> is requesting access to those data:
+                            {this.state.viewMode===VIEWMODE_DATASHARE? 
+                            <div className="siwc-oauth-datashare">
+                                <div className="siwc-oauth-section">
+                                    <strong>{this.state.oauthClientName}</strong> will receive those data from your <strong>{this.state.aIdentity[this.state.iSelectedIdentity].wallet_id}</strong> identity
+                                </div>
+
+                                {this.state.aIdentity.length>1?
+                                    <div className="siwc-oauth-legend">
+                                    </div>
+                                :
+                                ""}
+
+                                <ul className="scopes-list">
+                                    {this.state.aScope.map((item, index) => (  
+                                        <li key={index}>
+                                            <span className="scope-name">{item.text}</span>
+                                            <span className={"scope-value "+item.value} id={"scope_"+item.value}>
+                                                { this.getCondensedText(this.state.aIdentity[this.state.iSelectedIdentity][item.value]) }
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+
                             </div>
+                            : 
+                            <div className="siwc-oauth-datashare">
+                                <div className="siwc-oauth-section">
+                                    Select identity to grant data share from:
+                                </div>                        
 
-                            <ul className="scopes-list">
-                                {this.state.aScope.map((item, index) => (  
-                                    <li key={index}>
-                                        <span className="scope-name">{item.text}</span>
-                                        <span className={"scope-value "+item.value} id={"scope_"+item.value}>
-                                            { this.getCondensedText(this.state.aIdentity[this.state.iSelectedIdentity][item.value]) }
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
+                                {this.renderListOfIdentities({
+                                    aIdentity: this.state.aIdentity,
+                                    iSel: this.state.iSelectedIdentity, 
+                                    onSelect: this.onChangeIdentity.bind(this),
+                                    onHover: this.onHover.bind(this),
+                                })}
 
-
-                            <div className="siwc-oauth-section">
-                                Select identity to grant data share from:
                             </div>
-
-                            {this.renderListOfIdentities({
-                                aIdentity: this.state.aIdentity,
-                                iSel: this.state.iSelectedIdentity, 
-                                onSelect: this.onChangeIdentity.bind(this),
-                                onHover: this.onHover.bind(this),
-                            })}
+                            }
 
                             <div className="identity_action">
                                 <button 
@@ -200,21 +231,30 @@ class AppAuthorize extends AppAuthenticate {
                                     onClick={evt => {
                                     }}
                                 >
-                                    Add identities...
-                                </button>
-
-                                <button 
-                                    className="btn btn-quiet"
-                                    onClick={evt => {
-                                    }}
-                                >
                                     Grant Access!
                                 </button>
+
+                                {this.state.viewMode===VIEWMODE_DATASHARE && this.state.aIdentity.length>1 ? 
+                                    <div 
+                                        className="actionLink back"
+                                        onClick={evt => {this.onToggleView();}}
+                                    >
+                                        Switch Identity!
+                                    </div>                            
+                                : 
+                                    <div 
+                                        className="actionLink back"
+                                        onClick={evt => {this.onBackToAddIdentity(evt);}}
+                                    >
+                                        &lt;&lt; back to wallets...
+                                    </div>
+                                }   
                             </div>
+
 
                         </div>                
                     : 
-                    <div className={"login-line login-line-emph" + (this.state.theme.dark_mode ? "dark-mode": "")}>
+                    <div className={"login-line login-line-emph" + (this.props.theme.dark_mode ? "dark-mode": "")}>
                         <div className="siwc-oauth-login">
                             Who are you? Cannot find your identity...
                         </div>
@@ -230,7 +270,7 @@ class AppAuthorize extends AppAuthenticate {
                     </div>
                     }
                     <AppAuthFooter 
-                        theme = {this.state.theme}
+                        theme = {this.props.theme}
                         message = {this.state.hover}
                     />
 

@@ -41,7 +41,7 @@ class AppAuthWalletConnect extends Component {
                 <div className="connectWalletLogoContainer"> 
                     <img className="connectWalletLogo" src={this.props.logo ? this.props.logo : ""} />  
                 </div>
-                <div className="connectWalletTitle" id="loginWithWallet">{this.props.wallet_id}</div>
+                <div className="connectWalletTitle" >{this.props.wallet_id}</div>
             </li>
         )
     }

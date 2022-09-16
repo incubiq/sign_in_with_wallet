@@ -87,6 +87,8 @@ class AppRoutes extends Component {
                         version={this.state.version}
                         didSocketConnect={this.state.didSocketConnect}
                         getSocket={this.getSocket}
+                        theme={getTheme()}
+                        styles={getStyles()}
                     />
                 </Suspense> 
                 } exact />
@@ -98,6 +100,9 @@ class AppRoutes extends Component {
                         version={this.state.version}
                         didSocketConnect={this.state.didSocketConnect}
                         getSocket={this.getSocket}
+                        theme={getTheme()}
+                        styles={getStyles()}
+                        onRedirect={this.props.onSoftRedirect}
                     />
                 </Suspense> 
                 } exact />
@@ -109,6 +114,8 @@ class AppRoutes extends Component {
                         version={this.state.version}
                         didSocketConnect={this.state.didSocketConnect}
                         getSocket={this.getSocket}
+                        theme={getTheme()}
+                        styles={getStyles()}
                         onRedirect={this.props.onSoftRedirect}
                     />
                 </Suspense> 

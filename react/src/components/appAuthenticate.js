@@ -3,9 +3,10 @@ import AppAuthHeader from "./appAuthHeader";
 import AppAuthFooter from "./appAuthFooter";
 import AppAuthProgressBar from "./appAuthProgressBar";
 import AppAuthWalletConnect from "./appAuthWalletConnect";
+import FormAuthenticate from "./formAuthenticate";
 
 import {srv_prepare} from "../services/authenticate";
-import {createPartialIdentity, updatePartialIdentity} from "../services/me";
+import {createPartialIdentity, updatePartialIdentity, getMyIdentities} from "../services/me";
 import jsonwebtoken from "jsonwebtoken";
 
 class AppAuthenticate extends AppConnect {
@@ -32,20 +33,30 @@ class AppAuthenticate extends AppConnect {
 
             //UX/UI
             mustConfirm: (_confirm==="true"),       // shall we wait for user confirmation?
-            hover: "",                              // indicate anything to user in footer
+            hover: "One moment! checking "+this.props.theme.name+" wallet browser plugins...",                              // indicate anything to user in footer
 
             // identity we will use
+            cookie: null,
+            username: null,
             wallet_id: null,
             wallet_address: null,
+
         });
     }
 
-    async async_onAuthCookieReceived(cookie) {
-        let eltMe=document.getElementById("me");
-        if(eltMe) {
-            eltMe.value="";
+    submitIdentity(cookie) {
+        // try authenticate with the server using our token
+        let eltForm=document.getElementById('form-login');
+        if(eltForm) {
+            document.cookie = cookie.name + "=" + cookie.token + ";path=/";
+            document.getElementById('form-login').submit();      // Normal redirect    
         }
+    }
 
+    async async_onAuthCookieReceived(cookie) {
+
+        let _client_id=this.state.client_id;
+        let that=this;
         jsonwebtoken.verify(cookie.token, this.state.cookieSecret, function(err, decoded){
             if(err) {
                 console.log("Error decoding Cookie in REACT app");
@@ -57,13 +68,40 @@ class AppAuthenticate extends AppConnect {
                     username: decoded.username
                 });
 
-                // check if we agreed to grant our data
+                // now we know who you are
+                that.setState({username: decoded.username});
+                that.setState({wallet_address: decoded.wallet_address});
+                that.setState({wallet_id: decoded.wallet_id});
 
-                // only if we are on this page... authenticate with the server using our new token
-                let eltForm=document.getElementById('form-login');
-                if(eltForm) {
-                    document.cookie = cookie.name + "=" + cookie.token + ";path=/";
-                    document.getElementById('form-login').submit();      // Normal redirect    
+                // check if we agreed to grant our data
+                let aId=getMyIdentities();
+                let i=aId.findIndex(function (x) {return x.username===decoded.username});
+
+                // we have granted?
+                if(i===-1) {
+                    console.log("Houston, we have a problem... unknown identity")
+                    return false
+                }
+
+                let j=-1; 
+                let aWebApp=aId[i].aWebApp;
+                if(aWebApp && aWebApp.length>0) {
+                    j=aWebApp.findIndex(x => {
+                        return x.client_id===_client_id
+                    });
+                }
+
+                // never asked for granting? 
+                if(j===-1 || aWebApp[j].didGrant!==true) {
+
+                    // need to grant authorization first...
+                    let _scope=JSON.stringify(aWebApp[j].scope);
+                    that.props.onRedirect("/app/authorize?client_id="+_client_id+"&domain="+that.state.oauthDomain+"&name="+that.state.oauthClientName+"&scope="+_scope);
+                }
+                else {
+                    // now we know who your data
+                    // todo...
+                    that.submitIdentity(cookie);
                 }
 
                 return true;
@@ -121,6 +159,19 @@ class AppAuthenticate extends AppConnect {
         super.onSIWCNotify_WalletsAccessible(_aWallet);
 
         let didRequestAuthSIWC=false;
+        let msg="Zero wallet detected!"
+        if(_aWallet.length===1) {
+            if(_aWallet[0].isConnected) {
+                msg="One wallet detected, please click to validate."
+            }
+            else {
+                msg="One wallet detected, please connect."
+            }
+        }
+        if(_aWallet.length>1) {
+            msg= _aWallet.length+" wallets detected, please choose at least one to connect to."
+        }
+        this.setState({hover:msg});
         _aWallet.forEach((item) => {
 
             if(item.isConnected && item.address) {
@@ -194,7 +245,7 @@ class AppAuthenticate extends AppConnect {
                     <ul className = "connectWallets">
                         {objParam.aWallet.map((item, index) => (
                         <AppAuthWalletConnect 
-                            theme = {this.state.theme}
+                            theme = {this.props.theme}
                             client_id = {this.state.client_id}
                             wallet_id = {item.id}
                             isConnected = {item.isConnected}
@@ -214,9 +265,9 @@ class AppAuthenticate extends AppConnect {
 
     render() {
         return(
-            <div id="siwc-login-container" style={this.state.styles.container}>
+            <div id="siwc-login-container" style={this.props.styles.container}>
             {this.props.didSocketConnect ? 
-                <div className={"modal-login center-vh" + (this.state.theme.dark_mode ? "dark-mode": "")} style={this.state.styles.color}>
+                <div className={"modal-login center-vh" + (this.props.theme.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                     <AppAuthHeader 
                         client_id= {this.state.client_id}
@@ -224,21 +275,25 @@ class AppAuthenticate extends AppConnect {
                         oauthDomain = {this.state.oauthDomain}
                         isOauth = {true}
                         SIWCLogo = "/assets/images/siwc_logo.png"
-                        theme = {this.state.theme}
+                        theme = {this.props.theme}
                     />
 
-                    <div className={"login-line login-line-emph" + (this.state.theme.dark_mode ? "dark-mode": "")}>
+                    <div className={"login-line login-line-emph" + (this.props.theme.dark_mode ? "dark-mode": "")}>
                         <div id="idBeforeLogin" className="siwc_before">
-                            <form className="hidden" id="form-login" action="/oauth/login" method="POST">
-                                <input type="text" id="me" />
-                            </form>
+
+                            <FormAuthenticate 
+                                username={this.state.username}
+                                wallet_id={this.state.wallet_id}
+                                wallet_address={this.state.wallet_address}
+                            />
+
                             {this.state.didAccessWallets===false? 
                                 <div>
                                     <div id="idTransitoryMessage" className="transitoryMessage">
-                                        Please wait<br /> searching for {this.state.theme.name} wallets...
+                                        Please wait<br /> searching for {this.props.theme.name} wallets...
                                     </div>
                                     <AppAuthProgressBar
-                                        theme = {this.state.theme}
+                                        theme = {this.props.theme}
                                         idMessage = "idTransitoryMessage"
                                     />                            
                                 </div>
@@ -248,15 +303,28 @@ class AppAuthenticate extends AppConnect {
 
                                     {this.state.client_id?
                                         <div>
-                                            <div className="siwc-oauth-section">
-                                                <strong>Sign-in with {this.state.theme.name}</strong> has detected those wallets:
+                                            {this.state.aWallet.length>0? 
+                                            <>
+                                                <div className="siwc-oauth-section">
+                                                    <strong>Sign-in with {this.props.theme.name}</strong> has detected {this.state.aWallet.length===1? "one wallet:" : "those wallets:"} 
+                                                </div>
+                                        
+                                                {this.renderListOfWallets({
+                                                    aWallet: this.state.aWallet,
+                                                    onSelect: this.async_connectWallet.bind(this),
+                                                    onHover: this.onHover.bind(this),
+                                                })}
+                                            </>
+                                            : 
+                                            <>
+                                            <div className="transitoryMessage">
+                                                Could not detect a single wallet from this browser
+                                                <br />
+                                                <br />
+                                                You must use at least one {this.props.theme.name} wallet extension
                                             </div>
-                                    
-                                            {this.renderListOfWallets({
-                                                aWallet: this.state.aWallet,
-                                                onSelect: this.async_connectWallet.bind(this),
-                                                onHover: this.onHover.bind(this),
-                                            })}
+                                        </>
+                                            }
 
                                         </div>
                                     :
@@ -275,7 +343,7 @@ class AppAuthenticate extends AppConnect {
                     </div>
 
                     <AppAuthFooter 
-                        theme = {this.state.theme}
+                        theme = {this.props.theme}
                         message = {this.state.hover}
                     />
 

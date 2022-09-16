@@ -7,8 +7,6 @@ import {setCacheEncryption} from "../services/cache";
 //import siwc from "@incubiq/siwc";                     // real prod
 import siwc_connect from "../siwc/siwc_connect";        // for test only
 
-import {getTheme, getStyles} from "../assets/themes/cardano"; 
-
 class AppConnect extends Component {
 
 /*
@@ -34,10 +32,6 @@ constructor(props) {
             // init vars
             didInitSIWC: false,
             didAccessWallets: false,
-
-            // chain theme
-            theme: getTheme(),
-            styles: getStyles()
         }
     }
 
