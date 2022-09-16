@@ -18,6 +18,8 @@ const socket = io("/client");
  *      Routing class
  */
 
+let didSocketConnect=false;
+let didMount=false;
 class AppRoutes extends Component {
 
   constructor(props) {
@@ -28,9 +30,19 @@ class AppRoutes extends Component {
     }
 
     socket.on("connect", _socket => { 
-        this.setState({didSocketConnect: true});
+        didSocketConnect=true;
+        if(didMount && this.state.didSocketConnect!==didSocketConnect) {
+            this.setState({didSocketConnect: didSocketConnect});
+        }
     });        
 
+  }
+  componentDidMount() {
+    didMount=true;
+    this.setState({didSocketConnect: didSocketConnect});
+  }
+  componentWillUnmount() {
+    didMount=false;
   }
 
   getSocket( ){

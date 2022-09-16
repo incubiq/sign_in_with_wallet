@@ -1,6 +1,7 @@
 import AppAuthenticate from "./appAuthenticate";
 import AppAuthHeader from "./appAuthHeader";
 import AppAuthFooter from "./appAuthFooter";
+import AppAuthWalletConnect from "./appAuthWalletConnect";
 
 import {registerWebAppWithIdentity, getMyIdentities} from "../services/me";
 
@@ -30,6 +31,8 @@ class AppAuthorize extends AppAuthenticate {
             aIdentity: aId,
             iSelectedIdentity: 0
         });
+
+        this._setSharedIdentity(0);
     }
 
 /*
@@ -37,11 +40,13 @@ class AppAuthorize extends AppAuthenticate {
  */
 
     onSIWCNotify_WalletsAccessible(_aWallet) {
-        super.onSIWCNotify_WalletsAccessible(_aWallet);
-        
-        // update known identities...
-        let aId=getMyIdentities();
-        this.setState({aIdentity: aId});
+        // we cannot let the authenticate parent do Auth in the background...
+        return;
+    }
+
+    onSIWCNotify_WalletConnected(objParam) {
+        // we cannot let the authenticate parent do Auth in the background...
+        return;
     }
 
     async async_onAuthCookieReceived(cookie) {
@@ -56,18 +61,93 @@ class AppAuthorize extends AppAuthenticate {
  *          UI
  */
 
+    onHover(event, bOver) {
+        // who's there?
+        let idElt=event.currentTarget;
+        let _id=idElt.getAttribute("attr-id");
+        try {
+            let i=this.state.aIdentity.findIndex(function (x) {return x.wallet_id===_id});
+            if(i!==-1) {
+                if(bOver && i!==this.state.iSelectedIdentity) {
+                    this.setState({hover:"Click to preview shared data from your <strong>"+this.state.aIdentity[i].wallet_id+"</strong> wallet's identity."});
+                }
+                else {
+                    this._setSharedIdentity(this.state.iSelectedIdentity);
+                }
+            }
+        }
+        catch(err) {
+        }        
+    }
+
     getCondensedText(_str) {
         if(!_str) {return "";}
         if(_str.length<=10) return _str;
-        return _str.substring(0,10)+"...";
+        return _str.substring(0,10)+"..."+_str.substring(_str.length,_str.length-4);
     }
 
     onReAuthenticate ( ){
         this.props.onRedirect("/app/authenticate?client_id=" + this.state.client_id+"&domain="+this.state.oauthDomain+"&name="+this.state.oauthClientName);
     }
 
-    onChangeIdentity(event)  {
+    _setSharedIdentity(_iSel) {
+        // update data with this selection
+        if(_iSel!==-1) {
+            if(_iSel!==this.state.iSelectedIdentity) {
+                this.setState({iSelectedIdentity: _iSel});
+            }
+            this.setState({hover:"You will share data taken from your <strong>"+this.state.aIdentity[_iSel].wallet_id+"</strong> identity"});
+        }
+    }
+    
+    onChangeIdentity(event) {
+        // who's there?
+        let idElt=event.currentTarget;
+        let _id=idElt.getAttribute("attr-id");
 
+        // css 
+        let aEltId=document.getElementsByClassName("wallet-sign");
+        for(var i=0; i<aEltId.length; i++) {
+            aEltId[i].className ="wallet-sign connected";
+        }
+        idElt.className="wallet-sign connected selected";
+
+        let _iSel=this.state.aIdentity.findIndex(function (x) {return x.wallet_id===_id});
+        this._setSharedIdentity(_iSel);
+    }
+
+    // Params: aIdentity: [], selWallet_id: <> , onSelect: fn...
+    renderListOfIdentities(objParam) {
+        return (
+            <>
+                <div className="siwc-oauth-legend">
+                    <div className="legendSquare connected"></div>
+                    <div className="legendText">Connected</div>
+                    <div className="legendSquare selected"></div>
+                    <div className="legendText">Selected</div>
+                </div>
+
+                <div className = "connectCont">
+                    <ul className = "connectWallets">
+                        {objParam.aIdentity.map((item, index) => (
+                            <AppAuthWalletConnect 
+                                theme = {this.state.theme}
+                                client_id = {this.state.client_id}
+                                wallet_id = {item.wallet_id}
+                                isConnected = {true}
+                                isSelected = {index===this.state.iSelectedIdentity}
+                                address = {item.wallet_address}
+                                logo = {item.wallet_logo}
+                                onConnect={objParam.onSelect}
+                                onHover={objParam.onHover}
+                                index = {index}
+                                key={index}
+                                />
+                            ))}
+                    </ul>
+                </div>
+            </>
+        )
     }
 
     render() {
@@ -107,7 +187,12 @@ class AppAuthorize extends AppAuthenticate {
                                 Select identity to grant data share from:
                             </div>
 
-                            {this.renderWalletSelection(this.state.aIdentity, this.state.iSelectedIdentity)}
+                            {this.renderListOfIdentities({
+                                aIdentity: this.state.aIdentity,
+                                iSel: this.state.iSelectedIdentity, 
+                                onSelect: this.onChangeIdentity.bind(this),
+                                onHover: this.onHover.bind(this),
+                            })}
 
                             <div className="identity_action">
                                 <button 
@@ -146,6 +231,7 @@ class AppAuthorize extends AppAuthenticate {
                     }
                     <AppAuthFooter 
                         theme = {this.state.theme}
+                        message = {this.state.hover}
                     />
 
                 </div>

@@ -18,8 +18,17 @@
     --accent-3-dark: #4A6D03;
 
     --shadow: rgba(63,39, 47, 0.5);
-}
+    
+    --selected:  #c0c0f0;;
+    --selected-dark: #ccc;
+    --connected:  #e0f0e0;;
+    --connected-dark: #ccc;
+    --disconnected: #f0f0f0;
+    --disconnected-dark: #e0e0e0;
 
+    --scroll-bar-bg-color: transparent;
+    --scroll-bar-color: #aaa;
+}
 
 body {
     font-family: Inter, sans-serif;
@@ -31,6 +40,29 @@ body {
 
 a {
     color: var(--accent-1) !important;
+}
+
+::-webkit-scrollbar-corner { background: rgba(0,0,0,0.5); }
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll-bar-color) var(--scroll-bar-bg-color);
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--scroll-bar-bg-color);
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-bar-color);
+    border-radius: 20px;
+    border: 3px solid var(--scroll-bar-bg-color);
 }
 
 .hidden {
@@ -57,6 +89,16 @@ a {
 }
 .siwc-login-footer {
     border-top: 1px solid #eee;
+    position: relative;
+}
+
+.siwc-login-footer .message{
+    font-style: italic;
+    position: absolute;
+    bottom: 0;
+    left: 14px;
+    font-size: 10px;
+    color: #666;
 }
 
 #siwc-login-container {
@@ -78,6 +120,7 @@ a {
     margin: 0;
     min-height: 80px;
     position: relative;
+    overflow: hidden;
 }
 .transitoryMessage {
     text-align: center;
@@ -85,26 +128,64 @@ a {
     font-size: 18px;
     line-height: 24px;
 }
-.connectCont{
+.connectCont {
+    overflow-x: scroll;
+}
+.connectWallets{
     height: 80px;
     margin: 6px;
+    display: inline-flex;
+    list-style: none;
+}
+
+.siwc-oauth-legend {
+    text-align: right;
+    width: 100%;
+    display: inline-flex;
+}
+
+.siwc-oauth-legend .legendSquare {
+    width: 10px;
+    height: 10px;
+    display: inline-flex;
+    display: inline-flex;
+    margin: 0 4px 0 16px;
+}
+.siwc-oauth-legend .legendSquare.selected{
+    border: 1px solid var(--selected-dark);
+    background-color: var(--selected);
+}
+.siwc-oauth-legend .legendSquare.connected{
+    border: 1px solid var(--connected-dark);
+    background-color: var(--connected);
+}
+.siwc-oauth-legend .legendSquare.disconnected{
+    border: 1px solid var(--disconnected-dark);
+    background-color: var(--disconnected);
+}
+.siwc-oauth-legend .legendText {
+    display: inline-flex;
+    font-size: 9px;
+    line-height: 14px;
 }
 
 .wallet-sign {
     float: left;
     margin-right: 12px;
-    border: 1px solid #e0e0e0;
-    background-color: #f0f0f0;
+    border: 1px solid var(--disconnected-dark);
+    background-color: var(--disconnected);
     cursor: pointer;
 }
 
 .wallet-sign.connected {
-    border: 1px solid #333;
-    background-color: #c0c0f0;
+    border: 1px solid var(--connected-dark);
+    background-color: var(--connected);
 }
 
 .wallet-sign.connected.selected {
-    box-shadow: 0px 6px 22px var(--shadow);
+    border: 1px solid var(--selected-dark);
+    background-color: var(--selected);
+    box-shadow: 0px 3px 6px var(--shadow);
 }
 
 .connectWalletLogoContainer {
@@ -171,9 +252,10 @@ a {
     flex-direction: row;
 }
 .client-login-credits {
-    padding: 10px;
+    padding: 6px 10px;
     text-align: right;
     font-size: 12px;
+    min-height: 40px;
 }
 .client-login-disclaimer {
     margin: 10px;

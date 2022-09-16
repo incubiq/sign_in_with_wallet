@@ -30,8 +30,9 @@ class AppAuthenticate extends AppConnect {
             oauthClientName: _oauthClientName? _oauthClientName : "???",
             oauthDomain: _oauthDomain? _oauthDomain : "unknown",
 
-            // shall we wait for user confirmation?
-            mustConfirm: (_confirm==="true"),
+            //UX/UI
+            mustConfirm: (_confirm==="true"),       // shall we wait for user confirmation?
+            hover: "",                              // indicate anything to user in footer
 
             // identity we will use
             wallet_id: null,
@@ -76,6 +77,7 @@ class AppAuthenticate extends AppConnect {
     _prepareSIWC(objIdentityForAuth){
         // can we authenticate with SIWC??
         if(objIdentityForAuth) {
+            this.setState({hover:"Using "+objIdentityForAuth.wallet_id+" wallet as the signing identity..."});
 
             // get soket... hopefully it s here!
             let _socket=this.props.getSocket();
@@ -157,28 +159,56 @@ class AppAuthenticate extends AppConnect {
 /*
  *          UI
  */
+    onHover(event, bOver) {
+        // who's there?
+        let idElt=event.currentTarget;
+        let _id=idElt.getAttribute("attr-id");
+        try {
+            let msg="";
+            let i=this.state.aWallet.findIndex(function (x) {return x.id===_id});
+            if(i!==-1) {
+                if(bOver) {
+                    msg=this.state.aWallet[i].isConnected===true ? 
+                        "Click to choose <strong>"+this.state.aWallet[i].id+"</strong> wallet as the signing identity."
+                        : "Click to add <strong>"+this.state.aWallet[i].id+"</strong> wallet as a signing identity.";
+                }
+            }
+            this.setState({hover:msg});
+        }
+        catch(err) {
+        }
+    }
 
-    renderWalletSelection(aWallet, iSel) {
+    // Params: aWallet: [], onSelect: fn...
+    renderListOfWallets(objParam) {
         return (
-            <div className="identitySelection_container">
-                <img className="identity_image" src={aWallet[iSel].wallet_logo? aWallet[iSel].wallet_logo : aWallet[iSel].logo} />
-                <select 
-                    className="identity_list" 
-                    onChange={this.onChangeIdentity}  >
-                    
-                    {aWallet.map((item, index) => (  
-                    <option 
-                        id={"wallet_"+index} 
-                        key={index}
-                        data-provider={item.wallet_id? item.wallet_id : item.id}
-                        data-username={item.username? item.username : null}
-                        value = {item.username}
-                    >
-                        {item.wallet_id? item.wallet_id : item.id}
-                    </option>
-                    ))}
-                </select>
-            </div>
+            <>
+                <div className="siwc-oauth-legend">
+                    <div className="legendSquare connected"></div>
+                    <div className="legendText">Connected</div>
+                    <div className="legendSquare disconnected"></div>
+                    <div className="legendText">Disconnected</div>
+                </div>
+
+                <div className = "connectCont">
+                    <ul className = "connectWallets">
+                        {objParam.aWallet.map((item, index) => (
+                        <AppAuthWalletConnect 
+                            theme = {this.state.theme}
+                            client_id = {this.state.client_id}
+                            wallet_id = {item.id}
+                            isConnected = {item.isConnected}
+                            address = {item.address}
+                            logo = {item.logo}
+                            onConnect={objParam.onSelect}
+                            onHover={objParam.onHover}
+                            index = {index}
+                            key={index}
+                            />
+                        ))}
+                    </ul>
+                </div>
+            </>
         )
     }
 
@@ -215,33 +245,26 @@ class AppAuthenticate extends AppConnect {
                             :
 
                                 <>
-                                    <div className="siwc-oauth-section">
-                                        <strong>Sign-in with {this.state.theme.name}</strong> has detected those wallets:
-                                    </div>
 
                                     {this.state.client_id?
-                                        <div
-                                            className = "connectCont"
-                                        >
-                                            {this.state.aWallet.map((item, index) => (
-                                            <AppAuthWalletConnect 
-                                                theme = {this.state.theme}
-                                                client_id = {this.state.client_id}
-                                                wallet_id = {item.id}
-                                                isConnected = {item.isConnected}
-                                                address = {item.address}
-                                                logo = {item.logo}
-                                                onConnect={this.async_connectWallet.bind(this)}
-                                                key = {index}
-                                                />
-                                            ))}
+                                        <div>
+                                            <div className="siwc-oauth-section">
+                                                <strong>Sign-in with {this.state.theme.name}</strong> has detected those wallets:
+                                            </div>
+                                    
+                                            {this.renderListOfWallets({
+                                                aWallet: this.state.aWallet,
+                                                onSelect: this.async_connectWallet.bind(this),
+                                                onHover: this.onHover.bind(this),
+                                            })}
+
                                         </div>
                                     :
                                         <>
                                             <div className="transitoryMessage">
                                                 Could not identify caller!
                                                 <br />
-                                                Please <b>Login</b> again from the application.
+                                                Please try <b>Login</b> again from the application.
                                             </div>
                                         </>
                                     }
@@ -253,6 +276,7 @@ class AppAuthenticate extends AppConnect {
 
                     <AppAuthFooter 
                         theme = {this.state.theme}
+                        message = {this.state.hover}
                     />
 
                 </div>
