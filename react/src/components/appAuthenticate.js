@@ -1,18 +1,26 @@
 import AppConnect from "./appConnect";
-import AppAuthHeader from "./appAuthHeader";
-import AppAuthFooter from "./appAuthFooter";
-import AppAuthProgressBar from "./appAuthProgressBar";
-import AppAuthWalletConnect from "./appAuthWalletConnect";
+import ViewHeader from "./viewHeader";
+import ViewFooter from "./viewFooter";
+import ViewDataShare from "./viewDataShare";
+import ViewIdentities from "./viewIdentities";
+import ViewWallets from "./viewWallets";
+import ViewProgressBar from "./viewProgressBar";
 import FormAuthenticate from "./formAuthenticate";
 
-import {srv_prepare} from "../services/authenticate";
-import {createPartialIdentity, updatePartialIdentity, getMyIdentities} from "../services/me";
+import {srv_prepare, srv_getDomainInfo} from "../services/authenticate";
+import {registerWebAppWithIdentity, createPartialIdentity, updatePartialIdentity, getMyIdentities} from "../services/me";
+
 import jsonwebtoken from "jsonwebtoken";
+
+let didMount=false;
+const VIEWMODE_IDENTITY="identity";
+const VIEWMODE_DATASHARE="datashare";
+const VIEWMODE_REDIRECT="redirect";
 
 class AppAuthenticate extends AppConnect {
 
 /*
- *          page inits
+ *          inits
  */
 
     constructor(props) {
@@ -20,41 +28,90 @@ class AppAuthenticate extends AppConnect {
 
         // params?
         let _client_id=decodeURIComponent(decodeURIComponent(this.getmyuri("client_id", window.location.search)));
-        let _oauthDomain=decodeURIComponent(decodeURIComponent(this.getmyuri("domain", window.location.search))).toLowerCase();
-        let _oauthClientName=decodeURIComponent(decodeURIComponent(this.getmyuri("name", window.location.search)));
+
+        // todo : remove this soon....
         let _confirm=decodeURIComponent(decodeURIComponent(this.getmyuri("confirm", window.location.search)));
         
         this.state= Object.assign({}, this.state, {
 
-            // webApp requesting authentication
+            // webApp requesting authentication/authorization
             client_id: _client_id? _client_id : null,
-            oauthClientName: _oauthClientName? _oauthClientName : "???",
-            oauthDomain: _oauthDomain? _oauthDomain : "unknown",
+            oauthClientName: "???",
+            oauthDomain: "unknown",
+            logoWebApp: "",
+            theme: this.props.theme,
+            redirect_url: null,
 
             //UX/UI
             mustConfirm: (_confirm==="true"),       // shall we wait for user confirmation?
             hover: "One moment! checking "+this.props.theme.name+" wallet browser plugins...",                              // indicate anything to user in footer
 
-            // identity we will use
+            // identity we will use for authentication
             cookie: null,
             username: null,
             wallet_id: null,
             wallet_address: null,
 
-        });
+            // for authorization
+            isAuthenticated: false,
+            isAuthorized: false,
+            aScope: [],
+            aIdentity: [],
+            iSelectedIdentity: null,
+            viewMode: VIEWMODE_DATASHARE
+        });        
     }
 
-    submitIdentity(cookie) {
-        // try authenticate with the server using our token
-        let eltForm=document.getElementById('form-login');
-        if(eltForm) {
-            document.cookie = cookie.name + "=" + cookie.token + ";path=/";
-            document.getElementById('form-login').submit();      // Normal redirect    
+    componentDidMount() {
+        super.componentDidMount();
+
+        // get the webApp info once
+        if(!didMount) {
+            didMount=true;
+            this.async_initializeDomain(this.state.client_id);
         }
     }
 
-    async async_onAuthCookieReceived(cookie) {
+    // get all necessary info from connecting webapp
+    async async_initializeDomain(_client_id) {
+        let dataDomain=await srv_getDomainInfo(_client_id);
+        if(dataDomain && dataDomain.data) {
+            this.setState({oauthClientName: dataDomain.data.display_name});
+            this.setState({oauthDomain: dataDomain.data.domain_name});
+            this.setState({redirect_url: dataDomain.data.redirect_uri});
+        }
 
+        // get the scope...
+        if(dataDomain && dataDomain.data && dataDomain.data.aScope) {
+            let aId=getMyIdentities();
+        
+            // make sure WebApp is registered for each known identity of this user...
+            aId.forEach(item=> {
+                registerWebAppWithIdentity(item.username, {
+                    client_id: _client_id,
+                    scope: dataDomain.data.aScope
+                });    
+            });
+    
+            this.setState({aScope: dataDomain.data.aScope});
+            this.setState({aIdentity: aId});    
+        }
+    }
+    
+/*
+ *          Authentication
+ */
+
+    // calling this will move the UI to the authorization section (next step)
+    authenticateUser(iUser) {
+        this.setState({isAuthenticated: true});
+        this.setState({mustConfirm: true});
+        this.setSharedIdentity(iUser);
+        this.setState({viewMode: VIEWMODE_DATASHARE});
+    }
+
+    // receiving a cookie from the backend => we are being authenticated into SIWW
+    async async_onAuthCookieReceived(cookie) {
         let _client_id=this.state.client_id;
         let that=this;
         jsonwebtoken.verify(cookie.token, this.state.cookieSecret, function(err, decoded){
@@ -72,9 +129,13 @@ class AppAuthenticate extends AppConnect {
                 that.setState({username: decoded.username});
                 that.setState({wallet_address: decoded.wallet_address});
                 that.setState({wallet_id: decoded.wallet_id});
+                that.setState({cookie: cookie});
 
-                // check if we agreed to grant our data
+                // any new identity?
                 let aId=getMyIdentities();
+                that.setState({aIdentity: aId});
+
+                // check if our selected identity agreed to grant data
                 let i=aId.findIndex(function (x) {return x.username===decoded.username});
 
                 // we have granted?
@@ -91,23 +152,46 @@ class AppAuthenticate extends AppConnect {
                     });
                 }
 
-                // never asked for granting? 
+                // never asked for granting?  need to grant authorization first...
                 if(j===-1 || aWebApp[j].didGrant!==true) {
-
-                    // need to grant authorization first...
-                    let _scope=JSON.stringify(aWebApp[j].scope);
-                    that.props.onRedirect("/app/authorize?client_id="+_client_id+"&domain="+that.state.oauthDomain+"&name="+that.state.oauthClientName+"&scope="+_scope);
+                    that.authenticateUser(i);
                 }
                 else {
                     // now we know who your data
-                    // todo...
-                    that.submitIdentity(cookie);
+                    that.authorizeUser();
                 }
 
                 return true;
             }
         })
     }
+
+/*
+ *          Authorization
+ */
+
+    // calling this will move the UI to the redirection section (final step)
+    authorizeUser() {
+        this.setState({isAuthorized: true});
+    }
+
+    setSharedIdentity(_iSel) {
+        // update data with this selection
+        if(_iSel!==-1 && this.state.aIdentity.length>0) {
+            if(_iSel!==this.state.iSelectedIdentity) {
+                this.setState({iSelectedIdentity: _iSel});
+                let _aScope=this.state.aScope.slice();
+                _aScope.forEach(item => {
+                    let _value=this.state.aIdentity[this.state.iSelectedIdentity][item.property]
+                    item.value=_value;
+                });
+
+                this.setState({aScope: _aScope});
+            }
+            this.setState({hover:"You will share data taken from your <strong>"+this.state.aIdentity[_iSel].wallet_id+"</strong> identity"});
+        }
+    }
+
 /*
  *          Wallet interaction
  */
@@ -126,6 +210,7 @@ class AppAuthenticate extends AppConnect {
 
             // now pass details to server, so we get a cookie
             srv_prepare({
+                provider: objIdentityForAuth.provider,
                 wallet_id: objIdentityForAuth.wallet_id,
                 wallet_addr: objIdentityForAuth.wallet_address,    
                 socket_id: _socket.id,
@@ -134,22 +219,21 @@ class AppAuthenticate extends AppConnect {
                 .then(res => {
                     // ok??
                     if(!res.ok) {
-                        throw {
+                        let _err={
                             data: null,
                             status: res.status,
                             statusText: res.statusText
                         }
+                        throw _err;
                     }
                     else {
                         // visual effect (wait for cookie)
         
                         // we wait to be called back on sockets...
-
                     }
 
                 }).catch(err =>{
                     // log/display an error 
-
                 });    
         }
     }
@@ -158,199 +242,335 @@ class AppAuthenticate extends AppConnect {
     onSIWCNotify_WalletsAccessible(_aWallet) {
         super.onSIWCNotify_WalletsAccessible(_aWallet);
 
-        let didRequestAuthSIWC=false;
         let msg="Zero wallet detected!"
         if(_aWallet.length===1) {
-            if(_aWallet[0].isConnected) {
-                msg="One wallet detected, please click to validate."
-            }
-            else {
-                msg="One wallet detected, please connect."
-            }
+            msg="One wallet detected, checking connection..."
         }
         if(_aWallet.length>1) {
             msg= _aWallet.length+" wallets detected, please choose at least one to connect to."
         }
         this.setState({hover:msg});
-        _aWallet.forEach((item) => {
-
-            if(item.isConnected && item.address) {
-
-                // make sure we have this user's identity in storage
-                createPartialIdentity({
-                    wallet_address: item.address,
-                    wallet_id: item.id,
-                    wallet_logo: item.logo
-                });
-
-                // use the first wallet to authenticate user with SIWC (only in case we do not have to confirm by user click)
-                if(!didRequestAuthSIWC && !this.state.mustConfirm) {
-                    didRequestAuthSIWC=true;
-                    this._prepareSIWC({
-                        wallet_address: item.address,
-                        wallet_id: item.id,
-                    });        
-                }
-            }
-        }); 
     }
     
     onSIWCNotify_WalletConnected(objParam) {
-        super.onSIWCNotify_WalletConnected(objParam);
 
-        // did user just click to accept? we use this as Identity
-        if(objParam.didUserClick && objParam.didUserAccept) {
-            this._prepareSIWC({
-                wallet_address: objParam.address,
-                wallet_id: objParam.id,
-            });    
+        // process this call ONLY if we are in authentication view
+        if(!this.state.isAuthenticated) {
+            super.onSIWCNotify_WalletConnected(objParam);
+            let _wallet = objParam && objParam.wallet? objParam.wallet : null;
+    
+            // make sure we have this user's identity in storage
+            createPartialIdentity({
+                wallet_address: _wallet.address,
+                wallet_id: _wallet.id,
+                wallet_logo: _wallet.logo
+            });
+    
+            // did user just click to accept? we use this as Identity
+            if(objParam.didUserClick) {
+                if(objParam.didUserAccept) {
+                    this._prepareSIWC({
+                        wallet_address: _wallet.address,
+                        wallet_id: _wallet.id,
+                        provider: _wallet.provider
+                    });        
+                }
+            }
+            else {
+                // use the first wallet to authenticate user with SIWC (only in case we do not have to confirm by user click)
+                if(!this.state.mustConfirm) {
+                    this._prepareSIWC({
+                        wallet_address: _wallet.address,
+                        wallet_id: _wallet.id,
+                        provider: _wallet.provider
+                    });        
+                }
+            }    
         }
     }
 
 /*
- *          UI
+ *          UI (authentication)
  */
+    
+
+    renderAuthentication( ){
+        return(
+            <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
+                <div className="siww_message">
+
+                    {this.state.didAccessWallets===false? 
+                        <div>
+                            <div id="idTransitoryMessage" className="transitoryMessage">
+                                Please wait<br /> searching for {this.state.theme.name} wallets...
+                            </div>
+                            <ViewProgressBar
+                                theme = {this.state.theme}
+                                id = "myLoginProgressBar"
+                                idMessage = "idTransitoryMessage"
+                            />                            
+                        </div>
+                    :
+                        <>
+                            {this.state.client_id?
+                                <ViewWallets 
+                                    theme = {this.state.theme}
+                                    aWallet= {this.state.aWallet}
+                                    onSelect= {this.async_connectWallet.bind(this)}
+                                    onHover= {this.onHover.bind(this)}                            
+                                />
+                            :
+                                <>
+                                    <div className="transitoryMessage">
+                                        Could not identify caller!
+                                        <br />
+                                        Please try <b>Login</b> again from the application.
+                                    </div>
+                                </>
+                            }
+                        </>
+                    }
+                </div>
+            </div>                   
+        )
+    }
+
+/*
+ *          UI (authorization)
+ */
+    
+    onChangeIdentity(event) {
+        // who's there?
+        let idElt=event.currentTarget;
+        let _id=idElt.getAttribute("attr-id");
+
+        // css 
+        let aEltId=document.getElementsByClassName("wallet-sign");
+        for(var i=0; i<aEltId.length; i++) {
+            aEltId[i].className ="wallet-sign connected";
+        }
+        idElt.className="wallet-sign connected selected";
+
+        let _iSel=this.state.aIdentity.findIndex(function (x) {return x.wallet_id===_id});
+        this.setSharedIdentity(_iSel);
+        this.onToggleAuthorizationView();
+    }
+
+    onBackToAddIdentity() {
+        this.setState({isAuthenticated: false});
+    }
+
+    onToggleAuthorizationView() {
+        if(this.state.viewMode===VIEWMODE_DATASHARE) {
+            this.setState({viewMode: VIEWMODE_IDENTITY});
+        }
+        else {
+            this.setState({viewMode: VIEWMODE_DATASHARE});
+        }
+    }
+
+    onReAuthenticate ( ){
+        // todo
+        this.props.onRedirect("/app/authenticate?client_id=" + this.state.client_id);
+    }
+    
+    renderAuthorization() {
+        return(
+            <>
+            {this.state.aScope.length>0? 
+                <>
+                {this.state.aIdentity.length>0?
+                    <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
+
+                        {this.state.viewMode===VIEWMODE_DATASHARE? 
+                            <ViewDataShare 
+                                theme = {this.state.theme}
+                                oauthClientName = {this.state.oauthClientName}
+                                iSelectedIdentity = {this.state.iSelectedIdentity}
+                                aIdentity = {this.state.aIdentity}
+                                aScope = {this.state.aScope}
+                            />
+                        : 
+                            <ViewIdentities 
+                                theme = {this.state.theme}
+                                iSelectedIdentity = {this.state.iSelectedIdentity}
+                                aIdentity = {this.state.aIdentity}
+                                onHover = {this.onHover.bind(this)}
+                                onSelect= {this.onChangeIdentity.bind(this)}
+                            />
+                        }
+
+                        <div className="identity_action">
+
+                            {this.state.viewMode===VIEWMODE_DATASHARE && this.state.aIdentity.length>1 ? 
+                                <div 
+                                    className="btn btn-transparent actionLink back"
+                                    onClick={evt => {this.onToggleAuthorizationView();}}
+                                >
+                                    Switch Identity!
+                                </div>                            
+                            : 
+                                <div 
+                                    className="btn btn-transparent actionLink back"
+                                    onClick={evt => {this.onBackToAddIdentity(evt);}}
+                                >
+                                    Back to wallets!
+                                </div>
+                            }   
+
+                            <button 
+                                className="btn btn-quiet"
+                                onClick={evt => {
+                                    this.authorizeUser();
+                                }}
+                            >
+                                Grant Access!
+                            </button>
+                        </div>
+                    </div>                
+                : 
+                <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
+                    <div className="siwc-oauth-login">
+                        Who are you? Cannot find your identity...
+                    </div>
+                    <br />
+                    <button 
+                        className="btn btn-quiet"
+                        onClick={evt => {
+                            this.onReAuthenticate(evt); 
+                        }}
+                    >
+                        Re-Authenticate!
+                    </button>
+                </div>
+                }
+            </>                    
+            : 
+            <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
+                <div className="siwc-oauth-login">
+                    This application has not defined any data autorization.
+                    < br/>
+                    Their fault, not yours! 
+                    < br/>
+                    Cannot grant access with no minimum ID to share...
+                </div>
+            </div>
+            }
+            </>  
+        )
+    }
+
+/*
+ *          UI redirect
+ */
+
+    renderRedirect() {
+
+        return (
+            <>
+                <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
+                    <div className="siww_message">
+                        <div id="idRedirectMessage" className="transitoryMessage">
+                            On your way to {this.state.oauthClientName}...
+                        </div>
+
+                        <span>Stay safe online with {this.state.theme.name}</span>
+                        <div className="separator"></div>                        
+                        <ViewProgressBar
+                            theme = {this.state.theme}
+                            id = "myRedirectProgressBar"
+                            idMessage = "idRedirectMessage"
+                        />                            
+
+                    </div>
+
+                    <div className="separator"></div>         
+
+                    <FormAuthenticate 
+                        theme = {this.state.theme}
+                        aScope = {this.state.aScope}
+                        cookie = {this.state.cookie}
+                    />
+
+                </div>
+
+            </>
+        )
+    }
+
+/*
+ *          UI generic
+ */
+
     onHover(event, bOver) {
         // who's there?
         let idElt=event.currentTarget;
         let _id=idElt.getAttribute("attr-id");
         try {
-            let msg="";
-            let i=this.state.aWallet.findIndex(function (x) {return x.id===_id});
-            if(i!==-1) {
-                if(bOver) {
-                    msg=this.state.aWallet[i].isConnected===true ? 
-                        "Click to choose <strong>"+this.state.aWallet[i].id+"</strong> wallet as the signing identity."
-                        : "Click to add <strong>"+this.state.aWallet[i].id+"</strong> wallet as a signing identity.";
+            let msg=null;
+            if(this.state.isAuthenticated) {
+                let i=this.state.aIdentity.findIndex(function (x) {return x.wallet_id===_id});
+                if(i!==-1) {
+                    if(bOver && i!==this.state.iSelectedIdentity) {
+                        msg="Click to preview shared data from your <strong>"+this.state.aIdentity[i].wallet_id+"</strong> wallet's identity.";
+                    }
+                    else {
+                        this.setSharedIdentity(this.state.iSelectedIdentity);
+                    }
                 }
             }
-            this.setState({hover:msg});
+            else {
+                let i=this.state.aWallet.findIndex(function (x) {return x.id===_id});
+                if(i!==-1) {
+                    if(bOver) {
+                        msg=this.state.aWallet[i].isEnabled===true ? 
+                            "Click to choose <strong>"+this.state.aWallet[i].id+"</strong> wallet as the signing identity."
+                            : "Click to add <strong>"+this.state.aWallet[i].id+"</strong> wallet as a signing identity.";
+                    }
+                }    
+            }
+
+            if(msg) {
+                this.setState({hover:msg});
+            }
         }
         catch(err) {
         }
     }
 
-    // Params: aWallet: [], onSelect: fn...
-    renderListOfWallets(objParam) {
-        return (
-            <>
-                <div className="siwc-oauth-legend">
-                    <div className="legendSquare connected"></div>
-                    <div className="legendText">Connected</div>
-                    <div className="legendSquare disconnected"></div>
-                    <div className="legendText">Disconnected</div>
-                </div>
-
-                <div className = "connectCont">
-                    <ul className = "connectWallets">
-                        {objParam.aWallet.map((item, index) => (
-                        <AppAuthWalletConnect 
-                            theme = {this.props.theme}
-                            client_id = {this.state.client_id}
-                            wallet_id = {item.id}
-                            isConnected = {item.isConnected}
-                            address = {item.address}
-                            logo = {item.logo}
-                            onConnect={objParam.onSelect}
-                            onHover={objParam.onHover}
-                            index = {index}
-                            key={index}
-                            />
-                        ))}
-                    </ul>
-                </div>
-            </>
-        )
-    }
-
     render() {
-        return(
+        return (
             <div id="siwc-login-container" style={this.props.styles.container}>
             {this.props.didSocketConnect ? 
-                <div className={"modal-login center-vh" + (this.props.theme.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+                <div className={"modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
-                    <AppAuthHeader 
+                    <ViewHeader 
                         client_id= {this.state.client_id}
                         oauthClientName = {this.state.oauthClientName}
                         oauthDomain = {this.state.oauthDomain}
                         isOauth = {true}
-                        SIWCLogo = "/assets/images/siwc_logo.png"
-                        theme = {this.props.theme}
+                        SIWCLogo = {this.state.theme.logo}
+                        theme = {this.state.theme}
                     />
 
-                    <div className={"login-line login-line-emph" + (this.props.theme.dark_mode ? "dark-mode": "")}>
-                        <div id="idBeforeLogin" className="siwc_before">
+                    {this.state.isAuthenticated && this.state.iSelectedIdentity!==null ? 
+                        this.state.isAuthorized? 
+                            this.renderRedirect() 
+                        :
+                            this.renderAuthorization() 
+                        : 
+                            this.renderAuthentication()
+                    }
 
-                            <FormAuthenticate 
-                                username={this.state.username}
-                                wallet_id={this.state.wallet_id}
-                                wallet_address={this.state.wallet_address}
-                            />
-
-                            {this.state.didAccessWallets===false? 
-                                <div>
-                                    <div id="idTransitoryMessage" className="transitoryMessage">
-                                        Please wait<br /> searching for {this.props.theme.name} wallets...
-                                    </div>
-                                    <AppAuthProgressBar
-                                        theme = {this.props.theme}
-                                        idMessage = "idTransitoryMessage"
-                                    />                            
-                                </div>
-                            :
-
-                                <>
-
-                                    {this.state.client_id?
-                                        <div>
-                                            {this.state.aWallet.length>0? 
-                                            <>
-                                                <div className="siwc-oauth-section">
-                                                    <strong>Sign-in with {this.props.theme.name}</strong> has detected {this.state.aWallet.length===1? "one wallet:" : "those wallets:"} 
-                                                </div>
-                                        
-                                                {this.renderListOfWallets({
-                                                    aWallet: this.state.aWallet,
-                                                    onSelect: this.async_connectWallet.bind(this),
-                                                    onHover: this.onHover.bind(this),
-                                                })}
-                                            </>
-                                            : 
-                                            <>
-                                            <div className="transitoryMessage">
-                                                Could not detect a single wallet from this browser
-                                                <br />
-                                                <br />
-                                                You must use at least one {this.props.theme.name} wallet extension
-                                            </div>
-                                        </>
-                                            }
-
-                                        </div>
-                                    :
-                                        <>
-                                            <div className="transitoryMessage">
-                                                Could not identify caller!
-                                                <br />
-                                                Please try <b>Login</b> again from the application.
-                                            </div>
-                                        </>
-                                    }
-
-                                </>
-                            }
-                        </div>
-                    </div>
-
-                    <AppAuthFooter 
-                        theme = {this.props.theme}
+                    <ViewFooter 
+                        theme = {this.state.theme}
                         message = {this.state.hover}
                     />
 
                 </div>
             :
-                <div>
-                    Waiting for socket connection...
+                <div className="loading fullHeight">
+                    <div className="loadingText">Waiting for socket connection...</div>
                 </div>
             }
         </div>

@@ -59,7 +59,7 @@ const Q = require('q');
             var deferred = Q.defer();
             regSIWW.async_isRegisteredDomain(gConfig.siww)
                 .then(_dataIsReg => {
-                    if(_dataIsReg.data && _dataIsReg.data.isRegistered===true) {
+                    if(_dataIsReg.data && _dataIsReg.data.client_id) {
                         deferred.resolve();
                     }
                     else {

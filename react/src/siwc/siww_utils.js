@@ -27,7 +27,7 @@ import { randomStringForEntropy } from '@stablelib/random';
     export const checkIsValidDomain = (domain) => { 
         let _isValid=(domain!==null);
         if(_isValid) {            
-            var re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/); 
+            var re = new RegExp(/^((?:(?:(?:\w[.\-+]?)*)\w)+)((?:(?:(?:\w[.\-+]?){0,62})\w)+)\.(\w{2,6})$/); 
             _isValid=domain.match(re) || (domain==="localhost" || domain==="localhost:3000" || domain==="localhost:3001");
         }
         if(!_isValid) {console.log("invalid domain: "+domain)}

@@ -1,17 +1,9 @@
 import {Component} from "react";
 
-class AppAuthWalletConnect extends Component {
+class ViewWalletConnect extends Component {
 
 /*
- *          page inits
- */
-
-    constructor(props) {
-        super(props);        
-    }
-
-/*
- *          
+ *      UI
  */
     onConnect(event) {
         if(this.props.onConnect) {
@@ -32,14 +24,14 @@ class AppAuthWalletConnect extends Component {
                 id={"btnLoginWithWallet_"+ this.props.wallet_id}
                 attr-id={this.props.wallet_id}
                 key={this.props.index}
-                className={"wallet-sign" + (this.props.isConnected? " connected ": " disconnected ") + (this.props.isSelected? " selected " :"")} 
+                className={"wallet-sign" + (this.props.isSelected? " selected " : this.props.isConnected? " connected" : " ")} 
                 style={style} 
                 onClick={evt => {this.onConnect(evt)} }
                 onMouseOver={evt => {if(this.props.onHover) {this.props.onHover(evt, true); }}}
                 onMouseLeave={evt => {if(this.props.onHover) {this.props.onHover(evt, false); }}}
             >
                 <div className="connectWalletLogoContainer"> 
-                    <img className="connectWalletLogo" src={this.props.logo ? this.props.logo : ""} />  
+                    <img className="connectWalletLogo" src={this.props.logo ? this.props.logo : ""} alt="logo" />  
                 </div>
                 <div className="connectWalletTitle" >{this.props.wallet_id}</div>
             </li>
@@ -47,4 +39,4 @@ class AppAuthWalletConnect extends Component {
     }
 }
 
-export default AppAuthWalletConnect;
+export default ViewWalletConnect;

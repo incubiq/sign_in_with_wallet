@@ -2,12 +2,12 @@ const request = require('request');
 const Q = require('q');
 
 module.exports = {
-    async_isRegisteredDomain,
+    async_isGetDomainInfo,
     async_registerDomain
 }
 
     // are we registered with SIWC backend?
-    function async_isRegisteredDomain(configSIWC) {
+    function async_isGetDomainInfo(configSIWC) {
         var deferred = Q.defer();
         request.get(
             configSIWC.host+"web3/domain/"+configSIWC.clientID,
@@ -19,7 +19,7 @@ module.exports = {
                     deferred.reject({
                         data: null,
                         status: 400,
-                        statusText: "Could not check registered domain with SIWW"
+                        statusText: "Could not find domain "+ configSIWC.clientID
                     });
                 }
             }

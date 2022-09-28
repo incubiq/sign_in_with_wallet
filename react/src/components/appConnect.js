@@ -1,7 +1,4 @@
 import React, {Component} from "react";
-import AppAuthHeader from "./appAuthHeader";
-import AppAuthFooter from "./appAuthFooter";
-import AppAuthWalletConnect from "./appAuthWalletConnect";
 import {setCacheEncryption} from "../services/cache";
 
 //import siwc from "@incubiq/siwc";                     // real prod
@@ -36,7 +33,7 @@ constructor(props) {
     }
 
     getmyuri(n,s){
-        n = n.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");
+        n = n.replace(/[[]/,"\\[").replace(/[\]]/,"\\]");
         var p = (new RegExp("[\\?&]"+n+"=([^&#]*)")).exec(s);
         return (p===null) ? "" : p[1];
     }
@@ -92,28 +89,23 @@ constructor(props) {
             didAccessWallets: true
         });        
 
-        // show connection to those wallets which are connected
-        if(this.props.onConnect) {
-            _aWallet.forEach((item) => {
-                this.props.onConnect(item);
-            })
-        }
     }
 
     // processing the wallet connection request (did we really connect?)
     onSIWCNotify_WalletConnected(objParam) {
 
         // replace an existing entry (case when we connected)
-        let i=this.state.aWallet.findIndex(function (x) {return x.id===objParam.id});
+        let i=this.state.aWallet.findIndex(function (x) {return x.id===objParam.wallet.id});
         if(i!==-1 && objParam.didUserAccept) {
             let _aWallet=this.state.aWallet.slice();
-            _aWallet[i].address=objParam.address;
+            _aWallet[i].address=objParam.wallet.address;
+            _aWallet[i].hasConnected=true;
             this.setState({aWallet:_aWallet});
         }
 
         // bubble up to listening page
         if(this.props.onConnect) {
-            this.props.onConnect(objParam)
+            this.props.onConnect(objParam.wallet)
         }
 
         // make sure dialog gets closed and ready to go for another round

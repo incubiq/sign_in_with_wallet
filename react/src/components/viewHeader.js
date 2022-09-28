@@ -1,31 +1,19 @@
 import {Component} from "react";
 
-class AppAuthHeader extends Component {
+class ViewHeader extends Component {
 
 /*
- *          page inits
+ *      UI 
  */
-
-    constructor(props) {
-        super(props);    
-    }
-
-    componentDidMount() {
-    }
-
-/*
- *          
- */
-
 
     render() {
         return (
-            <div className="siwc-login-header">
-                <div className={"login-line client-login-info" + (this.props.theme.dark_mode? this.props.theme.dark_mode : '')}>
+            <div className="siww-header">
+                <div className={"siww-panel " + (this.props.theme.webapp.dark_mode? this.props.theme.webapp.dark_mode : '')}>
                     {this.props.isOauth ?
                     <>
                         <div className="display-app-logo">
-                            <img className="client-login-logo" src={this.props.theme.logo} />
+                            <img className="client-login-logo" src={this.props.theme.webapp.logo} alt="logo" />
                             <div className="login-subtitle">
                                 <span>{this.props.oauthClientName}</span>
                                 <br />
@@ -38,7 +26,7 @@ class AppAuthHeader extends Component {
                     :""}
 
                     <div className="display-app-logo">
-                        <img className="client-login-logo" src={this.props.SIWCLogo} />
+                        <img className="client-login-logo" src={this.props.SIWCLogo} alt="logo"/>
                         <div className="login-subtitle">Sign-in with<br />{this.props.theme.name}</div>
                     </div>
                 </div>
@@ -47,4 +35,4 @@ class AppAuthHeader extends Component {
     }
 }
 
-export default AppAuthHeader;
+export default ViewHeader;

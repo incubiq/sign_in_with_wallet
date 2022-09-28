@@ -26,7 +26,9 @@ export const WidgetLoading = (props) => {
         {props.image? 
           <img 
             className="backgroundImage"
-            src={props.image} />
+            src={props.image}
+            alt = "background"
+          />
         : ""
         }
 

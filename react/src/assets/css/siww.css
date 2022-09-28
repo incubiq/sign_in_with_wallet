@@ -25,6 +25,8 @@
     --connected-dark: #ccc;
     --disconnected: #f8f8f8;
     --disconnected-dark: #e0e0e0;
+    --disabled: #ffa0a0;
+    --disabled-dark: #990000;
 
     --scroll-bar-bg-color: transparent;
     --scroll-bar-color: #aaa;
@@ -83,10 +85,15 @@ a {
     display: none;
 }
 
-.siwc-login-header {
+.siww-header {
     border-bottom: 1px solid #eee;
-
 }
+
+.siww-header .siww-panel {
+    display: flex;
+    background: transparent;
+}
+
 .siwc-login-footer {
     border-top: 1px solid #eee;
     position: relative;
@@ -115,7 +122,7 @@ a {
     font-size: 20px;
 }
 
-.siwc_before, .siwc_after {
+.siww_message {
     padding: 0;
     margin: 0;
     min-height: 80px;
@@ -153,6 +160,10 @@ a {
     display: inline-flex;
     margin: 0 4px 0 16px;
 }
+.siwc-oauth-legend .legendSquare.disabled{
+    border: 1px solid var(--disabled-dark);
+    background-color: var(--disabled);
+}
 .siwc-oauth-legend .legendSquare.selected{
     border: 1px solid var(--selected-dark);
     background-color: var(--selected);
@@ -183,12 +194,17 @@ a {
     cursor: pointer;
 }
 
+.wallet-sign.disabled {
+    border: 1px solid var(--disabled-dark);
+    background-color: var(--disabled);
+}
+
 .wallet-sign.connected {
     border: 1px solid var(--connected-dark);
     background-color: var(--connected);
 }
 
-.wallet-sign.connected.selected {
+.wallet-sign.selected {
     border: 1px solid var(--selected-dark);
     background-color: var(--selected);
     box-shadow: 0px 3px 6px var(--shadow);
@@ -216,6 +232,7 @@ a {
 .modal-login {
     width: calc(40% + 120px);
     max-width: 500px;
+    width: 100%;
     border-radius: 15px;
     background: rgba(255,255,255,0.85);
     color: var(--dark-text);
@@ -226,18 +243,17 @@ a {
     color: var(--light);
 }
 
-.login-line {
+.siww-panel {
     padding: 12px 20px;
     text-align: center;
-    background: transparent;
-}
-.login-line-emph {
     background: rgba(255,255,255,0.7);
 }
-.login-line.dark-mode {
+
+.siww-panel.dark-mode {
     background: rgba(0,0,0,0.7);
     color: var(--light);
 }
+
 .login-separator {
     padding:50px 0;
     margin: 0 24px;
@@ -295,7 +311,7 @@ a {
 .actionLink.back {
     position: absolute;
     left: 2px;
-    bottom:4px;
+    bottom:-4px;
 }
 
 .actionLink.preview {
@@ -403,6 +419,11 @@ a {
     border: 1px solid var(--shadow);
 }
 
+.btn-transparent {
+    background-color: transparent;
+    border: 1px solid #f0f0f0;
+}
+
 .btn-primary:hover, .btn-primary:active, .btn-quiet:hover .btn-quiet:active{
     box-shadow: 0 17px 38px -12px var(--shadow),0 2px 12px -10px rgba(5,9,41,0.13);
     font-weight: bold;
@@ -479,8 +500,12 @@ a {
         height: 70px;
     }
 
+    .display-app-logo {
+        width: 90px;
+    }
+
     .display-app-logo .login-subtitle{
-        font-size: 80%;
+        font-size: 65%;
     }
 
     .login-line.intro {

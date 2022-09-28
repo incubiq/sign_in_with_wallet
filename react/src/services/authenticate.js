@@ -1,12 +1,18 @@
 
-import {API_HOST, API_PRIVATEROUTE, API_PUBLICROUTE, srv_getRoute, srv_getUniqueRoute} from "./base";
+import {API_HOST, srv_getRoute} from "./base";
 const API_OAUTHROUTE= "/oauth/";
 const API_WEB3ROUTE= "/web3/";
 
+
+const srv_getDomainInfo = async (client_id) => {
+  return await srv_getRoute(API_HOST+API_WEB3ROUTE+"domain/"+client_id);
+}
+
+// call this to request an Authentication cookie to SIWW
 const srv_prepare = async(obj) => {
   try {
     let jsonStr=JSON.stringify({
-      provider: "SIWC",
+      provider: obj.provider,
       wallet_id: obj.wallet_id,
       wallet_addr: obj.wallet_addr,
       socket_id: obj.socket_id,
@@ -27,6 +33,7 @@ const srv_prepare = async(obj) => {
   }
 }
 
+// call this to authenticate into SIWW
 const srv_authenticate = async(obj) => {
   try {
     let jsonStr=JSON.stringify({
@@ -56,5 +63,6 @@ const srv_authenticate = async(obj) => {
 
 export { 
   srv_prepare,
-  srv_authenticate
+  srv_authenticate,
+  srv_getDomainInfo
 }

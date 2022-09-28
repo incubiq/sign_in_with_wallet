@@ -1,4 +1,4 @@
-import {setCacheEncryption, getCache, setCache} from './cache'
+import {getCache, setCache} from './cache'
 
 const CACHE_ME="me"
 

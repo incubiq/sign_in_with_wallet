@@ -1,6 +1,6 @@
 import {Component} from "react";
 
-class AppAuthProgressBar extends Component {
+class ViewProgressBar extends Component {
 
 /*
  *          page inits
@@ -16,8 +16,8 @@ class AppAuthProgressBar extends Component {
     }
 
     componentDidMount() {
-        this.state.isVisible=true;
-        let eltBar=document.getElementById("myLoginProgressBar");
+        this.setState({isVisible: true});
+        let eltBar=document.getElementById(this.props.id);
         this.go({
             delay: 4000,
             eltCancel: null, 
@@ -34,15 +34,15 @@ class AppAuthProgressBar extends Component {
     }
 
     componentWillUnmount() {
-        this.state.isVisible=false;
+        this.setState({isVisible: false});
         if(this.state.downloadTimer) {
             clearInterval(this.state.downloadTimer);
-            this.state.downloadTimer=null;
+            this.setState({downloadTimer : null});
         }
     }
 
 /*
- *          
+ *         UI/UX
  */
 
     go(objOptions) {
@@ -68,7 +68,7 @@ class AppAuthProgressBar extends Component {
         var inc=40;
         var timeleft = 0;
         if(this.state.downloadTimer===null && objOptions.eltBar!==null) {
-            this.state.downloadTimer = setInterval(function(){
+            let _timer= setInterval(function(){
                 if(timeleft >= 100){
                     clearInterval(this.state.downloadTimer);
                     this.downloadTimer=null;
@@ -76,6 +76,8 @@ class AppAuthProgressBar extends Component {
                 objOptions.eltBar.style.width = timeleft+"%";
                 timeleft += (100/inc);
             }.bind(this), (objOptions.delay/inc));    
+
+            this.setState({downloadTimer: _timer});
         }
     }
 
@@ -85,17 +87,17 @@ class AppAuthProgressBar extends Component {
             height:"8px",
             width: "0"
         };
-        if(this.props.theme.color && this.props.theme.color.button_text) {
-            styleCont.backgroundColor=this.props.theme.color.button_text;
-            styleProgress.backgroundColor=this.props.theme.color.button;
+        if(this.props.theme.webapp.color && this.props.theme.webapp.color.button_text) {
+            styleCont.backgroundColor=this.props.theme.webapp.color.button_text;
+            styleProgress.backgroundColor=this.props.theme.webapp.color.button;
         }
 
         return (
             <div className="progressBarContainer" style={styleCont}>
-                <div id="myLoginProgressBar" style={styleProgress}></div>
+                <div id={this.props.id} style={styleProgress}></div>
             </div>
         )
     }
 }
 
-export default AppAuthProgressBar;
+export default ViewProgressBar;
