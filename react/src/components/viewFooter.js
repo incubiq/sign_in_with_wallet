@@ -14,7 +14,7 @@ class ViewFooter extends Component {
 
         return (            
             <div className="siwc-login-footer">
-                <div className="login-line client-login-credits"> Powered by &nbsp;
+                <div className="login-line client-login-credits">©&nbsp;
                     <a className="footer-link" style={style} href="/" target="_blank">Sign-in with {this.props.theme.name}</a>
                 </div>
                 <div 

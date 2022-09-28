@@ -8,14 +8,13 @@ import ViewProgressBar from "./viewProgressBar";
 import FormAuthenticate from "./formAuthenticate";
 
 import {srv_prepare, srv_getDomainInfo} from "../services/authenticate";
-import {registerWebAppWithIdentity, createPartialIdentity, updatePartialIdentity, getMyIdentities} from "../services/me";
+import {registerWebAppWithIdentity, createPartialIdentity, updatePartialIdentity, getMyIdentities, grantAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
 
 import jsonwebtoken from "jsonwebtoken";
 
 let didMount=false;
 const VIEWMODE_IDENTITY="identity";
 const VIEWMODE_DATASHARE="datashare";
-const VIEWMODE_REDIRECT="redirect";
 
 class AppAuthenticate extends AppConnect {
 
@@ -89,7 +88,7 @@ class AppAuthenticate extends AppConnect {
             aId.forEach(item=> {
                 registerWebAppWithIdentity(item.username, {
                     client_id: _client_id,
-                    scope: dataDomain.data.aScope
+                    aScope: dataDomain.data.aScope
                 });    
             });
     
@@ -108,6 +107,12 @@ class AppAuthenticate extends AppConnect {
         this.setState({mustConfirm: true});
         this.setSharedIdentity(iUser);
         this.setState({viewMode: VIEWMODE_DATASHARE});
+
+        // did we grant authorization before?
+        if(isGrantedAccessToWebApp(this.state.aIdentity[iUser].username, this.state.client_id)) {
+            this.authorizeDataShare(this.state.aIdentity[iUser].username);
+        }
+
     }
 
     // receiving a cookie from the backend => we are being authenticated into SIWW
@@ -138,29 +143,14 @@ class AppAuthenticate extends AppConnect {
                 // check if our selected identity agreed to grant data
                 let i=aId.findIndex(function (x) {return x.username===decoded.username});
 
-                // we have granted?
+                // we know this guy?
                 if(i===-1) {
                     console.log("Houston, we have a problem... unknown identity")
                     return false
                 }
 
-                let j=-1; 
-                let aWebApp=aId[i].aWebApp;
-                if(aWebApp && aWebApp.length>0) {
-                    j=aWebApp.findIndex(x => {
-                        return x.client_id===_client_id
-                    });
-                }
-
-                // never asked for granting?  need to grant authorization first...
-                if(j===-1 || aWebApp[j].didGrant!==true) {
-                    that.authenticateUser(i);
-                }
-                else {
-                    // now we know who your data
-                    that.authorizeUser();
-                }
-
+                // now need to pass grant authorization...
+                that.authenticateUser(i);
                 return true;
             }
         })
@@ -171,7 +161,9 @@ class AppAuthenticate extends AppConnect {
  */
 
     // calling this will move the UI to the redirection section (final step)
-    authorizeUser() {
+    authorizeDataShare(_username) {
+        // set granting to local storage
+        grantAccessToWebApp(_username, this.state.client_id);
         this.setState({isAuthorized: true});
     }
 
@@ -180,9 +172,10 @@ class AppAuthenticate extends AppConnect {
         if(_iSel!==-1 && this.state.aIdentity.length>0) {
             if(_iSel!==this.state.iSelectedIdentity) {
                 this.setState({iSelectedIdentity: _iSel});
+                this.setState({username: this.state.aIdentity[_iSel].username});
                 let _aScope=this.state.aScope.slice();
                 _aScope.forEach(item => {
-                    let _value=this.state.aIdentity[this.state.iSelectedIdentity][item.property]
+                    let _value=this.state.aIdentity[_iSel][item.property]
                     item.value=_value;
                 });
 
@@ -190,6 +183,9 @@ class AppAuthenticate extends AppConnect {
             }
             this.setState({hover:"You will share data taken from your <strong>"+this.state.aIdentity[_iSel].wallet_id+"</strong> identity"});
         }
+
+        // we get back the selected username (changes with selected identity)
+        return this.state.aIdentity[_iSel].username;
     }
 
 /*
@@ -261,6 +257,7 @@ class AppAuthenticate extends AppConnect {
     
             // make sure we have this user's identity in storage
             createPartialIdentity({
+                provider: _wallet.provider,
                 wallet_address: _wallet.address,
                 wallet_id: _wallet.id,
                 wallet_logo: _wallet.logo
@@ -421,7 +418,7 @@ class AppAuthenticate extends AppConnect {
                             <button 
                                 className="btn btn-quiet"
                                 onClick={evt => {
-                                    this.authorizeUser();
+                                    this.authorizeDataShare(this.state.aIdentity[this.state.iSelectedIdentity].username);
                                 }}
                             >
                                 Grant Access!
@@ -464,6 +461,14 @@ class AppAuthenticate extends AppConnect {
  *          UI redirect
  */
 
+    doLogin ( ){
+        let eltForm=document.getElementById('form-login');
+        if(eltForm) {
+            document.cookie = this.state.cookie.name + "=" + this.state.cookie.token + ";path=/";
+            document.getElementById('form-login').submit();
+        }
+    }
+
     renderRedirect() {
 
         return (
@@ -480,6 +485,9 @@ class AppAuthenticate extends AppConnect {
                             theme = {this.state.theme}
                             id = "myRedirectProgressBar"
                             idMessage = "idRedirectMessage"
+                            inc = {20}
+                            delay = {1800}
+                            callback = {this.doLogin.bind(this)}
                         />                            
 
                     </div>
@@ -488,8 +496,9 @@ class AppAuthenticate extends AppConnect {
 
                     <FormAuthenticate 
                         theme = {this.state.theme}
+                        client_id = {this.state.client_id}
                         aScope = {this.state.aScope}
-                        cookie = {this.state.cookie}
+                        onClick = {this.doLogin.bind(this)}
                     />
 
                 </div>

@@ -2,12 +2,12 @@ const request = require('request');
 const Q = require('q');
 
 module.exports = {
-    async_isGetDomainInfo,
+    async_getDomainInfo,
     async_registerDomain
 }
 
     // are we registered with SIWC backend?
-    function async_isGetDomainInfo(configSIWC) {
+    function async_getDomainInfo(configSIWC) {
         var deferred = Q.defer();
         request.get(
             configSIWC.host+"web3/domain/"+configSIWC.clientID,
@@ -46,6 +46,9 @@ module.exports = {
                     redirect_uri_dev: configSIWC.callbackURL,
                     redirect_error_dev: function(){},
 
+                    // SIWW provider (currently a single provider per app)
+                    provider: "cardano",
+
                     // todo : put prod here
                     redirect_uri: configSIWC.callbackURL,           
                     redirect_error: function(){},
@@ -65,6 +68,8 @@ module.exports = {
                 if (!error && response.statusCode === 201 && body.data.client_id) {
                     gConfig.siww.clientID=body.data.client_id;
                     gConfig.siww.asRegistered=body.data;
+
+                    console.log("Domain registered with SIWW with ID="+body.data.client_id)
                     deferred.resolve(body);
                 }
                 else {

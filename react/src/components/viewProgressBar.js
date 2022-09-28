@@ -19,10 +19,16 @@ class ViewProgressBar extends Component {
         this.setState({isVisible: true});
         let eltBar=document.getElementById(this.props.id);
         this.go({
-            delay: 4000,
+            delay: this.props.delay? this.props.delay: 4000,
             eltCancel: null, 
             eltBar: eltBar,
             onElapsed: function() {
+                // do we have a callback to call?
+                if(this.props.callback) {
+                    this.props.callback();
+                }
+
+                // wait a bit more.. update UI
                 if(this.props.idMessage && this.state.isVisible) {
                     let eltMsg=document.getElementById(this.props.idMessage);
                     if(eltMsg) {
@@ -65,7 +71,7 @@ class ViewProgressBar extends Component {
     }
 
     fnLoadingEffect (objOptions) {
-        var inc=40;
+        var inc=this.props.inc? this.props.inc : 40;
         var timeleft = 0;
         if(this.state.downloadTimer===null && objOptions.eltBar!==null) {
             let _timer= setInterval(function(){

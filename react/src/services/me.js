@@ -1,5 +1,19 @@
 import {getCache, setCache} from './cache'
 
+// structure of info
+//
+//  - username: ...
+//  - wallet_address: ...
+//  - wallet_id: ...
+//  - wallet_logo: ...
+//  - provider
+//  - webapp: [{ 
+//    client_id: ...
+//    aScope: [{label: ... , property: ...}]
+//    didGrant : true/false
+//  }]
+//
+
 const CACHE_ME="me"
 
 const getMyIdentities = () => {
@@ -95,19 +109,21 @@ const registerWebAppWithIdentity = (_username, _objWebApp) => {
   if(!objIdentity.aWebApp) {objIdentity.aWebApp=[]}
   if(_objWebApp && _objWebApp.client_id) {
     let i=objIdentity.aWebApp.findIndex(function (x) {return x.client_id===_objWebApp.client_id});
-    let newScope=_objWebApp.scope? _objWebApp.scope : "";
+    let aNewScope=_objWebApp.aScope? _objWebApp.aScope : [];
     if(i===-1) {
       objIdentity.aWebApp.push({
         client_id: _objWebApp.client_id,
-        scope: newScope,
+        aScope: aNewScope,
         didGrant: false
       })
     }
     else {
       // changed scope?
-      if(objIdentity.aWebApp[i].scope!==newScope) {
-        objIdentity.aWebApp[i].scope=newScope;
-        objIdentity.didGrant= false;
+      let _new=JSON.stringify(aNewScope);
+      let _old=JSON.stringify(objIdentity.aWebApp[i].aScope);
+      if(_new!==_old) {
+        objIdentity.aWebApp[i].aScope=aNewScope;
+        objIdentity.aWebApp[i].didGrant= false;
       }
     }
 
@@ -117,10 +133,39 @@ const registerWebAppWithIdentity = (_username, _objWebApp) => {
 
     return objIdentity;
   }
-
   return null;
 }
 
+const grantAccessToWebApp = (_username, _client_id) => {
+  let objIdentity=_findIdentityFromUsername(_username);
+  if(!objIdentity || !objIdentity.aWebApp || objIdentity.aWebApp.length===0) {
+    return null;
+  }
+
+  let i=objIdentity.aWebApp.findIndex(function (x) {return x.client_id===_client_id});
+  if(i===-1) {
+    return null;
+  }
+
+  if(!objIdentity.aWebApp[i].didGrant) {
+    objIdentity.aWebApp[i].didGrant=true;
+    updateIdentity(_username, {
+      aWebApp: objIdentity.aWebApp
+    });  
+  }
+}
+
+const isGrantedAccessToWebApp = (_username, _client_id) => {
+  let objIdentity=_findIdentityFromUsername(_username);
+  if(!objIdentity || !objIdentity.aWebApp || objIdentity.aWebApp.length===0) {
+    return false;
+  }
+  let i=objIdentity.aWebApp.findIndex(function (x) {return x.client_id===_client_id});
+  if(i===-1) {
+    return false;
+  }
+  return objIdentity.aWebApp[i].didGrant===true;
+}
 
 export {
   CACHE_ME,
@@ -129,5 +174,7 @@ export {
   createPartialIdentity,
   updatePartialIdentity,
   updateIdentity,
-  registerWebAppWithIdentity
+  registerWebAppWithIdentity,
+  grantAccessToWebApp,
+  isGrantedAccessToWebApp
 };

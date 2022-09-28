@@ -53,11 +53,11 @@ const Q = require('q');
 // ************************************************
 //      Real authentication starts here!
 // ************************************************
-    router.get('/prepare/siwc', function(req, res, next) {
+    router.get('/prepare/siww', function(req, res, next) {
         
         let fnReg=function() {
             var deferred = Q.defer();
-            regSIWW.async_isRegisteredDomain(gConfig.siww)
+            regSIWW.async_getDomainInfo(gConfig.siww)
                 .then(_dataIsReg => {
                     if(_dataIsReg.data && _dataIsReg.data.client_id) {
                         deferred.resolve();
@@ -87,14 +87,14 @@ const Q = require('q');
 
         // ensure we have connection with SIWC
         fnReg().then(function(){
-            res.redirect("/auth/siwc");
+            res.redirect("/auth/siww");
         })
     });
 
 //    router.get('/siwc',_loginSIWW);
 //    router.get('/siwc/callback',_loginSIWW);
-    router.get('/siwc',passport.authenticate('SIWW', {session: false}));        // will call SIWC /oauth/dialog/authorize
-    router.get('/siwc/callback', passportSIWW.authenticate('SIWW', {
+    router.get('/siww',passport.authenticate('SIWW', {session: false}));        // will call SIWW /oauth/dialog/authorize
+    router.get('/siww/callback', passportSIWW.authenticate('SIWW', {
         failureRedirect: '/auth/unauthorized',
         session: false
     }), function (req, res) {

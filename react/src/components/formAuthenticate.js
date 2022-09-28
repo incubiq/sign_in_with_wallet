@@ -2,27 +2,6 @@ import {Component} from "react";
 class FormAuthenticate extends Component {
 
 /*
- *          page inits
- */
-
-    constructor(props) {
-        super(props);
-        this.props.aScope.forEach(item => {
-            let _obj={};
-            _obj[item.property]=item.value;
-            this.setState(_obj)
-        })
-    }
-  
-    doLogin ( ){
-        let eltForm=document.getElementById('form-login');
-        if(eltForm) {
-            document.cookie = this.props.cookie.name + "=" + this.props.cookie.token + ";path=/";
-            document.getElementById('form-login').submit();
-        }
-    }
-
-/*
  *          UI
  */
 
@@ -43,15 +22,23 @@ class FormAuthenticate extends Component {
                         id={item.property} 
                         value={item.value}
                         onChange={(e) => {
-                            let _obj={};
-                            _obj[item.property]=e.target.value;
-                            this.setState(_obj)
+                            // no change
                         }}
                     />
                 ))}
 
+                <input 
+                    type="text" 
+                    className="hidden"
+                    id="client_id" 
+                    value={this.props.client_id}
+                    onChange={(e) => {
+                        // no change
+                    }}
+                />
+
                 <button 
-                    className="signin-btn btn" 
+                    className="btn btn-quiet" 
                     style= {style}
                     onClick = {this.doLogin}
                 >

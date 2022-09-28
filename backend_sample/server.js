@@ -30,7 +30,7 @@ global.gConfig={
     siww: {
         clientID: "11111111111111111111",
         clientSecret: "aLongSecret!",
-        callbackURL:"auth/siwc/callback",
+        callbackURL:"auth/siww/callback",
         host: "http://localhost:3010/",         // change this later... (will need https:// when on final server)
         domain: "localhost:3010"
     },
