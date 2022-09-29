@@ -94,18 +94,31 @@ a {
     background: transparent;
 }
 
-.siwc-login-footer {
+.siwc-footer {
     border-top: 1px solid #eee;
     position: relative;
 }
 
-.siwc-login-footer .message{
+.siwc-footer .credits {
+    padding: 8px 8px 0 0;
+    text-align: right;
+    font-size: 12px;
+    line-height: initial;
+}
+.siwc-footer .disclaimer {
+    margin: 10px;
+    font-size: 9px;
     font-style: italic;
-    position: absolute;
-    bottom: 0;
+    line-height: 12px;
+}
+
+.siwc-footer .message{
+    font-style: italic;
     left: 14px;
     font-size: 10px;
     color: #666;
+    padding: 6px 0 12px 6px;
+    line-height: initial;
 }
 
 #siwc-login-container {
@@ -211,18 +224,29 @@ a {
 }
 
 .connectWalletLogoContainer {
-    height: 50px;
+    height: 80px;
     width: 64px;
+    position: relative;
 }
 .connectWalletLogo{
-    max-height:40px;
-    max-width:40px;
+    max-height:32px;
+    max-width:32px;
     padding: 6px 12px;
 }
 
+.connectWalletLogo.connecting {
+    font-size: 180%;
+    padding: 0;
+    margin: 24px auto 0 auto;
+}
+
 .connectWalletTitle{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width:100%;
     font-size: 16px;
-    padding: 0 8px;
+    text-align: center;
 }
 
 .wallet-sign.connected .connectWalletTitle {
@@ -237,6 +261,7 @@ a {
     background: rgba(255,255,255,0.85);
     color: var(--dark-text);
     box-shadow: 0px 6px 22px var(--shadow);
+    overflow: hidden;
 }
 .modal-login.dark-mode {
     background: rgba(0,0,0,0.5);
@@ -272,18 +297,6 @@ a {
 .client-login-info {
     display: flex;
     flex-direction: row;
-}
-.client-login-credits {
-    padding: 6px 10px;
-    text-align: right;
-    font-size: 12px;
-    min-height: 40px;
-}
-.client-login-disclaimer {
-    margin: 10px;
-    font-size: 9px;
-    font-style: italic;
-    line-height: 12px;
 }
 
 .client-login-logo {
@@ -449,6 +462,11 @@ a {
     text-decoration: none;
 }
 
+.footer-version{
+    font-size: 66%;
+    color: #888;
+}
+
 .siwc-login-download {
     display: flex;
     justify-content: center;
@@ -492,9 +510,6 @@ a {
         transform: none;
         border-radius: 0;
     }
-    .login-line{
-        padding: 8px 12px;
-    }
 
     .client-login-logo {
         height: 70px;
@@ -506,10 +521,6 @@ a {
 
     .display-app-logo .login-subtitle{
         font-size: 65%;
-    }
-
-    .login-line.intro {
-        font-size: 80%;
     }
 }
 

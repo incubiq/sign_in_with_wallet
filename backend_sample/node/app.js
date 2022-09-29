@@ -88,7 +88,7 @@ const express = require('express');
                         "default-src 'self' 'unsafe-eval' data: http://localhost:"+gConfig.port +" ; " +
                         "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:"+gConfig.port +" ; " +
                         "style-src 'self' 'unsafe-eval' 'unsafe-inline' http://localhost:"+gConfig.port +" ; " +
-                        "font-src  http://localhost::"+gConfig.port +" ; " +
+                        "font-src  http://localhost:"+gConfig.port +" ; " +
                         "connect-src ws://localhost:"+gConfig.port +" http://localhost:"+gConfig.port +" 'self'; " +
                         "worker-src blob: ; " +
                         "img-src 'self' data: https: localhost:"+gConfig.port +" ; " +

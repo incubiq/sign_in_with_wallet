@@ -16,13 +16,6 @@ const App  = React.lazy(() => import ("./app"));
 
 class AppRoutes extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state={
-        version: ""
-    }
-  }
-
 /*
 *     all for APP routes 
 */
@@ -49,7 +42,8 @@ class AppRoutes extends Component {
                 <Suspense 
                     fallback={<div>Loading React home...</div>}>
                     <App
-                        version={this.state.version}
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
                     />
                 </Suspense> 
                 } exact />
@@ -58,7 +52,8 @@ class AppRoutes extends Component {
                 <Suspense 
                     fallback={this.renderBackground()}>
                     <AppConnect
-                        version={this.state.version}
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
                         didSocketConnect={this.props.didSocketConnect}
                         getSocket={this.props.getSocket}
                         theme={getTheme()}
@@ -71,12 +66,31 @@ class AppRoutes extends Component {
                 <Suspense 
                     fallback={this.renderBackground()}>
                     <AppAuthenticate
-                        version={this.state.version}
+                        // utils
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
+                        onRedirect={this.props.onSoftRedirect}
+                        chain="cardano"
+
+                        // cookie
+                        AuthenticationCookieName={this.props.AuthenticationCookieName}
+                        AuthenticationCookieToken={this.props.AuthenticationCookieToken}
+                        AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
+
+                        // sockets
                         didSocketConnect={this.props.didSocketConnect}
                         getSocket={this.props.getSocket}
+
+                        // webapp
+                        webAppId = {this.props.webAppId}
+                        webAppName = {this.props.webAppName}
+                        webAppDomain = {this.props.webAppDomain}
+                        webApp = {this.props.webApp}              
                         theme={getTheme()}
                         styles={getStyles()}
-                        onRedirect={this.props.onSoftRedirect}
+                        // overload theme??
+                        // TODO
+
                     />
                 </Suspense> 
                 } exact />
@@ -85,7 +99,8 @@ class AppRoutes extends Component {
                 <Suspense 
                     fallback={<div>Loading APIs...</div>}>
                     <AppAuthApi
-                        version={this.state.version}
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
                     />
                 </Suspense> 
                 } exact />

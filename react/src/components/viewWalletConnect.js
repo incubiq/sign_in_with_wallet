@@ -3,12 +3,56 @@ import {Component} from "react";
 class ViewWalletConnect extends Component {
 
 /*
+ *      Inits
+ */
+    
+    constructor(props) {
+        super(props);    
+        this.state={            
+            isConnecting: false
+        }
+    }
+
+/*
  *      UI
  */
-    onConnect(event) {
+
+    async async_onConnect(event) {
         if(this.props.onConnect) {
-            this.props.onConnect(event);
-            // this.props.loginUrl    
+
+            // who's there?
+            let idElt=event.currentTarget;
+            let _id=idElt.getAttribute("attr-id");
+            
+            // waiting/loading effect
+            this.setState({isConnecting: true});
+            if(this.props.fnShowMessage) {
+                this.props.fnShowMessage("Connecting to your <b>"+_id+"</b> wallet...", true);
+            }
+
+            await this.props.onConnect(_id);
+
+            this.setState({isConnecting: false});
+            if(this.props.fnShowMessage) {
+                this.props.fnShowMessage("Connected to your <b>"+_id+"</b> wallet...", false);
+            }
+        }
+    }
+
+    onHover(event, bOver) {
+        // who's there?
+        let idElt=event.currentTarget;
+        let _id=idElt.getAttribute("attr-id");
+        let msg=null;
+        
+        if(_id && bOver && this.props.fnShowMessage && !this.state.isConnecting) {
+            msg=this.props.isConnected ? 
+                "Click to choose <strong>"+_id+"</strong> wallet as the signing identity."
+                : "Click to add <strong>"+_id+"</strong> wallet as a signing identity.";
+        }
+
+        if(msg) {
+            this.props.fnShowMessage(msg);
         }
     }
 
@@ -26,14 +70,20 @@ class ViewWalletConnect extends Component {
                 key={this.props.index}
                 className={"wallet-sign" + (this.props.isSelected? " selected " : this.props.isConnected? " connected" : " ")} 
                 style={style} 
-                onClick={evt => {this.onConnect(evt)} }
-                onMouseOver={evt => {if(this.props.onHover) {this.props.onHover(evt, true); }}}
-                onMouseLeave={evt => {if(this.props.onHover) {this.props.onHover(evt, false); }}}
+                onClick={evt => {this.async_onConnect(evt)} }
+                onMouseOver={evt => {this.onHover(evt, true) }}
+                onMouseLeave={evt => {this.onHover(evt, false) }}
             >
                 <div className="connectWalletLogoContainer"> 
-                    <img className="connectWalletLogo" src={this.props.logo ? this.props.logo : ""} alt="logo" />  
+                    {this.state.isConnecting? 
+                        <div className="connectWalletLogo connecting">⌛</div>  
+                    :
+                    <>
+                        <img className="connectWalletLogo" src={this.props.logo ? this.props.logo : ""} alt="logo" />  
+                        <div className="connectWalletTitle" >{this.props.wallet_id}</div>
+                    </>
+                    }
                 </div>
-                <div className="connectWalletTitle" >{this.props.wallet_id}</div>
             </li>
         )
     }

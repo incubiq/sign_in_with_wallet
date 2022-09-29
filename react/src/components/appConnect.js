@@ -1,5 +1,4 @@
 import React, {Component} from "react";
-import {setCacheEncryption} from "../services/cache";
 
 //import siwc from "@incubiq/siwc";                     // real prod
 import siwc_connect from "../siwc/siwc_connect";        // for test only
@@ -12,57 +11,25 @@ class AppConnect extends Component {
 
 constructor(props) {
         super(props);    
-    
-        // TODO : we need to pass the key from server (DO NOT KEEP this into prod)
-        let _localSecret="cacheEncryptionKey_1234567890";              // encryption key for localstore ; 
-        let _cookieSecret="somekey_1234567890";
-
-        setCacheEncryption(_localSecret);
-
         this.state={
             // connected wallets
             aWallet: [],                 // all available wallets to connect to  (gathered from connect engine)
-
-            cacheSecret: _localSecret,   // secret to encode localstore
-            cookieSecret: _cookieSecret, // secret to decode cookie
 
             // init vars
             didInitSIWC: false,
             didAccessWallets: false,
         }
     }
-
-    getmyuri(n,s){
-        n = n.replace(/[[]/,"\\[").replace(/[\]]/,"\\]");
-        var p = (new RegExp("[\\?&]"+n+"=([^&#]*)")).exec(s);
-        return (p===null) ? "" : p[1];
-    }
     
     componentDidMount() {
-
         // socket ready? let's use SIWC
         if(this.props.didSocketConnect && !this.state.didInitSIWC) {
             this.setState({didInitSIWC: true});
             this.siwc=new siwc_connect();
             this.registerSIWCCallbacks();
-
-            // Receive the authentication cookie
-            let _socket=this.props.getSocket();
-            if(!_socket) {
-                console.log("Socket not initialized!!");
-            }
-            else {
-                _socket.on('auth_cookie', cookie => {
-                    this.async_onAuthCookieReceived(cookie);
-                })       
-            }
         }        
     }
     
-    async_onAuthCookieReceived(cookie){
-        return;
-    }
-
 /*
  *          SIWC callbacks
  */
@@ -88,7 +55,6 @@ constructor(props) {
             aWallet:_aWallet,
             didAccessWallets: true
         });        
-
     }
 
     // processing the wallet connection request (did we really connect?)
@@ -142,11 +108,7 @@ constructor(props) {
     }
 
     // user wants to connect wallet
-    async async_connectWallet(event) {
-
-        // who's there?
-        let idElt=event.currentTarget;
-        let _id=idElt.getAttribute("attr-id");
+    async async_connectWallet(_id) {
 
         try {
             // not waiting for this to finish, it could wait too long

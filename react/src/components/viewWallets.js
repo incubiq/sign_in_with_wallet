@@ -28,7 +28,7 @@ class ViewWallets extends Component {
                                 address = {item.address}
                                 logo = {item.logo}
                                 onConnect={objParam.onSelect}
-                                onHover={objParam.onHover}
+                                fnShowMessage={this.props.fnShowMessage}
                                 index = {index}
                                 key={index}
                             />
