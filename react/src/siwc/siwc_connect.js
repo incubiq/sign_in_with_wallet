@@ -140,12 +140,32 @@ export class siwc_connect  extends siww_connect {
             _objWallet.networkId = await _objWallet.api.getNetworkId();
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
             _objWallet.chain= _objWallet.networkId === 0 ? "Cardano testnet" : "Cardano mainnet";
+            _objWallet.balance = await this._async_getBalance(_objWallet.api);
+            _objWallet.utxos=await this._async_getUtxo(_objWallet.api)
             _objWallet.isEnabled=true;
             return _objWallet;
         }
         catch(err) {
             _objWallet.isEnabled=false;
             return _objWallet;
+        }
+    }
+
+    async async_getConnectedWalletBalance(_objWallet){
+        try {
+            if(!_objWallet.api && _objWallet.id!==null) {
+                _objWallet.api = await this.async_enableWallet(_objWallet.id);
+            }
+
+            if(!_objWallet.api) {
+                throw new Error("Bad params");
+            }
+
+            let balance = await this._async_getBalance(_objWallet.api);
+            return balance;
+        }
+        catch(err) {
+            return null;
         }
     }
 

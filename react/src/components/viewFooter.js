@@ -14,16 +14,16 @@ class ViewFooter extends Component {
         }
 
         return (            
-            <div className="siwc-footer">
+            <div className="siww-footer">
                 <div className="credits">©&nbsp;
-                    <a className="footer-link" style={style} href="/" target="_blank">Sign-in with {this.props.theme.name}</a>                    
-                    <span className="footer-version">&nbsp;&nbsp;v{this.props.version}</span>
+                    <a className="footer-link" style={style} href="/" target="_blank">Sign-in with {this.props.theme.name}</a>                                        
                 </div>
                 <div 
                     className="message"
                     dangerouslySetInnerHTML={{__html: this.props.message}} 
                 >
                 </div>
+                <div className="footer-version">&nbsp;&nbsp;v{this.props.version}</div>
                 {this.props.inTimerEffect? 
                     <ViewProgressBar
                     theme = {this.props.theme}

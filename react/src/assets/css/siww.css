@@ -38,6 +38,7 @@ body {
     font-size: 18px;
     line-height: 1.6em;
     font-weight: 500;
+    margin: 0;
 }
 
 a {
@@ -71,11 +72,11 @@ a {
     display: none;
 }
 
-.siwc-oauth-login {
+.siww-oauth-login {
     font-size: 85%;
 }
 
-.siwc-oauth-section {
+.siww-oauth-section {
     font-size: 85%;
     padding-top:12px;
     text-align: left;
@@ -94,25 +95,25 @@ a {
     background: transparent;
 }
 
-.siwc-footer {
+.siww-footer {
     border-top: 1px solid #eee;
     position: relative;
 }
 
-.siwc-footer .credits {
+.siww-footer .credits {
     padding: 8px 8px 0 0;
     text-align: right;
     font-size: 12px;
     line-height: initial;
 }
-.siwc-footer .disclaimer {
+.siww-footer .disclaimer {
     margin: 10px;
     font-size: 9px;
     font-style: italic;
     line-height: 12px;
 }
 
-.siwc-footer .message{
+.siww-footer .message{
     font-style: italic;
     left: 14px;
     font-size: 10px;
@@ -121,7 +122,7 @@ a {
     line-height: initial;
 }
 
-#siwc-login-container {
+#siww-login-container {
     position:absolute;
     top: 0;
     bottom: 0;
@@ -159,43 +160,43 @@ a {
     padding-inline-start: 0;
 }
 
-.siwc-oauth-legend {
+.siww-oauth-legend {
     text-align: right;
     width: 100%;
     display: inline-flex;
     position: relative;
 }
 
-.siwc-oauth-legend .legendSquare {
+.siww-oauth-legend .legendSquare {
     width: 10px;
     height: 10px;
     display: inline-flex;
     display: inline-flex;
     margin: 0 4px 0 16px;
 }
-.siwc-oauth-legend .legendSquare.disabled{
+.siww-oauth-legend .legendSquare.disabled{
     border: 1px solid var(--disabled-dark);
     background-color: var(--disabled);
 }
-.siwc-oauth-legend .legendSquare.selected{
+.siww-oauth-legend .legendSquare.selected{
     border: 1px solid var(--selected-dark);
     background-color: var(--selected);
 }
-.siwc-oauth-legend .legendSquare.connected{
+.siww-oauth-legend .legendSquare.connected{
     border: 1px solid var(--connected-dark);
     background-color: var(--connected);
 }
-.siwc-oauth-legend .legendSquare.disconnected{
+.siww-oauth-legend .legendSquare.disconnected{
     border: 1px solid var(--disconnected-dark);
     background-color: var(--disconnected);
 }
-.siwc-oauth-legend .legendText {
+.siww-oauth-legend .legendText {
     display: inline-flex;
     font-size: 9px;
     line-height: 14px;
 }
 
-.siwc-oauth-datashare {
+.siww-oauth-datashare {
     min-height: 180px;
 }
 
@@ -227,6 +228,9 @@ a {
     height: 80px;
     width: 64px;
     position: relative;
+}
+.connectWalletLogoContainer.connecting {
+    height: auto;
 }
 .connectWalletLogo{
     max-height:32px;
@@ -362,7 +366,7 @@ a {
     font-size: 12px;
 }
 
-.siwc-oauth-authorize {
+.siww-oauth-authorize {
     border: 1px solid var(--shadow);
     border-radius: 5px;
     background: #fafafa;
@@ -463,17 +467,20 @@ a {
 }
 
 .footer-version{
-    font-size: 66%;
+    position: absolute;
+    bottom: 0;
+    right: 8px;
+    font-size: 8px;
     color: #888;
 }
 
-.siwc-login-download {
+.siww-login-download {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.siwc-login-download .extapp-download-button {
+.siww-login-download .extapp-download-button {
     text-align: center;
     display: inline-block;
     min-width: 100px;
@@ -487,7 +494,7 @@ a {
     transition: box-shadow 350ms ease, transform 350ms ease, background-color 350ms ease, color 350ms ease, -webkit-transform 350ms ease;
 }
 
-.siwc-login-download .extapp-download-button img {
+.siww-login-download .extapp-download-button img {
     width: 66%;
 }
 
@@ -597,4 +604,108 @@ a {
   
   .slider.round:before {
     border-radius: 50%;
+  }
+
+  .siww_configure-header {
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #888;
+    min-height: 80px;
+    font-size: 14px;
+    padding: 8px;
+    color: #555;
+  }
+
+  .siww_configure-body {
+    position: relative;
+    overflow-y: scroll;
+    max-height: calc(100vh - 212px);
+  }
+
+  .siww_configure-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+
+  .siww_configure {
+    margin: 12px;
+    color:#333;
+    margin: 12px auto;
+    text-align: center;
+    width: max-content;
+  }
+  
+  .siww_configure .row {
+    margin: 12px auto;
+  }
+
+  .siww_configure .label {
+    display: inline-block;
+    min-width: 120px;
+    font-size: 14px;
+    text-align: left;
+  }
+
+  .siww_configure .hint {
+    display: block;
+    font-size: 11px;
+    line-height: 11px;
+    text-align: left;
+    font-style: italic;
+    color: #888;
+  }
+
+  .siww_configure .row .value {
+    display: inline-block;
+    width: 240px;
+    color: #333;
+  }
+  .siww_configure .row.compulsory .value {
+    width: calc(240px - 16px);
+  }
+
+  .siww_configure .row .icon { 
+    display: none;
+  }
+  .siww_configure .row.compulsory .icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    display: inline-block;
+  }
+
+  .siww_configure .category {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+    padding-top: 12px;
+  }
+
+  .siww_configure .preview {
+    width: calc(100% - 24px);
+    margin: 12px;
+    border: 1px solid #333;
+    background-color: #fafafa;
+    min-height: 320px;
+    height: calc(100% - 24px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 0px 3px 6px var(--shadow);
+  }
+
+  .siww_configure .preview .btn-close {
+    position: absolute;
+    padding: 4px 16px;
+    font-size: 14px;
+  }
+
+  .siww_configure .preview .btn-close.top.left {
+    top: 0;
+    left: 0;
+  }
+
+  .siww_configure .preview .btn-close.bottom.right {
+    bottom: 0;
+    right: 0;
   }

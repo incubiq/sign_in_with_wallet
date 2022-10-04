@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import Cookies from 'js-cookie';
 import { useNavigate } from "react-router-dom";
-import AppRoutes from "./appRoutes";
+
+import Cookies from 'js-cookie';
 import io from 'socket.io-client';
+
+import AppRoutes from "./appRoutes";
 import {srv_getSIWW} from "./services/base";
 import {setCacheEncryption} from "./services/cache";
-import {srv_getDomainInfo} from "./services/authenticate";
+import {srv_getDomainInfo} from "./services/configure";
 import {registerWebAppWithIdentity, getMyIdentities} from "./services/me";
 
 import "./assets/css/app.css";
@@ -16,7 +18,7 @@ let gDidMount=false;
 const socket = io("/client");       
 
 export default function AppRouter(props) {
-  const [didSocketConnect, setDidSocketConnect] = useState(gDidSocketConnect); 
+  const [didSocketConnect, setDidSocketConnect] = useState(false); 
 
   // Our backend basic info
   const [version, setVersion] = useState(""); 

@@ -1,5 +1,6 @@
 import {Component} from "react";
-class FormAuthenticate extends Component {
+
+class FormAuthorize extends Component {
 
 /*
  *          UI
@@ -50,4 +51,4 @@ class FormAuthenticate extends Component {
     }
 }
 
-export default FormAuthenticate;
+export default FormAuthorize;

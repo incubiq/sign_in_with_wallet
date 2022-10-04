@@ -11,7 +11,7 @@ class ViewIdentities extends Component {
     renderListOfIdentities(objParam) {
         return (
             <>
-                <div className="siwc-oauth-legend">
+                <div className="siww-oauth-legend">
                     <div className="legendSquare selected"></div>
                     <div className="legendText">Selected</div>
                     <div className="legendSquare disconnected"></div>
@@ -46,8 +46,8 @@ class ViewIdentities extends Component {
         }
 
         return (            
-            <div className="siwc-oauth-datashare">
-                <div className="siwc-oauth-section">
+            <div className="siww-oauth-datashare">
+                <div className="siww-oauth-section">
                     Select identity to grant data share from:
                 </div>                        
 

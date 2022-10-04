@@ -21,6 +21,8 @@
             profile.provider = user.provider? user.provider.id: null;
             profile.wallet = user.provider? user.provider.wallet_id: null;
             profile.id = user.username;
+
+            // datashare (from scope)
             profile.wallet_address = user.data? user.data.wallet_address: null;
             profile.username = user.data? user.data.username : null;
             profile.displayName = user.data && user.data.firstName && user.data.lastName?  user.data.firstName +' '+user.data.lastName : ""

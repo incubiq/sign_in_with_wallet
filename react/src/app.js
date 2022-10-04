@@ -25,7 +25,7 @@ class App extends Component {
             <br />
 
             <NavLink 
-                to="/app/connect"  
+                to="/connect/cardano"  
             >
                 <button id='btnConnectWallet'>Connect Wallet...</button>
             </NavLink>
@@ -43,6 +43,15 @@ class App extends Component {
             <br />
 
             <NavLink 
+                to="/configure"  
+            >
+                <button id='btnApi'>Configure...</button>
+            </NavLink>
+
+            <br />
+            <br />
+
+            <NavLink 
                 to="/api"  
             >
                 <button id='btnApi'>APIs...</button>
@@ -52,7 +61,7 @@ class App extends Component {
             <br />
 
             <NavLink 
-                to="/app/sign"  
+                to="/sign/cardano"  
             >
                 <button id='btnSignMessage'>Sign Message...</button>
             </NavLink>

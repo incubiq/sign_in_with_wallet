@@ -20,23 +20,46 @@ constructor(props) {
             didAccessWallets: false,
         }
     }
-    
+
     componentDidMount() {
-        // socket ready? let's use SIWC
         if(this.props.didSocketConnect && !this.state.didInitSIWC) {
-            this.setState({didInitSIWC: true});
-            this.siwc=new siwc_connect();
-            this.registerSIWCCallbacks();
+            this.initChain(this.props.chain);
         }        
     }
     
+    componentDidUpdate(prevProps) {
+        // socket ready? let's use SIWC
+        if(this.props.didSocketConnect && !this.state.didInitSIWC) {
+            this.initChain(this.props.chain);
+        }        
+    }
+
+    initChain(_chain) {
+        this.setState({didInitSIWC: true});
+        switch(_chain) {
+            case "cardano":
+                this.connectCardano();
+                break;
+
+            default:
+                console.log("Unknown chain to connect to!");
+                break;
+        }
+
+    }
+
 /*
- *          SIWC callbacks
+ *          SIWC inits + callbacks
  */
+
+    connectCardano() {
+        this.siww=new siwc_connect();
+        this.registerSIWCCallbacks();
+    }
 
     registerSIWCCallbacks( ){
         // register all callbacks with SIWC
-        this.siwc.async_initialize({
+        this.siww.async_initialize({
             onNotifyAccessibleWallets: function(_aWallet){
                 this.onSIWCNotify_WalletsAccessible(_aWallet);
             }.bind(this),
@@ -67,6 +90,12 @@ constructor(props) {
             _aWallet[i].address=objParam.wallet.address;
             _aWallet[i].hasConnected=true;
             this.setState({aWallet:_aWallet});
+
+            this.siww.async_getConnectedWalletExtendedInfo(_aWallet[i])
+            .then(objWallet => {
+                let j=this.state.aWallet.findIndex(function (x) {return x.id===objWallet.id});
+                _aWallet[j]=objWallet;
+            })
         }
 
         // bubble up to listening page
@@ -112,7 +141,7 @@ constructor(props) {
 
         try {
             // not waiting for this to finish, it could wait too long
-            await this.siwc.async_connectWallet(_id);
+            await this.siww.async_connectWallet(_id);
             return;
         }
         catch(err) {
@@ -126,13 +155,13 @@ constructor(props) {
         let _id=idElt.getAttribute("attr-id");
         try {
 
-            const objSiwcMsg = await this.siwc.async_createMessage(_id, {
+            const objSiwcMsg = await this.siww.async_createMessage(_id, {
                 message: "something i d like to say",
                 valid_for: 300,                 // 5min validity from when it is sent
             });
     
             // not waiting for this to finish, it could wait too long
-            this.siwc.async_signMessage(_id, objSiwcMsg, "authentication");
+            this.siww.async_signMessage(_id, objSiwcMsg, "authentication");
         }
         catch(err) {
             alert("Error when signning message ("+err.message+")");
@@ -162,19 +191,35 @@ constructor(props) {
                                 key={index}
                             >
                                 <button 
-                                    className={item.isConnected? "btn disabled" : "btn"}
+                                    className={item.isEnabled? "btn disabled" : "btn"}
                                     attr-id={item.id}
-                                    onClick={this.async_connectWallet.bind(this)}
+                                    onClick={(event) => {
+                                        let idElt=event.currentTarget;
+                                        let _id=idElt.getAttribute("attr-id");
+                                        this.async_connectWallet(_id);
+                                    }
+                                }
                                 >{item.isConnected? "Connected to"+item.name: "Connect to "+item.name}...</button>
                                 <ul>
-                                    <li>{"Status: " + (item.isConnected? "connected": "not connected")}</li>
-                                    <li className={item.isConnected?"" : "noshow"}>{"Address: "+this.getShortenAnonAddress(item.address)}</li>
-                                    <li className={item.isConnected?"" : "noshow"}>
+                                    <li>{"Status: " + (item.isEnabled? "connected": "not connected")}</li>
+                                    <li className={item.isEnabled?"" : "noshow"}>{"Address: "+this.getShortenAnonAddress(item.address)}</li>
+                                    <li className={item.isEnabled?"" : "noshow"}>{"Balance: "+(item.balance? item.balance.ptr : "")}</li>
+
+                                    <ul>
+                                    {item.utxos? item.utxos.map((utxo, idx)  => (
+                                        <li key={idx} className={item.isEnabled?"" : "noshow"}>
+                                            <a target="_blank" href={"https://testnet.cexplorer.io/"+utxo}> {"UTXO: "+this.getShortenAnonAddress(utxo) }</a>
+                                        </li>
+                                    )) 
+                                    :""}
+                                    </ul>
+
+                                    <li className={item.isEnabled?"" : "noshow"}>
                                         <button
                                             className="btn"
                                             attr-id={item.id}
                                             onClick={this.async_signMessage.bind(this)}
-                                        >Sign-in with Cardano</button>
+                                        >Sign-in Message...</button>
                                     </li>
                                 </ul>
                             </div>

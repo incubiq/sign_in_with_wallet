@@ -3,11 +3,6 @@ import {API_HOST, srv_getRoute} from "./base";
 const API_OAUTHROUTE= "/oauth/";
 const API_WEB3ROUTE= "/web3/";
 
-
-const srv_getDomainInfo = async (client_id) => {
-  return await srv_getRoute(API_HOST+API_WEB3ROUTE+"domain/"+client_id);
-}
-
 // call this to request an Authentication cookie to SIWW
 const srv_prepare = async(obj) => {
   try {
@@ -63,6 +58,5 @@ const srv_authenticate = async(obj) => {
 
 export { 
   srv_prepare,
-  srv_authenticate,
-  srv_getDomainInfo
+  srv_authenticate
 }

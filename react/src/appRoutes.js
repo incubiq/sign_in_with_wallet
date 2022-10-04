@@ -6,7 +6,8 @@ import {getTheme, getStyles} from "./assets/themes/cardano";
 import {WidgetLoading} from "./utils/widgetLoading"; 
 
 const AppConnect  = React.lazy(() => import ("./components/appConnect"));
-const AppAuthenticate  = React.lazy(() => import ("./components/appAuthenticate"));
+const AppAuthorize  = React.lazy(() => import ("./components/appAuthorize"));
+const AppConfigure  = React.lazy(() => import ("./components/appConfigure"));
 const AppAuthApi  = React.lazy(() => import ("./api/appAuthApi"));
 const App  = React.lazy(() => import ("./app"));
 
@@ -23,7 +24,7 @@ class AppRoutes extends Component {
   renderBackground() {
     let styles=getStyles();
     return (
-        <div id="siwc-login-container" style={styles.container}>
+        <div id="siww-login-container" style={styles.container}>
             <WidgetLoading 
                 isVisible = {true}
                 fullHeight = {true}
@@ -48,14 +49,20 @@ class AppRoutes extends Component {
                 </Suspense> 
                 } exact />
 
-            <Route  path="auth/connect" element={
+            <Route  path="connect/cardano" element={
                 <Suspense 
                     fallback={this.renderBackground()}>
                     <AppConnect
+                        // utils
                         version={this.props.version}
                         isDebug={this.props.isDebug}
+                        chain="cardano"
+
+                        // sockets
                         didSocketConnect={this.props.didSocketConnect}
                         getSocket={this.props.getSocket}
+
+                        // default themes
                         theme={getTheme()}
                         styles={getStyles()}
                     />
@@ -65,7 +72,7 @@ class AppRoutes extends Component {
             <Route  path="/auth/cardano" element={
                 <Suspense 
                     fallback={this.renderBackground()}>
-                    <AppAuthenticate
+                    <AppAuthorize
                         // utils
                         version={this.props.version}
                         isDebug={this.props.isDebug}
@@ -91,6 +98,18 @@ class AppRoutes extends Component {
                         // overload theme??
                         // TODO
 
+                    />
+                </Suspense> 
+                } exact />
+
+            <Route  path="/configure" element={
+                <Suspense 
+                    fallback={<div>Configure...</div>}>
+                    <AppConfigure
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
+                        theme={getTheme()}
+                        styles={getStyles()}
                     />
                 </Suspense> 
                 } exact />

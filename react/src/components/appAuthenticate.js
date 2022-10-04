@@ -1,13 +1,10 @@
 import AppConnect from "./appConnect";
 import ViewHeader from "./viewHeader";
 import ViewFooter from "./viewFooter";
-import ViewDataShare from "./viewDataShare";
-import ViewIdentities from "./viewIdentities";
 import ViewWallets from "./viewWallets";
-import FormAuthenticate from "./formAuthenticate";
 
-import {srv_prepare, srv_getDomainInfo} from "../services/authenticate";
-import {registerWebAppWithIdentity, createPartialIdentity, updatePartialIdentity, getMyIdentities, grantAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
+import {srv_prepare} from "../services/authenticate";
+import {createPartialIdentity, updatePartialIdentity, getMyIdentities, getIdentityFromUsername, getIdentityFromWallet, grantAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
 
 import jsonwebtoken from "jsonwebtoken";
 
@@ -23,10 +20,8 @@ class AppAuthenticate extends AppConnect {
 
     constructor(props) {
         super(props);    
-
-        // params?
-
         let aId=getMyIdentities();
+
         this.state= Object.assign({}, this.state, {
 
             theme: this.props.theme,        // todo : likely remove from here (set the theme before calling in here)
@@ -39,17 +34,14 @@ class AppAuthenticate extends AppConnect {
             incEffect: 50,
 
             // identity we will use for authentication
+            token: null,
             username: null,
             wallet_id: null,
             wallet_address: null,
 
-            // for authorization
-            isAuthenticated: false,
-            isAuthorized: false,
-            aScope: [],
+            // all user's identities
             aIdentity: aId,
-            iSelectedIdentity: null,
-            viewMode: VIEWMODE_DATASHARE
+            iSelectedIdentity: null,            // user is authenticated if not null
         });        
     }
 
@@ -69,23 +61,18 @@ class AppAuthenticate extends AppConnect {
     }
 
     componentDidUpdate(prevProps) {
+        super.componentDidUpdate(prevProps);
         let didCall=false;
 
         // we have a cookie and user was not yet authenticated?
-        if(this.props.AuthenticationCookieToken!==null && !this.state.isAuthenticated && !this.state.mustConfirm) {
+        if(this.props.AuthenticationCookieToken!==null && this.state.iSelectedIdentity===null && !this.state.mustConfirm) {
             didCall=true;
-            this.async_onAuthCookieReceived();
+            this.async_onAuthCookieReceived(this.props.AuthenticationCookieToken);
         }
 
         // we have a NEW cookie 
         if(!didCall && this.props.AuthenticationCookieToken!==null && (prevProps.AuthenticationCookieToken===null || this.props.AuthenticationCookieToken!==prevProps.AuthenticationCookieToken)) {
-            this.async_onAuthCookieReceived();
-        }
-
-        // see when we can init the scopes...
-        if(this.props.webApp!==null && this.state.aScope.length===0) {
-            this.setState({aScope: this.props.webApp.aScope});
-            this.setState({aIdentity: getMyIdentities()});
+            this.async_onAuthCookieReceived(this.props.AuthenticationCookieToken);
         }
     } 
     
@@ -93,32 +80,53 @@ class AppAuthenticate extends AppConnect {
  *          Authentication
  */
 
-    // calling this will move the UI to the authorization section (next step)
-    authenticateUser(iUser) {
-        this.setState({isAuthenticated: true});
-        this.setState({mustConfirm: true});
-        this.setSharedIdentity(iUser);
-        this.setState({viewMode: VIEWMODE_DATASHARE});
 
-        // did we grant authorization before?
-        if(isGrantedAccessToWebApp(this.state.aIdentity[iUser].username, this.props.webAppId)) {
-            this.authorizeDataShare(this.state.aIdentity[iUser].username);
+    // we pass aIdentity to this fct coz setState is async and never wakes up in time...
+    setSharedIdentity(_aIdentity, _iSel) {
+        // update data with this selection
+        if(_iSel!==-1 && _aIdentity.length>0) {
+            if(_iSel!==this.state.iSelectedIdentity) {
+                this.setState({iSelectedIdentity: _iSel});
+                this.setState({username: _aIdentity[_iSel].username});
+            }
+
+            // UI notofication update
+            this.setState({inTimerEffect: false})
+            this.setState({hover:"You will share data taken from your <strong>"+_aIdentity[_iSel].wallet_id+"</strong> identity"});
         }
+    }
 
+    // calling this will move the UI to the authorization section (next step)
+    authenticateUser(aIdentity, iUser) {
+        this.setState({mustConfirm: true});
+        this.setSharedIdentity(aIdentity, iUser);
     }
 
     // receiving a cookie from the backend => we are being authenticated into SIWW
-    async async_onAuthCookieReceived() {
+    async async_onAuthCookieReceived(_token) {
         let that=this;
-        jsonwebtoken.verify(this.props.AuthenticationCookieToken, this.props.AuthenticationCookieSecret, function(err, decoded){
+        jsonwebtoken.verify(_token, this.props.AuthenticationCookieSecret, function(err, decoded){
             if(err) {
                 console.log("Error decoding Cookie in REACT app");
                 return false;
             }
             else {
+                // keep this token
+                that.setState({token: _token});
+
+                // this identity myust be here in cache, or we will create...
+                if(getIdentityFromUsername(decoded.username)===null) {
+                    createPartialIdentity({
+                        provider: decoded.provider,
+                        wallet_address: decoded.wallet_address,
+                        wallet_id: decoded.wallet_id
+                    });    
+                }
+
                 // cookie contains new username (created by backend) => store it
-                updatePartialIdentity(decoded.wallet_address, {
-                    username: decoded.username
+                updatePartialIdentity(decoded.wallet_id, decoded.provider, {
+                    username: decoded.username,
+                    wallet_address: decoded.wallet_address
                 });
 
                 // now we know who you are
@@ -141,46 +149,10 @@ class AppAuthenticate extends AppConnect {
                 }
 
                 // now need to pass grant authorization...
-                that.authenticateUser(i);
+                that.authenticateUser(aId, i);
                 return true;
             }
         })
-    }
-
-/*
- *          Authorization
- */
-
-    // calling this will move the UI to the redirection section (final step)
-    authorizeDataShare(_username) {
-        // set granting to local storage
-        grantAccessToWebApp(_username, this.props.webAppId);
-        this.setState({isAuthorized: true});
-        this.setState({hover:"Redirecting..."});
-        this.setState({inTimerEffect: true});
-    }
-
-    setSharedIdentity(_iSel) {
-        // update data with this selection
-        if(_iSel!==-1 && this.state.aIdentity.length>0) {
-            if(_iSel!==this.state.iSelectedIdentity) {
-                this.setState({iSelectedIdentity: _iSel});
-                this.setState({username: this.state.aIdentity[_iSel].username});
-                let _aScope=this.state.aScope.slice();
-                _aScope.forEach(item => {
-                    let _value=this.state.aIdentity[_iSel][item.property]
-                    item.value=_value;
-                });
-
-                this.setState({aScope: _aScope});
-            }
-
-            this.setState({inTimerEffect: false})
-            this.setState({hover:"You will share data taken from your <strong>"+this.state.aIdentity[_iSel].wallet_id+"</strong> identity"});
-        }
-
-        // we get back the selected username (changes with selected identity)
-        return this.state.aIdentity[_iSel].username;
     }
 
 /*
@@ -218,6 +190,8 @@ class AppAuthenticate extends AppConnect {
                         throw _err;
                     }
                     else {
+//                        this.async_onAuthCookieReceived(res.data.token);
+
                         // visual effect (wait for cookie)
         
                         // we wait to be called back on sockets...
@@ -232,7 +206,7 @@ class AppAuthenticate extends AppConnect {
     // called at init (what are those wallets?)
     onSIWCNotify_WalletsAccessible(_aWallet) {
         super.onSIWCNotify_WalletsAccessible(_aWallet);
-        if(!this.state.isAuthenticated) {
+        if(this.state.iSelectedIdentity===null) {
             let msg="Zero wallet detected!"
             if(_aWallet.length===1) {
                 msg="One wallet detected, checking connection..."
@@ -248,17 +222,24 @@ class AppAuthenticate extends AppConnect {
     onSIWCNotify_WalletConnected(objParam) {
 
         // process this call ONLY if we are in authentication view
-//        if(!this.state.isAuthenticated) {
+//        if(this.state.iSelectedIdentity===null) {
             super.onSIWCNotify_WalletConnected(objParam);
             let _wallet = objParam && objParam.wallet? objParam.wallet : null;
     
-            // make sure we have this user's identity in storage
-            createPartialIdentity({
-                provider: _wallet.provider,
-                wallet_address: _wallet.address,
-                wallet_id: _wallet.id,
-                wallet_logo: _wallet.logo
-            });
+            // make sure we have this user's identity in storage + update logo in case it changed
+            if(getIdentityFromWallet(_wallet.id, _wallet.provider)===null) {
+                createPartialIdentity({
+                    provider: _wallet.provider,
+                    wallet_address: _wallet.address,
+                    wallet_id: _wallet.id,
+                    wallet_logo: _wallet.logo
+                });    
+            }
+            else {
+                updatePartialIdentity(_wallet.id, _wallet.provider, {
+                    wallet_logo: _wallet.logo
+                });    
+            }
     
             // did user just click to accept? we use this as Identity
             if(objParam.didUserClick) {
@@ -273,6 +254,7 @@ class AppAuthenticate extends AppConnect {
             else {
                 // use the first wallet to authenticate user with SIWC (only in case we do not have to confirm by user click)
                 if(!this.state.mustConfirm) {
+                    this.setState({mustConfirm: true});     // do not come back with another one after 1st wallet call
                     this._prepareSIWC({
                         wallet_address: _wallet.address,
                         wallet_id: _wallet.id,
@@ -325,176 +307,6 @@ class AppAuthenticate extends AppConnect {
     }
 
 /*
- *          UI (authorization)
- */
-    
-    onChangeIdentity(_id) {
-        let _iSel=this.state.aIdentity.findIndex(function (x) {return x.wallet_id===_id});
-        
-        // css 
-        let aEltId=document.getElementsByClassName("wallet-sign");
-        for(var i=0; i<aEltId.length; i++) {
-            if(i===_iSel) {
-                aEltId[i].className="wallet-sign connected selected";
-            }
-            else {
-                aEltId[i].className ="wallet-sign connected";
-            }
-        }
-
-        this.setSharedIdentity(_iSel);
-        this.onToggleAuthorizationView();
-    }
-
-    onBackToAddIdentity() {
-        this.setState({isAuthenticated: false});
-        this.setState({iSelectedIdentity: null});
-        this.setState({inTimerEffect: false})
-        this.setState({hover: "&nbsp;"})
-    }
-
-    onToggleAuthorizationView() {
-        if(this.state.viewMode===VIEWMODE_DATASHARE) {
-            this.setState({viewMode: VIEWMODE_IDENTITY});
-        }
-        else {
-            this.setState({viewMode: VIEWMODE_DATASHARE});
-        }
-    }
-
-    onReAuthenticate ( ){
-        // todo
-        this.props.onRedirect("/auth/"+this.props.chain+"?client_id=" + this.props.webAppId);
-    }
-    
-    renderAuthorization() {
-        return(
-            <>
-            {this.state.aScope.length>0? 
-                <>
-                {this.state.aIdentity.length>0?
-                    <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
-
-                        {this.state.viewMode===VIEWMODE_DATASHARE? 
-                            <ViewDataShare 
-                                theme = {this.state.theme}
-                                oauthClientName = {this.props.webAppName}
-                                iSelectedIdentity = {this.state.iSelectedIdentity}
-                                aIdentity = {this.state.aIdentity}
-                                aScope = {this.state.aScope}
-                            />
-                        : 
-                            <ViewIdentities 
-                                theme = {this.state.theme}
-                                iSelectedIdentity = {this.state.iSelectedIdentity}
-                                aIdentity = {this.state.aIdentity}
-                                onHover = {this.onHover.bind(this)}
-                                onSelect= {this.onChangeIdentity.bind(this)}
-                            />
-                        }
-
-                        <div className="identity_action">
-
-                            {this.state.viewMode===VIEWMODE_DATASHARE && this.state.aIdentity.length>1 ? 
-                                <div 
-                                    className="btn btn-transparent actionLink back"
-                                    onClick={evt => {this.onToggleAuthorizationView();}}
-                                >
-                                    Switch Identity!
-                                </div>                            
-                            : 
-                                <div 
-                                    className="btn btn-transparent actionLink back"
-                                    onClick={evt => {this.onBackToAddIdentity(evt);}}
-                                >
-                                    Back to wallets!
-                                </div>
-                            }   
-
-                            <button 
-                                className="btn btn-quiet"
-                                onClick={evt => {
-                                    this.authorizeDataShare(this.state.aIdentity[this.state.iSelectedIdentity].username);
-                                }}
-                            >
-                                Grant Access!
-                            </button>
-                        </div>
-                    </div>                
-                : 
-                <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
-                    <div className="siwc-oauth-login">
-                        Who are you? Cannot find your identity...
-                    </div>
-                    <br />
-                    <button 
-                        className="btn btn-quiet"
-                        onClick={evt => {
-                            this.onReAuthenticate(evt); 
-                        }}
-                    >
-                        Re-Authenticate!
-                    </button>
-                </div>
-                }
-            </>                    
-            : 
-            <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
-                <div className="siwc-oauth-login">
-                    This application has not defined any data autorization.
-                    < br/>
-                    Their fault, not yours! 
-                    < br/>
-                    Cannot grant access with no minimum ID to share...
-                </div>
-            </div>
-            }
-            </>  
-        )
-    }
-
-/*
- *          UI redirect
- */
-
-    doLogin ( ){
-        let eltForm=document.getElementById('form-login');
-        if(eltForm) {
-            document.cookie = this.props.AuthenticationCookieName + "=" + this.props.AuthenticationCookieToken + ";path=/";
-            document.getElementById('form-login').submit();
-        }
-    }
-
-    renderRedirect() {
-
-        return (
-            <>
-                <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
-                    <div className="siww_message">
-                        <div id="idRedirectMessage" className="transitoryMessage">
-                            On your way to {this.props.webAppname}...
-                        </div>
-
-                        <span>Stay safe online with {this.state.theme.name}</span>
-                        <div className="separator"></div>                        
-                    </div>
-
-                    <div className="separator"></div>         
-
-                    <FormAuthenticate 
-                        theme = {this.state.theme}
-                        client_id = {this.props.webAppId}
-                        aScope = {this.state.aScope}
-                        onClick = {this.doLogin.bind(this)}
-                    />
-
-                </div>
-
-            </>
-        )
-    }
-
-/*
  *          UI generic
  */
     showMessage(_msg, _hasTimerEffect) { 
@@ -503,10 +315,6 @@ class AppAuthenticate extends AppConnect {
     }
 
     callbackEffect () {
-        // which case of callback are we in??
-        if(this.state.isAuthorized) {
-            this.doLogin()
-        }
     }
 
     onHover(event, bOver) {
@@ -515,14 +323,14 @@ class AppAuthenticate extends AppConnect {
         let _id=idElt.getAttribute("attr-id");
         try {
             let msg=null;
-            if(this.state.isAuthenticated) {
+            if(this.state.iSelectedIdentity!==null) {
                 let i=this.state.aIdentity.findIndex(function (x) {return x.wallet_id===_id});
                 if(i!==-1) {
                     if(bOver && i!==this.state.iSelectedIdentity) {
                         msg="Click to preview shared data from your <strong>"+this.state.aIdentity[i].wallet_id+"</strong> wallet's identity.";
                     }
                     else {
-                        this.setSharedIdentity(this.state.iSelectedIdentity);
+                        this.setSharedIdentity(this.state.aIdentity, this.state.iSelectedIdentity);
                     }
                 }
             }
@@ -547,7 +355,7 @@ class AppAuthenticate extends AppConnect {
 
     render() {
         return (
-            <div id="siwc-login-container" style={this.props.styles.container}>
+            <div id="siww-login-container" style={this.props.styles.container}>
             {this.props.didSocketConnect ? 
                 <div className={"modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
@@ -556,18 +364,13 @@ class AppAuthenticate extends AppConnect {
                         oauthClientName = {this.props.webAppName}
                         oauthDomain = {this.props.webAppDomain}
                         isOauth = {true}
-                        SIWCLogo = {this.state.theme.logo}
+                        SIWWLogo = {this.state.theme.logo}
                         theme = {this.state.theme}
                     />
 
-                    {this.state.isAuthenticated && this.state.iSelectedIdentity!==null ? 
-                        this.state.isAuthorized? 
-                            this.renderRedirect() 
-                        :
-                            this.renderAuthorization() 
-                        : 
+                    {this.state.iSelectedIdentity===null ? 
                             this.renderAuthentication()
-                    }
+                    :""}
 
                     <ViewFooter 
                         version={this.props.version}

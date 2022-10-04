@@ -11,7 +11,7 @@ class ViewWallets extends Component {
     renderListOfWallets(objParam) {
         return (
             <>
-                <div className="siwc-oauth-legend">
+                <div className="siww-oauth-legend">
                     <div className="legendSquare connected"></div>
                     <div className="legendText">Connected</div>
                     <div className="legendSquare disconnected"></div>
@@ -46,10 +46,10 @@ class ViewWallets extends Component {
         }
 
         return (            
-            <div className="siwc-oauth-datashare">
+            <div className="siww-oauth-datashare">
             {this.props.aWallet.length>0? 
                 <>
-                    <div className="siwc-oauth-section">
+                    <div className="siww-oauth-section">
                         <strong>Sign-in with {this.props.theme.name}</strong> has detected {this.props.aWallet.length===1? "one wallet:" : "those wallets:"} 
                     </div>
 

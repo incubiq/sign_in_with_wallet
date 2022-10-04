@@ -21,11 +21,11 @@ const getMyIdentities = () => {
     return objMe? objMe.identities : [];
 }
 
-const _findIdentityFromWalletAddress = (_wallet_address) => {
+const _findIdentityFromWallet = (_wallet_id, _provider) => {
   let aId=getMyIdentities();
-  if(_wallet_address && aId && aId.length>0) {
+  if(_wallet_id && _provider && aId && aId.length>0) {
     for (var i=0; i<aId.length; i++) {
-      if (aId[i].wallet_address===_wallet_address) {
+      if (aId[i].wallet_id===_wallet_id && aId[i].provider === _provider) {
         return aId[i];
       }
     }
@@ -49,6 +49,10 @@ const getIdentityFromUsername = (_username) => {
   return _findIdentityFromUsername(_username);
 }
 
+const getIdentityFromWallet = (_walletId, _provider) => {
+  return _findIdentityFromWallet(_walletId, _provider);
+}
+
 const createPartialIdentity = (_objIdentity) => {
   let objMe=getCache(CACHE_ME);
   if(!objMe) {
@@ -56,22 +60,22 @@ const createPartialIdentity = (_objIdentity) => {
       identities: []
     };
   }
-  if(_findIdentityFromWalletAddress(_objIdentity.wallet_address)===null) {
+  if(_findIdentityFromWallet(_objIdentity.wallet_id, _objIdentity.provider)===null) {
     objMe.identities.push(_objIdentity);
     setCache(CACHE_ME, objMe);
   }
   return objMe;
 }
 
-const updatePartialIdentity = (_wallet_address, _objUpdate) => {
-  let objIdentity=_findIdentityFromWalletAddress(_wallet_address);
+const updatePartialIdentity = (_wallet_id, _provider, _objUpdate) => {
+  let objIdentity=_findIdentityFromWallet(_wallet_id, _provider)
   if(objIdentity) {
     for (const key in _objUpdate) {
       objIdentity[key]=_objUpdate[key];
     }
     let aId=getMyIdentities();
     for (var i=0; i<aId.length; i++) {
-      if(aId[i].wallet_address===_wallet_address) {
+      if(aId[i].wallet_id===_wallet_id && aId[i].provider===_provider) {
         aId[i]=objIdentity;
       }
     }
@@ -171,6 +175,7 @@ export {
   CACHE_ME,
   getMyIdentities,
   getIdentityFromUsername,
+  getIdentityFromWallet,
   createPartialIdentity,
   updatePartialIdentity,
   updateIdentity,

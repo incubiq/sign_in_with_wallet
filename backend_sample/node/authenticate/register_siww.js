@@ -6,6 +6,17 @@ module.exports = {
     async_registerDomain
 }
 
+    // Implement a scope request
+    function _getScopes( ){
+        return [{
+            label: "Username",
+            property: "username"
+        }, {
+            label: "Wallet Address",
+            property: "wallet_address"
+        }];
+    }
+
     // are we registered with SIWC backend?
     function async_getDomainInfo(configSIWC) {
         var deferred = Q.defer();
@@ -31,7 +42,7 @@ module.exports = {
     function async_registerDomain(configSIWC) {
         var deferred = Q.defer();
         request.post(
-            configSIWC.host+"web3/domain", { 
+            configSIWC.host+"web3/domain/claim", { 
                 json: { 
                     // who are we?
                     domain_name: gConfig.origin,
@@ -55,13 +66,7 @@ module.exports = {
                     
                     // token
                     token_lifespan:  3*24*60*60*1000,  // 3 day default
-                    scope: [{
-                        text: "Username",
-                        value: "username"
-                    }, {
-                        text: "Wallet Address",
-                        value: "wallet_address"
-                    }]
+                    scope: _getScopes()
                 } 
             },
             function (error, response, body) {

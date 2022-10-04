@@ -18,13 +18,13 @@ class ViewDataShare extends Component {
         }
 
         return (            
-            <div className="siwc-oauth-datashare">
-                <div className="siwc-oauth-section">
-                    <strong>{this.props.oauthClientName}</strong> will receive those data from your <strong>{this.props.aIdentity[this.props.iSelectedIdentity].wallet_id}</strong> identity
+            <div className="siww-oauth-datashare">
+                <div className="siww-oauth-section">
+                    <strong>{this.props.oauthClientName !==""? this.props.oauthClientName : "???"}</strong> will receive those data from your <strong>{this.props.aIdentity[this.props.iSelectedIdentity].wallet_id}</strong> identity
                 </div>
 
                 {this.props.aIdentity.length>1?
-                    <div className="siwc-oauth-legend">
+                    <div className="siww-oauth-legend">
                     </div>
                 :
                 ""}

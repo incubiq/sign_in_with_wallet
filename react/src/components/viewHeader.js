@@ -15,9 +15,9 @@ class ViewHeader extends Component {
                         <div className="display-app-logo">
                             <img className="client-login-logo" src={this.props.theme.webapp.logo} alt="logo" />
                             <div className="login-subtitle">
-                                <span>{this.props.oauthClientName}</span>
+                                <span>{this.props.oauthClientName !==""? this.props.oauthClientName : "???"}</span>
                                 <br />
-                                <span>{this.props.oauthDomain}</span>
+                                <span>{this.props.oauthDomain !==""? this.props.oauthDomain : "https://???"}</span>
                             </div>
                         </div>
                         <div className="login-separator">↔</div>
@@ -26,7 +26,7 @@ class ViewHeader extends Component {
                     :""}
 
                     <div className="display-app-logo">
-                        <img className="client-login-logo" src={this.props.SIWCLogo} alt="logo"/>
+                        <img className="client-login-logo" src={this.props.SIWWLogo} alt="logo"/>
                         <div className="login-subtitle">Sign-in with<br />{this.props.theme.name}</div>
                     </div>
                 </div>

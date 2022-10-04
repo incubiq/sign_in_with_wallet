@@ -1,5 +1,6 @@
 import {Component} from "react";
 
+let isMounted=false;
 class ViewWalletConnect extends Component {
 
 /*
@@ -11,6 +12,14 @@ class ViewWalletConnect extends Component {
         this.state={            
             isConnecting: false
         }
+    }
+
+    componentDidMount() {
+        isMounted=true;
+    }
+
+    componentWillUnmount() {
+        isMounted=false;
     }
 
 /*
@@ -25,16 +34,20 @@ class ViewWalletConnect extends Component {
             let _id=idElt.getAttribute("attr-id");
             
             // waiting/loading effect
-            this.setState({isConnecting: true});
-            if(this.props.fnShowMessage) {
-                this.props.fnShowMessage("Connecting to your <b>"+_id+"</b> wallet...", true);
+            if(isMounted) {
+                this.setState({isConnecting: true});
+                if(this.props.fnShowMessage) {
+                    this.props.fnShowMessage("Connecting to your <b>"+_id+"</b> wallet...", true);
+                }    
             }
 
             await this.props.onConnect(_id);
 
-            this.setState({isConnecting: false});
-            if(this.props.fnShowMessage) {
-                this.props.fnShowMessage("Connected to your <b>"+_id+"</b> wallet...", false);
+            if(isMounted) {
+                this.setState({isConnecting: false});
+                if(this.props.fnShowMessage) {
+                    this.props.fnShowMessage("Connected to your <b>"+_id+"</b> wallet...", false);
+                }
             }
         }
     }
@@ -74,7 +87,7 @@ class ViewWalletConnect extends Component {
                 onMouseOver={evt => {this.onHover(evt, true) }}
                 onMouseLeave={evt => {this.onHover(evt, false) }}
             >
-                <div className="connectWalletLogoContainer"> 
+                <div className={"connectWalletLogoContainer" + (this.state.isConnecting? " connecting": "")}> 
                     {this.state.isConnecting? 
                         <div className="connectWalletLogo connecting">⌛</div>  
                     :
