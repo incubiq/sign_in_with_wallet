@@ -20,7 +20,7 @@ class ViewFooter extends Component {
                 </div>
                 <div 
                     className="message"
-                    dangerouslySetInnerHTML={{__html: this.props.message}} 
+                    dangerouslySetInnerHTML={{__html: this.props.message && this.props.message!=="" ? this.props.message : "&nbsp;"}} 
                 >
                 </div>
                 <div className="footer-version">&nbsp;&nbsp;v{this.props.version}</div>

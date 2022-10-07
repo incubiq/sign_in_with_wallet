@@ -1,6 +1,5 @@
-import AppAuthenticate from "./appAuthenticate";
+import AuthAuthenticate from "./authAuthenticate";
 import ViewHeader from "./viewHeader";
-import ViewFooter from "./viewFooter";
 import ViewDataShare from "./viewDataShare";
 import ViewIdentities from "./viewIdentities";
 import FormAuthorize from "./formAuthorize";
@@ -10,7 +9,7 @@ import {getMyIdentities, grantAccessToWebApp, isGrantedAccessToWebApp} from "../
 const VIEWMODE_IDENTITY="identity";
 const VIEWMODE_DATASHARE="datashare";
 
-class AppAuthorize extends AppAuthenticate {
+class AuthAuthorize extends AuthAuthenticate {
 
 /*
  *          inits
@@ -267,7 +266,7 @@ class AppAuthorize extends AppAuthenticate {
         return (
             <div id="siww-login-container" style={this.props.styles.container}>
             {this.props.didSocketConnect ? 
-                <div className={"modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+                <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                     <ViewHeader 
                         client_id= {this.props.webAppId}
@@ -287,15 +286,7 @@ class AppAuthorize extends AppAuthenticate {
                             this.renderAuthentication()
                     }
 
-                    <ViewFooter 
-                        version={this.props.version}
-                        theme = {this.state.theme}
-                        message = {this.state.hover}
-                        inTimerEffect = {this.state.inTimerEffect}
-                        delayEffect = {this.state.delayEffect}
-                        incEffect = {this.state.incEffect}
-                        callback = {this.callbackEffect.bind(this)}
-                    />
+                    {this.renderFooter()}
 
                 </div>
             :
@@ -308,4 +299,4 @@ class AppAuthorize extends AppAuthenticate {
     }
 }
 
-export default AppAuthorize;
+export default AuthAuthorize;

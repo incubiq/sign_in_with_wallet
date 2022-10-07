@@ -1,4 +1,4 @@
-import AppAuth from "../components/appAuthenticate";
+import AppAuth from "../components/authAuthenticate";
 import {srv_getSIWW} from "../services/base";
 
 class AppAuthApi extends AppAuth {

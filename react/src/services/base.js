@@ -2,6 +2,9 @@
 const API_HOST= "http://localhost:3010";
 const API_PUBLICROUTE= "/api/v1/public/";
 const API_PRIVATEROUTE= "/api/v1/private/";
+const API_WEB3ROUTE= "/web3/";
+const API_OAUTHROUTE= "/oauth/";
+
 
 const srv_getRoute = async(route) => {
   try {
@@ -82,6 +85,8 @@ export {
   API_HOST,
   API_PRIVATEROUTE,
   API_PUBLICROUTE,
+  API_WEB3ROUTE,
+  API_OAUTHROUTE,
   srv_getRoute, 
   srv_getUniqueRoute,
   srv_patchRoute,

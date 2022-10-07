@@ -1,6 +1,5 @@
-import AppConnect from "./appConnect";
+import AuthConnect from "./authConnect";
 import ViewHeader from "./viewHeader";
-import ViewFooter from "./viewFooter";
 import ViewWallets from "./viewWallets";
 
 import {srv_prepare} from "../services/authenticate";
@@ -12,7 +11,7 @@ let didMount=false;
 const VIEWMODE_IDENTITY="identity";
 const VIEWMODE_DATASHARE="datashare";
 
-class AppAuthenticate extends AppConnect {
+class AuthAuthenticate extends AuthConnect {
 
 /*
  *          inits
@@ -20,18 +19,11 @@ class AppAuthenticate extends AppConnect {
 
     constructor(props) {
         super(props);    
-        let aId=getMyIdentities();
 
         this.state= Object.assign({}, this.state, {
 
-            theme: this.props.theme,        // todo : likely remove from here (set the theme before calling in here)
-
             //UX/UI
             mustConfirm: false,       // shall we wait for user confirmation?
-            hover: "One moment! checking "+this.props.theme.name+" wallet browser plugins...",                              // indicate anything to user in footer
-            inTimerEffect: false,
-            delayEffect: 4000,
-            incEffect: 50,
 
             // identity we will use for authentication
             token: null,
@@ -39,10 +31,7 @@ class AppAuthenticate extends AppConnect {
             wallet_id: null,
             wallet_address: null,
 
-            // all user's identities
-            aIdentity: aId,
-            iSelectedIdentity: null,            // user is authenticated if not null
-        });        
+        });                
     }
 
     componentDidMount() {
@@ -55,7 +44,7 @@ class AppAuthenticate extends AppConnect {
             // First UI loading effect
             if(!this.state.didAccessWallets) {
                 this.setState({inTimerEffect: true})
-                this.setState({hover: "searching for "+this.state.theme.name+" wallets..."});    
+                this.setState({hover: "searching for "+this.state.theme.name+" wallets browser plugins..."});    
             }
         }
     }
@@ -179,13 +168,13 @@ class AppAuthenticate extends AppConnect {
                 socket_id: _socket.id,
                 client_id: this.props.webAppId
             })
-                .then(res => {
+                .then(data => {
                     // ok??
-                    if(!res.ok) {
+                    if(!data || !data.data) {
                         let _err={
                             data: null,
-                            status: res.status,
-                            statusText: res.statusText
+                            status: data.status,
+                            statusText: data.statusText
                         }
                         throw _err;
                     }
@@ -282,14 +271,29 @@ class AppAuthenticate extends AppConnect {
                             </div>
                         </div>
                     :
-                        <>
+                        <div className="siww-oauth-datashare">
                             {this.props.webAppId?
-                                <ViewWallets 
-                                    theme = {this.state.theme}
-                                    aWallet= {this.state.aWallet}
-                                    onSelect= {this.async_connectWallet.bind(this)}
-                                    fnShowMessage={this.showMessage.bind(this)}                            
-                                />
+
+                                this.state.aWallet && this.state.aWallet.length>0? 
+                                    <>
+                                        <div className="siww-section">
+                                            <strong>Sign-in with {this.state.theme.name}</strong> has detected {this.state.aWallet.length===1? "one wallet:" : "those wallets:"} 
+                                        </div>
+
+                                        <ViewWallets 
+                                            theme = {this.state.theme}
+                                            aWallet= {this.state.aWallet}
+                                            onSelect= {this.async_connectWallet.bind(this)}
+                                            fnShowMessage={this.showMessage.bind(this)}                            
+                                        />
+                                    </>
+                                :
+                                    <div className="transitoryMessage">
+                                        Could not detect a single wallet from this browser
+                                        <br />
+                                        <br />
+                                        You must use at least one {this.state.theme.name} wallet extension
+                                    </div>
                             :
                                 <>
                                     <div className="transitoryMessage">
@@ -299,7 +303,7 @@ class AppAuthenticate extends AppConnect {
                                     </div>
                                 </>
                             }
-                        </>
+                        </div>
                     }
                 </div>
             </div>                   
@@ -357,7 +361,7 @@ class AppAuthenticate extends AppConnect {
         return (
             <div id="siww-login-container" style={this.props.styles.container}>
             {this.props.didSocketConnect ? 
-                <div className={"modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+                <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                     <ViewHeader 
                         client_id= {this.props.webAppId}
@@ -372,15 +376,7 @@ class AppAuthenticate extends AppConnect {
                             this.renderAuthentication()
                     :""}
 
-                    <ViewFooter 
-                        version={this.props.version}
-                        theme = {this.state.theme}
-                        message = {this.state.hover}
-                        inTimerEffect = {this.state.inTimerEffect}
-                        delayEffect = {this.state.delayEffect}
-                        incEffect = {this.state.incEffect}
-                        callback = {this.callbackEffect.bind(this)}
-                    />
+                    {this.renderFooter()}
 
                 </div>
             :
@@ -393,4 +389,4 @@ class AppAuthenticate extends AppConnect {
     }
 }
 
-export default AppAuthenticate;
+export default AuthAuthenticate;

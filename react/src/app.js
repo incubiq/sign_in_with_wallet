@@ -7,23 +7,7 @@ class App extends Component {
     return (
         <div>
             
-            <div></div>
-
-            <NavLink 
-                to="/"  
-            >
-            <button 
-                id='btnAccessDoc'
-                onClick={() => {
-                        window.open("https://eric-duneau.gitbook.io/siwc/", "_blank");
-                    }
-                }
-            >Access Documentation...</button>
-            </NavLink>
-
-            <br />
-            <br />
-
+        <h2>[/auth routes] - Requires Wallet connection</h2>
             <NavLink 
                 to="/connect/cardano"  
             >
@@ -43,7 +27,14 @@ class App extends Component {
             <br />
 
             <NavLink 
-                to="/configure"  
+                to="/auth/login"  
+            >
+                <button id='btnApi'>Sign-in to SIWW...</button>
+            </NavLink>
+
+        <h2>[/app routes] - Requires Login into SIWW</h2>
+            <NavLink 
+                to="/app/configure"  
             >
                 <button id='btnApi'>Configure...</button>
             </NavLink>
@@ -51,6 +42,21 @@ class App extends Component {
             <br />
             <br />
 
+        <h2>Misc others...</h2>
+            <NavLink 
+                    to="/"  
+                >
+                <button 
+                    id='btnAccessDoc'
+                    onClick={() => {
+                            window.open("https://eric-duneau.gitbook.io/siwc/", "_blank");
+                        }
+                    }
+                >Access Documentation...</button>
+            </NavLink>
+
+            <br />
+            <br />
             <NavLink 
                 to="/api"  
             >

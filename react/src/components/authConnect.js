@@ -1,9 +1,9 @@
-import React, {Component} from "react";
+import AppBase from "./appBase";
 
 //import siwc from "@incubiq/siwc";                     // real prod
 import siwc_connect from "../siwc/siwc_connect";        // for test only
 
-class AppConnect extends Component {
+class AuthConnect extends AppBase {
 
 /*
  *          page inits
@@ -11,23 +11,26 @@ class AppConnect extends Component {
 
 constructor(props) {
         super(props);    
-        this.state={
+        this.state= Object.assign({}, this.state, {
             // connected wallets
             aWallet: [],                 // all available wallets to connect to  (gathered from connect engine)
 
             // init vars
             didInitSIWC: false,
             didAccessWallets: false,
-        }
+        });
     }
 
     componentDidMount() {
+        super.componentDidMount();
         if(this.props.didSocketConnect && !this.state.didInitSIWC) {
             this.initChain(this.props.chain);
         }        
     }
     
     componentDidUpdate(prevProps) {
+        super.componentDidUpdate(prevProps);
+        
         // socket ready? let's use SIWC
         if(this.props.didSocketConnect && !this.state.didInitSIWC) {
             this.initChain(this.props.chain);
@@ -174,6 +177,51 @@ constructor(props) {
         return _address.substr(0,4)+"..."+_address.substr(_address.length-6,6)
     }
 
+    renderWalletConnect () {
+        return (
+            <>
+            {this.state.aWallet.map((item, index) => (
+                <div
+                    className = "connectContainer"
+                    key={index}
+                >
+                    <button 
+                        className={item.isEnabled? "btn disabled" : "btn"}
+                        attr-id={item.id}
+                        onClick={(event) => {
+                            let idElt=event.currentTarget;
+                            let _id=idElt.getAttribute("attr-id");
+                            this.async_connectWallet(_id);
+                        }
+                    }
+                    >{item.isConnected? "Connected to"+item.name: "Connect to "+item.name}...</button>
+                    <ul>
+                        <li>{"Status: " + (item.isEnabled? "connected": "not connected")}</li>
+                        <li className={item.isEnabled?"" : "noshow"}>{"Address: "+this.getShortenAnonAddress(item.address)}</li>
+                        <li className={item.isEnabled?"" : "noshow"}>{"Balance: "+(item.balance? item.balance.ptr : "")}</li>
+
+                        <ul>
+                        {item.utxos? item.utxos.map((utxo, idx)  => (
+                            <li key={idx} className={item.isEnabled?"" : "noshow"}>
+                                <a target="_blank" href={"https://testnet.cexplorer.io/"+utxo}> {"UTXO: "+this.getShortenAnonAddress(utxo) }</a>
+                            </li>
+                        )) 
+                        :""}
+                        </ul>
+
+                        <li className={item.isEnabled?"" : "noshow"}>
+                            <button
+                                className="btn"
+                                attr-id={item.id}
+                                onClick={this.async_signMessage.bind(this)}
+                            >Sign-in Message...</button>
+                        </li>
+                    </ul>
+                </div>
+            ))}
+        </>);
+    }
+
     render() {
         return( 
             <div>
@@ -185,45 +233,8 @@ constructor(props) {
                         <div>
                             {this.state.aWallet.length + " wallets found!"}
                         </div>
-                        {this.state.aWallet.map((item, index) => (
-                            <div
-                                className = "connectContainer"
-                                key={index}
-                            >
-                                <button 
-                                    className={item.isEnabled? "btn disabled" : "btn"}
-                                    attr-id={item.id}
-                                    onClick={(event) => {
-                                        let idElt=event.currentTarget;
-                                        let _id=idElt.getAttribute("attr-id");
-                                        this.async_connectWallet(_id);
-                                    }
-                                }
-                                >{item.isConnected? "Connected to"+item.name: "Connect to "+item.name}...</button>
-                                <ul>
-                                    <li>{"Status: " + (item.isEnabled? "connected": "not connected")}</li>
-                                    <li className={item.isEnabled?"" : "noshow"}>{"Address: "+this.getShortenAnonAddress(item.address)}</li>
-                                    <li className={item.isEnabled?"" : "noshow"}>{"Balance: "+(item.balance? item.balance.ptr : "")}</li>
 
-                                    <ul>
-                                    {item.utxos? item.utxos.map((utxo, idx)  => (
-                                        <li key={idx} className={item.isEnabled?"" : "noshow"}>
-                                            <a target="_blank" href={"https://testnet.cexplorer.io/"+utxo}> {"UTXO: "+this.getShortenAnonAddress(utxo) }</a>
-                                        </li>
-                                    )) 
-                                    :""}
-                                    </ul>
-
-                                    <li className={item.isEnabled?"" : "noshow"}>
-                                        <button
-                                            className="btn"
-                                            attr-id={item.id}
-                                            onClick={this.async_signMessage.bind(this)}
-                                        >Sign-in Message...</button>
-                                    </li>
-                                </ul>
-                            </div>
-                        ))}
+                        {this.renderWalletConnect()}
                     </>
                     : 
                     <span>Huhhh! No cardano wallet found!!!</span>
@@ -233,4 +244,4 @@ constructor(props) {
     }
 }
 
-export default AppConnect;
+export default AuthConnect;

@@ -47,7 +47,7 @@ class ViewIdentities extends Component {
 
         return (            
             <div className="siww-oauth-datashare">
-                <div className="siww-oauth-section">
+                <div className="siww-section">
                     Select identity to grant data share from:
                 </div>                        
 

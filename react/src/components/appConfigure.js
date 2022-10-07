@@ -1,7 +1,7 @@
-import AppAuthenticate from "./appAuthenticate";
+import AppLogged from "./appLogged";
 import FormConfigure from "./formConfigure";
 
-class AppConfigure extends AppAuthenticate {
+class AppConfigure extends AppLogged {
 
 /*
  *          page inits
@@ -11,53 +11,54 @@ class AppConfigure extends AppAuthenticate {
         super(props);
 
         this.state= Object.assign({}, this.state, {
-
-            theme: this.props.theme, 
+            claimed_domain: ""
         });
-    }
-
-    componentDidMount() {
-        super.componentDidMount();
-    }
-    
-    componentDidUpdate(prevProps) {
-        super.componentDidUpdate(prevProps);
+       
     }
 
 /*
- *          SIWC inits + callbacks
+ *        App Configure Renders 
  */
 
     render() {
         return( 
             <>
-                <div className="siww_configure-header">
-                    <h1>Sign-in config</h1>
-                    <span>Use the form below to claim a domain for authenticating end-users with Sign-in With Wallet.</span>
-                </div>
+                {this.renderHeader()}
 
-                {this.state.didAccessWallets===false? 
-                    <div className="">
+                <div 
+                    className="btn btn-tiny"
+                    onClick = {( )=> {this.props.onRedirect("/app")}}
+                >
+                    &lt;&lt; Back to Admin panel
+                </div>        
+                
+                {!this.state.authenticated_wallet_address? 
+                    <div>
+                        You are not logged in...
                     </div>
-                :""}
+                :
+                    <FormConfigure 
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
 
-                <FormConfigure 
-                    version={this.props.version}
-                    isDebug={this.props.isDebug}
-                    theme={this.props.theme} 
-                    styles={this.props.styles}
-                />
+                        theme={this.props.theme} 
+                        styles={this.props.styles}
+
+                        domain_name= {this.state.claimed_domain}
+                    />                    
+                }
+                
+                {this.renderFooter()}
             </>
         );
     }
 }
 
 /*
-    1. connect with your wallet to prove identity
-    2. reserve a domain (will enable claiming it in next 15min)
-    3. config domain oAuth access and params
-    4. claim the domain
-    5. test authentication
+    1. reserve a domain (will enable claiming it in next 15min)
+    2. config domain oAuth access and params
+    3. claim the domain
+    4. test authentication
 */
 
 export default AppConfigure;

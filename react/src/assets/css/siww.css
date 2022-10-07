@@ -76,7 +76,7 @@ a {
     font-size: 85%;
 }
 
-.siww-oauth-section {
+.siww-section {
     font-size: 85%;
     padding-top:12px;
     text-align: left;
@@ -97,6 +97,13 @@ a {
 
 .siww-footer {
     border-top: 1px solid #eee;
+    position: absolute;
+    bottom: 0;
+    left:0;
+    width:100%;
+}
+
+.modal .siww-footer {
     position: relative;
 }
 
@@ -162,9 +169,12 @@ a {
 
 .siww-oauth-legend {
     text-align: right;
-    width: 100%;
     display: inline-flex;
     position: relative;
+}
+
+.modal-login .siww-oauth-legend {
+    width: 100%;
 }
 
 .siww-oauth-legend .legendSquare {
@@ -200,8 +210,42 @@ a {
     min-height: 180px;
 }
 
+.domain-list{
+    height: 140px;
+    margin: 6px;
+    display: inline-flex;
+    list-style: none;
+    padding-inline-start: 0;
+}
+
+.domain-panel {
+    text-align: center;
+    padding: 8px;
+    min-width:124px;
+    min-height:124px;
+    border: 1px solid var(--disconnected-dark);
+    background-color: var(--disconnected);
+    cursor: pointer;
+    overflow: hidden;
+    line-height: 18px;
+}
+
+.domain-panel .domain-logo {
+    max-height: 64px;
+    max-width: 64px;
+    padding: 8px 0 16px 0;
+}
+
+.domain-panel .domain-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.domain-panel .domain-url {
+    font-size: 10px;
+}
+
 .wallet-sign {
-    float: left;
     margin: 0 6px;
     border: 1px solid var(--disconnected-dark);
     background-color: var(--disconnected);
@@ -446,6 +490,14 @@ a {
     font-weight: bold;
 }
 
+.btn-tiny {
+    padding: 2px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    background-color: #fafafa;
+}
+
 .center-vh {
     margin: 0;
     position: absolute;
@@ -512,7 +564,7 @@ a {
 @media screen and (max-width: 414px) {
     .center-vh {
         width:100%;
-        top: 8%;
+        top: 25%;
         left: 0;
         transform: none;
         border-radius: 0;
@@ -609,10 +661,19 @@ a {
   .siww_configure-header {
     background-color: #f0f0f0;
     border-bottom: 1px solid #888;
-    min-height: 80px;
+    min-height: 64px;
     font-size: 14px;
-    padding: 8px;
+    padding: 4px 8px;
     color: #555;
+  }
+
+  .siww_configure-header h1{
+    margin-bottom: 0;
+  }
+  .siww_configure-header .connected{
+    font-size:12px;
+    width: 100%;
+    text-align: right;
   }
 
   .siww_configure-body {

@@ -1,8 +1,8 @@
-import {Component} from "react";
-import ViewHeader from "./viewHeader";
 import ViewFooter from "./viewFooter";
+import ViewHeader from "./viewHeader";
 import ViewDataShare from "./viewDataShare";
-import {srv_reserveDomain, srv_claimDomain} from "../services/configure";
+import FormReserve from "./formReserve";
+import {srv_claimDomain} from "../services/configure";
 
 const fakeIdentity = {
     username: "<user_1234567890>",
@@ -10,7 +10,7 @@ const fakeIdentity = {
     wallet_address: "<addr...>"
 }
 
-class FormConfigure extends Component {
+class FormConfigure extends FormReserve {
 
 /*
  *          page inits
@@ -18,11 +18,14 @@ class FormConfigure extends Component {
 
     constructor(props) {
         super(props);    
-        this.state={
+        this.state= Object.assign({}, this.state, {
             
             // domain
             domain_name: "",
             display_name: "",
+
+            client_id: "",
+            client_secret: "",
 
             // theme
             theme: this.props.theme,
@@ -48,34 +51,14 @@ class FormConfigure extends Component {
 
             // UI / UX
             isPreview: false,
-            canValidate: false,
-            msgPreview: "Preview of the Authentication dialog..."
-        }
+            hover:"Preview of the Authentication dialog..."
+        });
+
     }
 
 /*
  *          Data entry validation
  */
-
-    validateDomain(url) {
-        //remove all http:// or https:// in front...
-        url = url.toLowerCase();
-        if (url.substr(0, 7) === "http://") {
-            url = url.substr(7, url.length);
-        } else {
-            if (url.substr(0, 8) === "https://") {
-                url = url.substr(8, url.length);
-            }
-        }
-
-        var re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
-        if (url.match(re) || url === "localhost") {
-            if (url.split(".").length-1 === 1) {
-                return url;
-            }
-        }
-        return null;
-    }
 
     validateDomainName(name) {
         return name.trim().length>=2;
@@ -102,7 +85,16 @@ class FormConfigure extends Component {
         this.setState({isPreview: !this.state.isPreview});
     }
 
-    claimDomain() {
+    async async_reserveDomain() {
+        let dataDomain=await super.async_reserveDomain();
+        if(dataDomain && dataDomain.data) {
+            this.setState({domain_name: dataDomain.data.domain_name});
+            this.setState({client_id: dataDomain.data.app_id});
+            this.setState({client_secret: dataDomain.data.app_secret});
+        }
+    }
+
+    async async_claimDomain() {
         let objConfig = {
             
             // what is this domain?
@@ -126,7 +118,7 @@ class FormConfigure extends Component {
         if(this.state.redirect_uri_dev!=="") {objConfig.redirect_uri_dev= this.state.redirect_uri_dev}
         if(this.state.redirect_error_dev!=="") {objConfig.redirect_error_dev= this.state.redirect_error_dev}
 
-        srv_reserveDomain(objConfig)
+        srv_claimDomain(objConfig)
             .then(res => {
                 
             })
@@ -139,7 +131,7 @@ class FormConfigure extends Component {
             className="hidden"
         >
             <div id="siww-login-container" style={this.props.styles.container}>
-                <div className={"modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+                <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                 <ViewHeader 
                     client_id= {null}
@@ -173,7 +165,7 @@ class FormConfigure extends Component {
                 <ViewFooter 
                     version={this.props.version}
                     theme = {this.state.theme}
-                    message = {this.state.msgPreview}
+                    message = {this.state.hover}
                 />
 
                 </div>
@@ -194,55 +186,7 @@ class FormConfigure extends Component {
         </div>
     )}
 
-    renderRow(objParam)  {
-        let that=this;
-        return (
-            <div className={"row"  +(objParam.isCompulsory===true ? " compulsory" : "") }>
-                <div
-                    className="label"
-                >{objParam.label}</div>
-
-                <img
-                    id={"icon_"+objParam.id} 
-                    className="icon"
-                    src="./assets/images/icon_compulsory.png"
-                />
-
-                <input 
-                    type={objParam.type} 
-                    className="value "
-                    id={objParam.id} 
-                    value={that.state[objParam.id]}
-                    placeholder = {objParam.placeholder}
-                    onChange={(e) => {
-                        let _eltIcon=document.getElementById("icon_"+objParam.id);
-                        let _defOnchange=function(_e) {
-                            let _obj={};
-                            _obj[objParam.id] = _e.target.value;
-                            that.setState(_obj);
-                            if(_e.target.value!=="") {
-                                let _isValid=objParam.fnValidate(_e.target.value);
-                                _eltIcon.src=_isValid? "./assets/images/icon_check.png" : "./assets/images/icon_warning.png"
-                            }
-                            else {
-                                _eltIcon.src="./assets/images/icon_compulsory.png"
-                            }
-                        }
-
-                        objParam.onChange? objParam.onChange(e) : _defOnchange(e)
-                    }}
-                />
-
-                <div
-                    className="hint"
-                >
-                    {objParam.hint}
-                </div>
-            </div>
-        )
-    }
-
-    render() {
+    renderFormConfigure() {
 
         let that=this;
         return( <>
@@ -262,6 +206,7 @@ class FormConfigure extends Component {
                         label: "Domain", 
                         hint: "The domain name of your web app", 
                         placeholder: "mydomain.com",
+                        isDisabled: true,
                         isCompulsory: true,
                         fnValidate: function (_input) {that.updateCanValidate( ); return that.validateDomain(_input);}
                     })}
@@ -400,20 +345,26 @@ class FormConfigure extends Component {
 
                 <div 
                     className={"btn btn-quiet " + (this.state.canValidate? "" : "disabled")}
-                    onClick = {this.claimDomain.bind(this)}
+                    onClick = {this.async_claimDomain.bind(this)}
                 >
                     Claim domain!
                 </div>
 
             </div>
         </>
-/*
 
-// token
-token_lifespan:  3*24*60*60*1000,  // 3 day default
-scope: _getScopes()
-*/
+        )
+    }
 
+    render() {
+        return (
+            <>
+            {this.state.domain_name===""? 
+                this.renderFormReserve()
+            :
+                this.renderFormConfigure()
+            }
+            </>
         )
     }
 }

@@ -40,34 +40,19 @@ class ViewWallets extends Component {
     }
 
     render() {
-        let style = {}
-        if (this.props.theme && this.props.theme.webapp && this.props.theme.webapp.color) {
-            style.color=this.props.theme.webapp.color.button+" !important";
-        }
 
         return (            
-            <div className="siww-oauth-datashare">
-            {this.props.aWallet.length>0? 
-                <>
-                    <div className="siww-oauth-section">
-                        <strong>Sign-in with {this.props.theme.name}</strong> has detected {this.props.aWallet.length===1? "one wallet:" : "those wallets:"} 
-                    </div>
-
+            <>
+                {this.props.aWallet.length>0?
+                <> 
                     {this.renderListOfWallets({
                         aWallet: this.props.aWallet,
                         onSelect: this.props.onSelect,
                         onHover: this.props.onHover
                     })}
                 </>
-            :
-                <div className="transitoryMessage">
-                    Could not detect a single wallet from this browser
-                    <br />
-                    <br />
-                    You must use at least one {this.props.theme.name} wallet extension
-                </div>
-            }
-            </div>
+                : ""}
+            </>
         )
     }
 }

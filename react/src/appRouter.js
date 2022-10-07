@@ -23,6 +23,7 @@ export default function AppRouter(props) {
   // Our backend basic info
   const [version, setVersion] = useState(""); 
   const [isDebug, setIsDebug] = useState(false); 
+  const [host, setHost] = useState(""); 
 
   // Authentication cookie
   const [cookieName, setCookieName] = useState(null); 
@@ -54,6 +55,7 @@ export default function AppRouter(props) {
           if(dataInfo && dataInfo.data) {
             setVersion(dataInfo.data.version);
             setIsDebug(dataInfo.data.isDebug);
+            setHost(dataInfo.data.host);
 
             // do we have a cookie?? if yes, we may already be authenticated
             let _name=dataInfo.data.isDebug? 'jwt_DEBUG_token_SIWW' : 'jwt_token_SIWW';
@@ -137,6 +139,7 @@ export default function AppRouter(props) {
           // utils
           version = {version}
           isDebug = {isDebug}
+          host = {host}
           onSoftRedirect = {onRedirect}
 
           // cookie

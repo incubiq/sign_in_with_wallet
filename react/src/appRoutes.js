@@ -5,9 +5,16 @@ import {Route, Routes } from 'react-router-dom';
 import {getTheme, getStyles} from "./assets/themes/cardano"; 
 import {WidgetLoading} from "./utils/widgetLoading"; 
 
-const AppConnect  = React.lazy(() => import ("./components/appConnect"));
-const AppAuthorize  = React.lazy(() => import ("./components/appAuthorize"));
+// authentication apps
+const AuthConnect  = React.lazy(() => import ("./components/authConnect"));              // to connect with wallet 
+const AuthAuthorize  = React.lazy(() => import ("./components/authAuthorize"));          // to authorise session via oAuth
+const AuthLogin  = React.lazy(() => import ("./components/authLogin"));                   // this one gives a login into SIWW (used by admin user)
+
+// /app route require user login into SIWW
+const AppLogged  = React.lazy(() => import ("./components/appLogged"));
 const AppConfigure  = React.lazy(() => import ("./components/appConfigure"));
+
+
 const AppAuthApi  = React.lazy(() => import ("./api/appAuthApi"));
 const App  = React.lazy(() => import ("./app"));
 
@@ -45,6 +52,7 @@ class AppRoutes extends Component {
                     <App
                         version={this.props.version}
                         isDebug={this.props.isDebug}
+                        host={this.props.host}
                     />
                 </Suspense> 
                 } exact />
@@ -52,10 +60,11 @@ class AppRoutes extends Component {
             <Route  path="connect/cardano" element={
                 <Suspense 
                     fallback={this.renderBackground()}>
-                    <AppConnect
+                    <AuthConnect
                         // utils
                         version={this.props.version}
                         isDebug={this.props.isDebug}
+                        host={this.props.host}
                         chain="cardano"
 
                         // sockets
@@ -72,10 +81,11 @@ class AppRoutes extends Component {
             <Route  path="/auth/cardano" element={
                 <Suspense 
                     fallback={this.renderBackground()}>
-                    <AppAuthorize
+                    <AuthAuthorize
                         // utils
                         version={this.props.version}
                         isDebug={this.props.isDebug}
+                        host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
                         chain="cardano"
 
@@ -102,12 +112,85 @@ class AppRoutes extends Component {
                 </Suspense> 
                 } exact />
 
-            <Route  path="/configure" element={
+            <Route  path="/auth/login" element={
                 <Suspense 
-                    fallback={<div>Configure...</div>}>
-                    <AppConfigure
+                    fallback={this.renderBackground()}>
+                    <AuthLogin
+
+                        // utils
                         version={this.props.version}
                         isDebug={this.props.isDebug}
+                        host={this.props.host}
+                        onRedirect={this.props.onSoftRedirect}
+                        chain="cardano"             // keep this for now, as it is how we will log user into SIWW (todo: later we will need to connect via all possible chains)
+
+                        // cookie
+                        AuthenticationCookieName={this.props.AuthenticationCookieName}
+                        AuthenticationCookieToken={this.props.AuthenticationCookieToken}
+                        AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
+
+                        // sockets
+                        didSocketConnect={this.props.didSocketConnect}
+                        getSocket={this.props.getSocket}
+
+                        // webapp    
+                        theme={getTheme()}
+                        styles={getStyles()}
+                    />
+                </Suspense> 
+                } exact />
+
+
+            <Route  path="/app" element={
+                <Suspense 
+                    fallback={this.renderBackground()}>
+                    <AppLogged
+
+                        // utils
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
+                        host={this.props.host}
+                        onRedirect={this.props.onSoftRedirect}
+
+                        // cookie
+                        AuthenticationCookieName={this.props.AuthenticationCookieName}
+                        AuthenticationCookieToken={this.props.AuthenticationCookieToken}
+                        AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
+
+                        // sockets
+                        didSocketConnect={this.props.didSocketConnect}
+                        getSocket={this.props.getSocket}
+
+                        // themes
+                        theme={getTheme()}
+                        styles={getStyles()}
+                    />
+                </Suspense> 
+                } exact />
+
+            <Route  path="/app/configure" element={
+                <Suspense 
+                    fallback={this.renderBackground()}>
+                    <AppConfigure
+
+                        // utils
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
+                        host={this.props.host}
+                        onRedirect={this.props.onSoftRedirect}
+                        chain="cardano"
+
+                        // cookie
+                        AuthenticationCookieName={this.props.AuthenticationCookieName}
+                        AuthenticationCookieToken={this.props.AuthenticationCookieToken}
+                        AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
+
+                        // sockets
+                        didSocketConnect={this.props.didSocketConnect}
+                        getSocket={this.props.getSocket}
+
+                        // webapp    
+                        webAppId = "self"
                         theme={getTheme()}
                         styles={getStyles()}
                     />
