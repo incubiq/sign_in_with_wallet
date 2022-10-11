@@ -221,6 +221,7 @@ a {
 .domain-panel {
     text-align: center;
     padding: 8px;
+    margin: 4px;
     min-width:124px;
     min-height:124px;
     border: 1px solid var(--disconnected-dark);
@@ -398,6 +399,10 @@ a {
     display: table-row;
 }
 
+.scopes-list li .group {
+    line-height: 16px;    
+}
+
 .scopes-list .scope-name{
     display: table-cell;
     min-width: 120px;
@@ -405,6 +410,12 @@ a {
 }
 
 .scopes-list .scope-value{
+    display: table-cell;
+    color: #aaa;
+    font-size: 12px;
+}
+
+.scopes-list .scope-property{
     display: table-cell;
     color: #aaa;
     font-size: 12px;
@@ -470,6 +481,16 @@ a {
     border-radius: 80px;
     cursor: pointer;
 }
+.btn.right {
+    float: right;
+}
+.btn-tiny {
+    padding: 2px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    background-color: #fafafa;
+}
 .btn-primary {
     background-color: var(--accent-2);
     color: var(--light);
@@ -486,16 +507,7 @@ a {
 }
 
 .btn-primary:hover, .btn-primary:active, .btn-quiet:hover .btn-quiet:active{
-    box-shadow: 0 17px 38px -12px var(--shadow),0 2px 12px -10px rgba(5,9,41,0.13);
-    font-weight: bold;
-}
-
-.btn-tiny {
-    padding: 2px 16px;
-    font-size: 14px;
-    border-radius: 8px;
-    border: 1px solid #f0f0f0;
-    background-color: #fafafa;
+    background-color: var(--accent-2-dark);
 }
 
 .center-vh {
@@ -697,7 +709,8 @@ a {
   }
   
   .siww_configure .row {
-    margin: 12px auto;
+    margin: 2px 0 12px auto;
+    display: block;
   }
 
   .siww_configure .label {
@@ -748,11 +761,12 @@ a {
     border: 1px solid #333;
     background-color: #fafafa;
     min-height: 320px;
-    height: calc(100% - 24px);
+    height: calc(100% - 76px);
     position: fixed;
     top: 0;
     left: 0;
     box-shadow: 0px 3px 6px var(--shadow);
+    z-index: 1000;
   }
 
   .siww_configure .preview .btn-close {

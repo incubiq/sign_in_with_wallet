@@ -51,7 +51,6 @@ class FormConfigure extends FormReserve {
 
             // UI / UX
             isPreview: false,
-            hover:"Preview of the Authentication dialog..."
         });
 
     }
@@ -79,9 +78,10 @@ class FormConfigure extends FormReserve {
  *          UI
  */
 
-    showPreview(event) {
+    togglePreview(event) {
         let eltPreview=document.getElementById("configuration_preview");
         eltPreview.className=this.state.isPreview? "hidden": "preview"
+        this.props.fnShowMessage(this.state.isPreview? "Fill-up data and scroll down to claim domain" : "Preview of the Authentication dialog...");
         this.setState({isPreview: !this.state.isPreview});
     }
 
@@ -91,6 +91,9 @@ class FormConfigure extends FormReserve {
             this.setState({domain_name: dataDomain.data.domain_name});
             this.setState({client_id: dataDomain.data.app_id});
             this.setState({client_secret: dataDomain.data.app_secret});
+
+            this.props.fnShowMessage("Fill-up data and scroll down to claim domain");
+            this.updateCanValidate();
         }
     }
 
@@ -100,9 +103,9 @@ class FormConfigure extends FormReserve {
             // what is this domain?
             domain_name: this.state.domain_name,
             display_name: this.state.display_name,
+            client_id: this.state.client_id,
 
             // callbacks
-            use_dev_uri: true,          // todo ????            
             redirect_uri: this.state.redirect_uri,
             redirect_error: this.state.redirect_error,
             
@@ -118,9 +121,15 @@ class FormConfigure extends FormReserve {
         if(this.state.redirect_uri_dev!=="") {objConfig.redirect_uri_dev= this.state.redirect_uri_dev}
         if(this.state.redirect_error_dev!=="") {objConfig.redirect_error_dev= this.state.redirect_error_dev}
 
-        srv_claimDomain(objConfig)
+        srv_claimDomain(objConfig, this.props.AuthenticationCookieToken)
             .then(res => {
-                
+                if(res.data===null && res.message) {
+                    this.props.fnShowMessage(res.message);
+                }
+                else {
+
+                    // are we good here??
+                }                
             })
     }
 
@@ -172,13 +181,13 @@ class FormConfigure extends FormReserve {
 
                 <div 
                     className="btn btn-close btn-primary top left"
-                    onClick = {this.showPreview.bind(this)}
+                    onClick = {this.togglePreview.bind(this)}
                 >
                     Quit Preview
                 </div>
                 <div 
                     className="btn btn-close btn-primary bottom right"
-                    onClick = {this.showPreview.bind(this)}
+                    onClick = {this.togglePreview.bind(this)}
                 >
                     Quit Preview
                 </div>
@@ -186,10 +195,33 @@ class FormConfigure extends FormReserve {
         </div>
     )}
 
+    renderScopes(_aScopes){
+        return(
+            <ul className="scopes-list">
+                 {_aScopes.map((item, index) => (
+                    <li className="row"
+                        key={index}
+                    >
+                        <div className="group">
+                            <span className="scope-name">Label</span>
+                            <span className="scope-property">{item.label}</span>
+                        </div>
+                        <div className="group">
+                            <span className="scope-name">Property</span>
+                            <span className="scope-property">{item.property}</span>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        )
+        
+    }
+
     renderFormConfigure() {
 
         let that=this;
         return( <>
+
             <div className="siww_configure-body">
                 <div  
                     className="siww_configure"
@@ -247,6 +279,7 @@ class FormConfigure extends FormReserve {
                     <div className="category">
                         Scopes
                     </div>
+                    {this.renderScopes(this.state.aScope)}
 
                     <div className="category">
                         Theme
@@ -330,40 +363,55 @@ class FormConfigure extends FormReserve {
                     })}
 */}
                     {this.renderPreview()}
+
+                    <div 
+                            className={"btn btn-primary " + (this.state.canValidate? "" : "disabled")}
+                            onClick = {this.async_claimDomain.bind(this)}
+                        >
+                            Claim domain!
+                    </div>
+
                 </div>
             </div>
 
-            <div
-                className="siww_configure-footer" 
-                > 
-                <div 
-                    className="btn btn-quiet" 
-                    onClick = {this.showPreview.bind(this)}
-                >
-                    Preview
-                </div>
-
-                <div 
-                    className={"btn btn-quiet " + (this.state.canValidate? "" : "disabled")}
-                    onClick = {this.async_claimDomain.bind(this)}
-                >
-                    Claim domain!
-                </div>
-
-            </div>
         </>
 
         )
     }
 
+    renderToolbar( ){
+        return (
+            <div className="toolbar">
+                    <div 
+                        className="btn btn-tiny"
+                        onClick = {( )=> {this.props.onRedirect("/app")}}
+                    >
+                        &lt;&lt; Back to Admin panel
+                    </div>        
+
+                {this.state.domain_name===""? "" 
+                :
+                    <div 
+                        className="btn right btn-tiny btn-primary" 
+                        onClick = {this.togglePreview.bind(this)}
+                    >
+                        Preview
+                    </div>
+                }
+            </div>      
+        );
+    }
+
     render() {
         return (
             <>
-            {this.state.domain_name===""? 
-                this.renderFormReserve()
-            :
-                this.renderFormConfigure()
-            }
+                {this.renderToolbar()}
+
+                {this.state.domain_name===""? 
+                    this.renderFormReserve()
+                :
+                    this.renderFormConfigure()
+                }
             </>
         )
     }

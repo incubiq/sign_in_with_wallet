@@ -48,7 +48,7 @@ class AppRoutes extends Component {
         <Routes>            
             <Route  path="/" element={
                 <Suspense 
-                    fallback={<div>Loading React home...</div>}>
+                    fallback={this.renderBackground()}>
                     <App
                         version={this.props.version}
                         isDebug={this.props.isDebug}

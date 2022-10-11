@@ -46,6 +46,10 @@ class AppBase extends Component {
 
     }
 
+    showMessage(_msg){
+        this.setState({hover: _msg});
+    }
+
 /*
  *        UI / UX
  */

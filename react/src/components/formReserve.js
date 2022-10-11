@@ -54,10 +54,10 @@ class FormReserve extends Component {
 
     async async_reserveDomain() {
         let objConfig = {            
-            domain_name: this.state.reserve_name,
+            domain_name: this.state.reserve_name
         };
 
-        return await srv_reserveDomain(objConfig);
+        return await srv_reserveDomain(objConfig, this.props.AuthenticationCookieToken);
     }
 
     renderRow(objParam)  {
@@ -71,7 +71,7 @@ class FormReserve extends Component {
                 <img
                     id={"icon_"+objParam.id} 
                     className="icon"
-                    src="./assets/images/icon_compulsory.png"
+                    src="/assets/images/icon_compulsory.png"
                 />
 
                 <input 
@@ -89,10 +89,10 @@ class FormReserve extends Component {
                             that.setState(_obj);
                             let _isValid=objParam.fnValidate(_e.target.value);
                             if(_e.target.value!=="") {
-                                _eltIcon.src=_isValid? "./assets/images/icon_check.png" : "./assets/images/icon_warning.png"
+                                _eltIcon.src=_isValid? "/assets/images/icon_check.png" : "/assets/images/icon_warning.png"
                             }
                             else {
-                                _eltIcon.src="./assets/images/icon_compulsory.png"
+                                _eltIcon.src="/assets/images/icon_compulsory.png"
                             }
                         }
 

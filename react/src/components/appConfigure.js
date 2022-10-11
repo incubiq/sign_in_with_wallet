@@ -12,6 +12,7 @@ class AppConfigure extends AppLogged {
 
         this.state= Object.assign({}, this.state, {
             claimed_domain: ""
+
         });
        
     }
@@ -20,31 +21,42 @@ class AppConfigure extends AppLogged {
  *        App Configure Renders 
  */
 
+    renderToolbar() {
+        return (
+        <div className="toolbar">
+            <div 
+                className="btn btn-tiny"
+                onClick = {( )=> {this.props.onRedirect("/app")}}
+            >
+                &lt;&lt; Back to Admin panel
+            </div>        
+
+        </div>      
+        );
+    }
+
     render() {
         return( 
             <>
                 {this.renderHeader()}
 
-                <div 
-                    className="btn btn-tiny"
-                    onClick = {( )=> {this.props.onRedirect("/app")}}
-                >
-                    &lt;&lt; Back to Admin panel
-                </div>        
-                
                 {!this.state.authenticated_wallet_address? 
-                    <div>
-                        You are not logged in...
-                    </div>
+                    <>
+                        {this.renderToolbar()}                        
+                    </>
                 :
-                    <FormConfigure 
+                <FormConfigure 
                         version={this.props.version}
                         isDebug={this.props.isDebug}
+                        onRedirect={this.props.onRedirect}
+                        fnShowMessage={this.showMessage.bind(this)}
 
                         theme={this.props.theme} 
                         styles={this.props.styles}
+                        isPreview={this.state.isPreview}
 
                         domain_name= {this.state.claimed_domain}
+                        AuthenticationCookieToken={this.props.AuthenticationCookieToken}
                     />                    
                 }
                 
