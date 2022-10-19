@@ -8,16 +8,22 @@ class AuthLogin extends AuthAuthenticate {
  *          SIWC inits + callbacks
  */
 
-    // called when wallet connect
-    async async_onAuthCookieReceived(_token) {
-        await super.async_onAuthCookieReceived(_token);
+    // called when wallet connect or if cookie is already here
+    async async_onAuthCookieReceived(_token) {        
+        let isOK=await super.async_onAuthCookieReceived(_token);
+        if(isOK) {
+            // ping backend with cookie to make sure we have it loaded in browser for next calls
+            let eltForm=document.getElementById('form-silentLogin');
+            if(eltForm) {
+                document.cookie = this.props.AuthenticationCookieName + "=" + _token + ";path=/";
+                document.getElementById('form-silentLogin').submit();
+            }            
+        }
+        else {
+            // cookie not valid... we need to ask for another one
+            return;
+        }
 
-        // ping backend with cookie to make sure we have it loaded in browser for next calls
-        let eltForm=document.getElementById('form-silentLogin');
-        if(eltForm) {
-            document.cookie = this.props.AuthenticationCookieName + "=" + _token + ";path=/";
-            document.getElementById('form-silentLogin').submit();
-        }            
     }
 
     render() {

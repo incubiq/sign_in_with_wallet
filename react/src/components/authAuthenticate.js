@@ -94,54 +94,58 @@ class AuthAuthenticate extends AuthConnect {
     // receiving a cookie from the backend => we are being authenticated into SIWW
     async async_onAuthCookieReceived(_token) {
         let that=this;
-        jsonwebtoken.verify(_token, this.props.AuthenticationCookieSecret, function(err, decoded){
-            if(err) {
-                console.log("Error decoding Cookie in REACT app");
-                return false;
-            }
-            else {
-                // keep this token
-                that.setState({token: _token});
-
-                // this identity myust be here in cache, or we will create...
-                if(getIdentityFromUsername(decoded.username)===null) {
-                    createPartialIdentity({
-                        provider: decoded.provider,
-                        wallet_address: decoded.wallet_address,
-                        wallet_id: decoded.wallet_id
-                    });    
+        let p=new Promise(function(resolve, reject) {
+            jsonwebtoken.verify(_token, that.props.AuthenticationCookieSecret, function(err, decoded){
+                if(err) {
+                    console.log("Error decoding Cookie in REACT app");
+                    resolve(false);
                 }
-
-                // cookie contains new username (created by backend) => store it
-                updatePartialIdentity(decoded.wallet_id, decoded.provider, {
-                    username: decoded.username,
-                    wallet_address: decoded.wallet_address
-                });
-
-                // now we know who you are
-                that.setState({username: decoded.username});
-                that.setState({wallet_address: decoded.wallet_address});
-                that.setState({wallet_id: decoded.wallet_id});
-
-                // any new identity?
-                let aId=getMyIdentities();
-                that.setState({aIdentity: aId});
-
-                // check if our selected identity agreed to grant data
-                let i=aId.findIndex(function (x) {return x.username===decoded.username});
-
-                // we know this guy?
-                if(i===-1) {
-                    console.log("Houston, we have a problem... unknown identity")
-                    this.setState({hover:"Unknown identity! Try login again from your original application..."});
-                    return false
+                else {
+                    // keep this token
+                    that.setState({token: _token});
+    
+                    // this identity myust be here in cache, or we will create...
+                    if(getIdentityFromUsername(decoded.username)===null) {
+                        createPartialIdentity({
+                            provider: decoded.provider,
+                            wallet_address: decoded.wallet_address,
+                            wallet_id: decoded.wallet_id
+                        });    
+                    }
+    
+                    // cookie contains new username (created by backend) => store it
+                    updatePartialIdentity(decoded.wallet_id, decoded.provider, {
+                        username: decoded.username,
+                        wallet_address: decoded.wallet_address
+                    });
+    
+                    // now we know who you are
+                    that.setState({username: decoded.username});
+                    that.setState({wallet_address: decoded.wallet_address});
+                    that.setState({wallet_id: decoded.wallet_id});
+    
+                    // any new identity?
+                    let aId=getMyIdentities();
+                    that.setState({aIdentity: aId});
+    
+                    // check if our selected identity agreed to grant data
+                    let i=aId.findIndex(function (x) {return x.username===decoded.username});
+    
+                    // we know this guy?
+                    if(i===-1) {
+                        console.log("Houston, we have a problem... unknown identity")
+                        that.setState({hover:"Unknown identity! Try login again from your original application..."});
+                        resolve(false);
+                    }
+    
+                    // now need to pass grant authorization...
+                    that.authenticateUser(aId, i);
+                    resolve(true);
                 }
-
-                // now need to pass grant authorization...
-                that.authenticateUser(aId, i);
-                return true;
-            }
-        })
+            })
+    
+        });
+        return p;
     }
 
 /*
