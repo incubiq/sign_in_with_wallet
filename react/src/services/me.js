@@ -8,7 +8,7 @@ import {getCache, setCache} from './cache'
 //  - wallet_logo: ...
 //  - provider
 //  - webapp: [{ 
-//    client_id: ...
+//    app_id: ...
 //    aScope: [{label: ... , property: ...}]
 //    didGrant : true/false
 //  }]
@@ -111,12 +111,12 @@ const registerWebAppWithIdentity = (_username, _objWebApp) => {
   
   // update this identity with WebApp
   if(!objIdentity.aWebApp) {objIdentity.aWebApp=[]}
-  if(_objWebApp && _objWebApp.client_id) {
-    let i=objIdentity.aWebApp.findIndex(function (x) {return x.client_id===_objWebApp.client_id});
+  if(_objWebApp && _objWebApp.app_id) {
+    let i=objIdentity.aWebApp.findIndex(function (x) {return x.app_id===_objWebApp.app_id});
     let aNewScope=_objWebApp.aScope? _objWebApp.aScope : [];
     if(i===-1) {
       objIdentity.aWebApp.push({
-        client_id: _objWebApp.client_id,
+        app_id: _objWebApp.app_id,
         aScope: aNewScope,
         didGrant: false
       })
@@ -146,7 +146,7 @@ const grantAccessToWebApp = (_username, _client_id) => {
     return null;
   }
 
-  let i=objIdentity.aWebApp.findIndex(function (x) {return x.client_id===_client_id});
+  let i=objIdentity.aWebApp.findIndex(function (x) {return x.app_id===_client_id});
   if(i===-1) {
     return null;
   }
@@ -164,7 +164,7 @@ const isGrantedAccessToWebApp = (_username, _client_id) => {
   if(!objIdentity || !objIdentity.aWebApp || objIdentity.aWebApp.length===0) {
     return false;
   }
-  let i=objIdentity.aWebApp.findIndex(function (x) {return x.client_id===_client_id});
+  let i=objIdentity.aWebApp.findIndex(function (x) {return x.app_id===_client_id});
   if(i===-1) {
     return false;
   }

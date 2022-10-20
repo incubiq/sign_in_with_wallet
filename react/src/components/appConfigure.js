@@ -11,10 +11,21 @@ class AppConfigure extends AppLogged {
         super(props);
 
         this.state= Object.assign({}, this.state, {
-            claimed_domain: ""
+            claimed_domain:  props.webAppDomain?  props.webAppDomain : null,
+            app_id: props.webAppId ? props.webAppId : null
 
         });
        
+    }
+
+    
+    componentDidUpdate(prevProps) {
+        if(prevProps.webAppId !== this.props.webAppId) {
+            this.setState({app_id: this.props.webAppId});
+        }
+        if(prevProps.webAppDomain !== this.props.webAppDomain) {
+            this.setState({claimed_domain: this.props.webAppDomain});
+        }
     }
 
 /*
@@ -56,6 +67,7 @@ class AppConfigure extends AppLogged {
                         isPreview={this.state.isPreview}
 
                         domain_name= {this.state.claimed_domain}
+                        app_id= {this.state.app_id}
                         AuthenticationCookieToken={this.props.AuthenticationCookieToken}
                     />                    
                 }

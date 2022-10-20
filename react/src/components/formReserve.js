@@ -12,11 +12,14 @@ class FormReserve extends Component {
         this.state={  
 
             // domain name to reserve...          
-            reserve_name: props.domain_name,
+            reserve_name: props.domain_name ? props.domain_name : "",
 
             // UI / UX
             canValidate: false,
         }
+    }
+
+    componentDidMount() {
     }
 
 /*
@@ -24,6 +27,8 @@ class FormReserve extends Component {
  */
 
     validateDomain(url) {
+        if(!url) {return null}
+
         //remove all http:// or https:// in front...
         url = url.toLowerCase();
         if (url.substr(0, 7) === "http://") {
@@ -35,15 +40,17 @@ class FormReserve extends Component {
         }
 
         var re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
-        if (url.match(re) || url === "localhost") {
-            if (url.split(".").length-1 === 1) {
-                return url;
-            }
+        if (url.match(re) && url.split(".").length-1 === 1) {
+            return url;
+        }
+        
+        if(url === "localhost" || url.substr(0,10) === "localhost:") {
+            return url;
         }
         return null;
     }
  
-    updateCanValidateReserve(_input) {
+    enableReserveForm(_input) {
         let isDomainOK = this.validateDomain(_input)!==null;
         this.setState({canValidate: isDomainOK});
     }
@@ -60,6 +67,16 @@ class FormReserve extends Component {
         return await srv_reserveDomain(objConfig, this.props.AuthenticationCookieToken);
     }
 
+    changeIcon(_value, _isValid, eltId) {
+        let _eltIcon=document.getElementById(eltId);
+        if(_value!=="") {
+            _eltIcon.src=_isValid? "/assets/images/icon_check.png" : "/assets/images/icon_warning.png"
+        }
+        else {
+            _eltIcon.src="/assets/images/icon_compulsory.png"
+        }
+    }
+
     renderRow(objParam)  {
         let that=this;
         return (
@@ -68,11 +85,16 @@ class FormReserve extends Component {
                     className="label"
                 >{objParam.label}</div>
 
-                <img
-                    id={"icon_"+objParam.id} 
-                    className="icon"
-                    src="/assets/images/icon_compulsory.png"
-                />
+                {objParam.fnValidate? 
+                    <img
+                        id={"icon_"+objParam.id} 
+                        className="icon"
+                        src={
+                            that.state[objParam.id]===""? "/assets/images/icon_compulsory.png": 
+                            objParam.fnValidate(that.state[objParam.id]) ? "/assets/images/icon_check.png" : 
+                            "/assets/images/icon_warning.png"}
+                    />
+                : ""}
 
                 <input 
                     type={objParam.type} 
@@ -81,30 +103,25 @@ class FormReserve extends Component {
                     disabled={objParam.isDisabled===true? "disabled": ""}
                     value={that.state[objParam.id]}
                     placeholder = {objParam.placeholder}
-                    onChange={(e) => {
-                        let _eltIcon=document.getElementById("icon_"+objParam.id);
-                        let _defOnchange=function(_e) {
-                            let _obj={};
-                            _obj[objParam.id] = _e.target.value;
-                            that.setState(_obj);
-                            let _isValid=objParam.fnValidate(_e.target.value);
-                            if(_e.target.value!=="") {
-                                _eltIcon.src=_isValid? "/assets/images/icon_check.png" : "/assets/images/icon_warning.png"
-                            }
-                            else {
-                                _eltIcon.src="/assets/images/icon_compulsory.png"
-                            }
-                        }
+                    onChange={(_event) => {
+                        let _obj={};
+                        _obj[objParam.id] = _event.target.value;
+                        that.setState(_obj);
+                        let _isValid=objParam.fnValidate(_event.target.value);
+                        that.changeIcon(_event.target.value, _isValid, "icon_"+objParam.id);
 
-                        objParam.onChange? objParam.onChange(e) : _defOnchange(e)
+                        // enable form button?
+                        if(objParam.fnEnableForm) {
+                            objParam.fnEnableForm(_event.target.value);
+                        }
                     }}
                 />
-
                 <div
                     className="hint"
                 >
                     {objParam.hint}
                 </div>
+
             </div>
         )
     }
@@ -129,7 +146,12 @@ class FormReserve extends Component {
                         hint: "Enter the domain name of your web app.", 
                         placeholder: "mydomain.com",
                         isCompulsory: true,
-                        fnValidate: function (_input) {that.updateCanValidateReserve(_input); return that.validateDomain(_input);}
+                        fnValidate: function (_input) {
+                            return that.validateDomain(_input);
+                        },
+                        fnEnableForm: function (_input) {
+                            return that.enableReserveForm(_input);
+                        }
                     })}
 
                     <div 

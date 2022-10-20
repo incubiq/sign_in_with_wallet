@@ -18,7 +18,7 @@ class App extends Component {
             <br />
             
             <NavLink 
-                to="/auth/cardano?client_id=7TdKmdPQ1663168239000"  
+                to="/auth/cardano?app_id=7TdKmdPQ1663168239000"  
             >
                 <button id='btnAuthWallet'>Authenticate with Wallet...</button>
             </NavLink>

@@ -22,6 +22,10 @@ const srv_claimDomain = async(obj, _token) => {
   return await srv_postRoute(API_HOST+API_PRIVATEROUTE+'domain/claim', obj, _token);
 }
 
+const srv_getDomainPrivateInfo = async (client_id, _token) => {
+  return await srv_getRoute(API_HOST+API_PRIVATEROUTE+"domain/"+client_id,  _token);
+}
+
 const srv_getDomains = async (obj, _token) => {
   return await srv_getRoute(API_HOST+API_PRIVATEROUTE+"domains/",  _token);
 }
@@ -30,5 +34,6 @@ export {
   srv_reserveDomain,
   srv_claimDomain,
   srv_getDomainInfo,
+  srv_getDomainPrivateInfo,
   srv_getDomains
 }

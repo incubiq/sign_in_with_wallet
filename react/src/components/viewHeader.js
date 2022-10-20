@@ -21,7 +21,7 @@ class ViewHeader extends Component {
                             </div>
                         </div>
                         <div className="login-separator">↔</div>
-                        <div className="hidden" id="idClient">{this.props.client_id}</div>
+                        <div className="hidden" id="idClient">{this.props.app_id}</div>
                     </>
                     :""}
 

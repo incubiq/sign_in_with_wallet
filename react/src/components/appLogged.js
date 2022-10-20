@@ -81,6 +81,10 @@ class AppLogged extends AppBase {
         
     }
 
+    onSelectDomain(client_id) {
+        this.props.onRedirect("/app/configure?app_id="+client_id);
+    }
+
     renderIdentities() {
         return (
             <>
@@ -105,9 +109,6 @@ class AppLogged extends AppBase {
                     </ul>
                 </div>
             </>);
-    }
-
-    onSelectDomain(evt) {
     }
 
     renderDomains() {
@@ -139,6 +140,12 @@ class AppLogged extends AppBase {
                                     logo = {item.theme.logo}
                                     domain_name = {item.domain_name}
                                     display_name = {item.display_name}
+                                    app_id = {item.app_id}
+                                    onClick = {(evt) => {
+                                        let idElt=evt.currentTarget;
+                                        let _id=idElt.getAttribute("attr-id");
+                                        this.onSelectDomain(_id);
+                                    }}
                                 />
                             </li>
                         ))}

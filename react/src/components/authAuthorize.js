@@ -122,7 +122,7 @@ class AuthAuthorize extends AuthAuthenticate {
 
     onReAuthenticate ( ){
         // todo
-        this.props.onRedirect("/auth/"+this.props.chain+"?client_id=" + this.props.webAppId);
+        this.props.onRedirect("/auth/"+this.props.chain+"?app_id=" + this.props.webAppId);
     }
     
     renderAuthorization() {
@@ -241,7 +241,7 @@ class AuthAuthorize extends AuthAuthenticate {
 
                     <FormAuthorize 
                         theme = {this.state.theme}
-                        client_id = {this.props.webAppId}
+                        app_id = {this.props.webAppId}
                         aScope = {this.state.aScope}
                         onClick = {this.doLogin.bind(this)}
                     />
@@ -269,7 +269,7 @@ class AuthAuthorize extends AuthAuthenticate {
                 <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                     <ViewHeader 
-                        client_id= {this.props.webAppId}
+                        app_id= {this.props.webAppId}
                         oauthClientName = {this.props.webAppName}
                         oauthDomain = {this.props.webAppDomain}
                         isOauth = {true}

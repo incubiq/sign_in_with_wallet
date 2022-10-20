@@ -66,10 +66,8 @@ export default function AppRouter(props) {
             }
           
             // do we have a requesting webapp? if yes, we prepare all for it
-            let _client_id=decodeURIComponent(decodeURIComponent(getmyuri("client_id", window.location.search)));
-            if (_client_id) {
-              async_initializeDomain(_client_id);
-            }
+            let _client_id=decodeURIComponent(decodeURIComponent(getmyuri("app_id", window.location.search)));
+            async_initializeDomain(_client_id);
 
             // open sockets
             socket.on("connect", _args => { 
@@ -98,30 +96,39 @@ export default function AppRouter(props) {
   
   // get all necessary info from connecting webapp
   const async_initializeDomain = async (_client_id) => {
+    if (_client_id && _client_id!=="") {
+      let dataDomain=await srv_getDomainInfo(_client_id);
+      if(dataDomain && dataDomain.data) {
+          setWebAppId(_client_id);
+          setWebAppName(dataDomain.data.display_name);
+          setWebAppDomain(dataDomain.data.domain_name);
+          setWebApp(dataDomain.data);
+      }
 
-    let dataDomain=await srv_getDomainInfo(_client_id);
-    if(dataDomain && dataDomain.data) {
-        setWebAppId(_client_id);
-        setWebAppName(dataDomain.data.display_name);
-        setWebAppDomain(dataDomain.data.domain_name);
-        setWebApp(dataDomain.data);
+      // get the scope...
+      if(dataDomain && dataDomain.data && dataDomain.data.aScope) {
+          let aId=getMyIdentities();
+      
+          // make sure WebApp is registered (not necessarily granted yet, but registered) for each known identity of this user...
+          aId.forEach(item=> {
+              registerWebAppWithIdentity(item.username, {
+                  app_id: _client_id,
+                  aScope: dataDomain.data.aScope
+              });    
+          });
+      }
     }
-
-    // get the scope...
-    if(dataDomain && dataDomain.data && dataDomain.data.aScope) {
-        let aId=getMyIdentities();
-    
-        // make sure WebApp is registered (not yet granted, but registerd) for each known identity of this user...
-        aId.forEach(item=> {
-            registerWebAppWithIdentity(item.username, {
-                client_id: _client_id,
-                aScope: dataDomain.data.aScope
-            });    
-        });
+    else {
+      setWebAppId(null);
+      setWebAppName(null);
+      setWebAppDomain(null);
+      setWebApp(null);
     }
   }
 
-  const onRedirect = (_route) => {
+  const onRedirect = async (_route) => {
+    let _client_id=decodeURIComponent(decodeURIComponent(getmyuri("app_id", _route)));
+    await async_initializeDomain(_client_id);
     navigate(_route);
   }
 

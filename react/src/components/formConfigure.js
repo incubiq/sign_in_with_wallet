@@ -2,7 +2,7 @@ import ViewFooter from "./viewFooter";
 import ViewHeader from "./viewHeader";
 import ViewDataShare from "./viewDataShare";
 import FormReserve from "./formReserve";
-import {srv_claimDomain} from "../services/configure";
+import {srv_claimDomain, srv_getDomainPrivateInfo} from "../services/configure";
 
 const fakeIdentity = {
     username: "<user_1234567890>",
@@ -21,14 +21,16 @@ class FormConfigure extends FormReserve {
         this.state= Object.assign({}, this.state, {
             
             // domain
-            domain_name: "",
+            domain_name: props.domain_name? props.domain_name : "",
             display_name: "",
 
-            client_id: "",
-            client_secret: "",
+            app_id: props.app_id? props.app_id : "",
+            app_secret: "",
 
             // theme
             theme: this.props.theme,
+
+            // config state vars
             background: "",
             logo: "",
 
@@ -54,6 +56,40 @@ class FormConfigure extends FormReserve {
         });
 
     }
+    
+    componentDidMount() {
+        super.componentDidMount();
+        if(this.props.app_id) {
+            this.async_initializeDomain(this.props.app_id);            
+        }
+    }
+    
+    async async_initializeDomain(_client_id) {
+        let dataDomain=await srv_getDomainPrivateInfo(_client_id, this.props.AuthenticationCookieToken);
+        if(dataDomain && dataDomain.data) {
+            this.setState({display_name: dataDomain.data.display_name});
+            this.setState({domain_name: dataDomain.data.domain_name});
+            this.setState({redirect_uri: dataDomain.data.redirect_uri});
+            this.setState({token_lifespan: dataDomain.data.token_lifespan});
+
+            if(dataDomain.data.app_secret) {
+                this.setState({app_secret: dataDomain.data.app_secret});
+            }
+            if(dataDomain.data.redirect_error) {
+                this.setState({redirect_error: dataDomain.data.redirect_error});
+            }
+            if(dataDomain.data.aScope)  {
+                this.setState({aScope: dataDomain.data.aScope});
+            }
+            if(dataDomain.data.theme)  {
+                let _objTheme=Object.assign({}, this.state.theme);
+                for (const key in dataDomain.data.theme) {
+                    _objTheme.webapp[key]=dataDomain.data.theme[key];
+                }                
+                this.setState({theme: _objTheme});
+            }
+        }
+    }
 
 /*
  *          Data entry validation
@@ -67,8 +103,22 @@ class FormConfigure extends FormReserve {
         return cb.trim().length>=4;
     }
 
-    updateCanValidate() {
+    _enableFormName(_input) {
         let isCallbackOK = this.validateCallback(this.state.redirect_uri);
+        let isDomainNameOK = this.validateDomainName(_input);
+        let isDomainOK = this.validateDomain(this.state.domain_name)!==null;
+        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK});
+    }
+
+    _enableFormDomain(_input) {
+        let isCallbackOK = this.validateCallback(this.state.redirect_uri);
+        let isDomainNameOK = this.validateDomainName(this.state.domain_name);
+        let isDomainOK = this.validateDomain(_input)!==null;
+        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK});
+    }
+
+    _enableFormCallback(_input) {
+        let isCallbackOK = this.validateCallback(_input);
         let isDomainNameOK = this.validateDomainName(this.state.domain_name);
         let isDomainOK = this.validateDomain(this.state.domain_name)!==null;
         this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK});
@@ -89,11 +139,10 @@ class FormConfigure extends FormReserve {
         let dataDomain=await super.async_reserveDomain();
         if(dataDomain && dataDomain.data) {
             this.setState({domain_name: dataDomain.data.domain_name});
-            this.setState({client_id: dataDomain.data.app_id});
-            this.setState({client_secret: dataDomain.data.app_secret});
+            this.setState({app_id: dataDomain.data.app_id});
 
             this.props.fnShowMessage("Fill-up data and scroll down to claim domain");
-            this.updateCanValidate();
+            this._enableFormDomain(dataDomain.data.domain_name);
         }
     }
 
@@ -103,7 +152,7 @@ class FormConfigure extends FormReserve {
             // what is this domain?
             domain_name: this.state.domain_name,
             display_name: this.state.display_name,
-            client_id: this.state.client_id,
+            app_id: this.state.app_id,
 
             // callbacks
             redirect_uri: this.state.redirect_uri,
@@ -133,6 +182,10 @@ class FormConfigure extends FormReserve {
             })
     }
 
+    async async_updateDomain( ) {
+
+    }
+
     renderPreview () {
         return (
         <div 
@@ -143,7 +196,7 @@ class FormConfigure extends FormReserve {
                 <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                 <ViewHeader 
-                    client_id= {null}
+                    app_id= {null}
                     oauthClientName = {this.state.display_name}
                     oauthDomain = {this.state.domain_name}
                     isOauth = {true}
@@ -240,7 +293,12 @@ class FormConfigure extends FormReserve {
                         placeholder: "mydomain.com",
                         isDisabled: true,
                         isCompulsory: true,
-                        fnValidate: function (_input) {that.updateCanValidate( ); return that.validateDomain(_input);}
+                        fnValidate: function (_input) {
+                            return that.validateDomain(_input);
+                        },
+                        fnEnableForm: function (_input) {
+                            return that._enableFormDomain(_input);
+                        }
                     })}
 
                     {this.renderRow({
@@ -250,7 +308,12 @@ class FormConfigure extends FormReserve {
                         hint: "Name of your app, as will be shown to end-users during authentication", 
                         placeholder: "My App",
                         isCompulsory: true,
-                        fnValidate: function (_input) {that.updateCanValidate( ); return that.validateDomainName(_input);}
+                        fnValidate: function (_input) {
+                            return that.validateDomainName(_input);
+                        },
+                        fnEnableForm: function (_input) {
+                            return that._enableFormName(_input);
+                        }
                     })}
 
                     <div className="category">
@@ -264,7 +327,12 @@ class FormConfigure extends FormReserve {
                         hint: "Redirect URI for the oAuth callback", 
                         placeholder: "/auth/siww/callback",
                         isCompulsory: true,
-                        fnValidate: function (_input) {that.updateCanValidate( ); return that.validateCallback(_input);}
+                        fnValidate: function (_input) {
+                            return that.validateCallback(_input);
+                        },
+                        fnEnableForm: function (_input) {
+                            return that._enableFormCallback(_input);
+                        }
                     })}
 
                     {this.renderRow({
@@ -364,12 +432,22 @@ class FormConfigure extends FormReserve {
 */}
                     {this.renderPreview()}
 
-                    <div 
-                            className={"btn btn-primary " + (this.state.canValidate? "" : "disabled")}
-                            onClick = {this.async_claimDomain.bind(this)}
-                        >
+                    {this.state.app_secret === ""?
+                        <div 
+                                className={"btn btn-primary " + (this.state.canValidate? "" : "disabled")}
+                                onClick = {this.async_claimDomain.bind(this)}
+                            >                                
                             Claim domain!
-                    </div>
+                        </div>
+
+                    : 
+                        <div 
+                            className={"btn btn-primary " + (this.state.canValidate? "" : "disabled")}
+                            onClick = {this.async_updateDomain.bind(this)}
+                        >                                
+                            Update...
+                        </div>
+                    }
 
                 </div>
             </div>

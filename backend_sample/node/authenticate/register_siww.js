@@ -70,11 +70,11 @@ module.exports = {
                 } 
             },
             function (error, response, body) {
-                if (!error && response.statusCode === 201 && body.data.client_id) {
-                    gConfig.siww.clientID=body.data.client_id;
+                if (!error && response.statusCode === 201 && body.data.app_id) {
+                    gConfig.siww.clientID=body.data.app_id;
                     gConfig.siww.asRegistered=body.data;
 
-                    console.log("Domain registered with SIWW with ID="+body.data.client_id)
+                    console.log("Domain registered with SIWW with ID="+body.data.app_id)
                     deferred.resolve(body);
                 }
                 else {

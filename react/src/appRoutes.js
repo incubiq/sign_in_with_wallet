@@ -190,7 +190,9 @@ class AppRoutes extends Component {
                         getSocket={this.props.getSocket}
 
                         // webapp    
-                        webAppId = "self"
+                        webAppId = {this.props.webAppId}
+                        webAppName = {this.props.webAppName}
+                        webAppDomain = {this.props.webAppDomain}
                         theme={getTheme()}
                         styles={getStyles()}
                     />

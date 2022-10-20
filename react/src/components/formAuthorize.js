@@ -31,8 +31,8 @@ class FormAuthorize extends Component {
                 <input 
                     type="text" 
                     className="hidden"
-                    id="client_id" 
-                    value={this.props.client_id}
+                    id="app_id" 
+                    value={this.props.app_id}
                     onChange={(e) => {
                         // no change
                     }}
