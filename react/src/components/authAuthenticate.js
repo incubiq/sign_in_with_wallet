@@ -11,6 +11,8 @@ let didMount=false;
 const VIEWMODE_IDENTITY="identity";
 const VIEWMODE_DATASHARE="datashare";
 
+let mustConfirm=false;          // shall we wait for user confirmation?
+
 class AuthAuthenticate extends AuthConnect {
 
 /*
@@ -22,9 +24,6 @@ class AuthAuthenticate extends AuthConnect {
 
         this.state= Object.assign({}, this.state, {
 
-            //UX/UI
-            mustConfirm: false,       // shall we wait for user confirmation?
-
             // identity we will use for authentication
             token: null,
             username: null,
@@ -32,6 +31,14 @@ class AuthAuthenticate extends AuthConnect {
             wallet_address: null,
 
         });                
+    }
+
+    setConfirmLogin() {
+        mustConfirm=true;
+    }
+
+    hasConfirmLogin() {
+        return mustConfirm
     }
 
     componentDidMount() {
@@ -54,7 +61,7 @@ class AuthAuthenticate extends AuthConnect {
         let didCall=false;
 
         // we have a cookie and user was not yet authenticated?
-        if(this.props.AuthenticationCookieToken!==null && this.state.iSelectedIdentity===null && !this.state.mustConfirm) {
+        if(this.props.AuthenticationCookieToken!==null && this.state.iSelectedIdentity===null && !mustConfirm) {
             didCall=true;
             this.async_onAuthCookieReceived(this.props.AuthenticationCookieToken);
         }
@@ -87,7 +94,7 @@ class AuthAuthenticate extends AuthConnect {
 
     // calling this will move the UI to the authorization section (next step)
     authenticateUser(aIdentity, iUser) {
-        this.setState({mustConfirm: true});
+        this.setConfirmLogin();
         this.setSharedIdentity(aIdentity, iUser);
     }
 
@@ -246,8 +253,8 @@ class AuthAuthenticate extends AuthConnect {
             }
             else {
                 // use the first wallet to authenticate user with SIWC (only in case we do not have to confirm by user click)
-                if(!this.state.mustConfirm) {
-                    this.setState({mustConfirm: true});     // do not come back with another one after 1st wallet call
+                if(!mustConfirm) {
+                    this.setConfirmLogin();     // do not come back with another one after 1st wallet call
                     this._prepareSIWC({
                         wallet_address: _wallet.address,
                         wallet_id: _wallet.id,

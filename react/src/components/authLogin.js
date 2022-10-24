@@ -4,6 +4,11 @@ import ViewWallets from "./viewWallets";
 // class for logging into SIWW backend (for user "admin" purposes)
 class AuthLogin extends AuthAuthenticate {
 
+    constructor(props) {
+        super(props);    
+        this.setConfirmLogin();     // if we come here... we must confirm login (no auto login)
+    }
+
 /*
  *          SIWC inits + callbacks
  */

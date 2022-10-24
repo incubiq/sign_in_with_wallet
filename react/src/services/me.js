@@ -1,4 +1,4 @@
-import {getCache, setCache} from './cache'
+import {getCache, setCache, removeCache} from './cache'
 
 // structure of info
 //
@@ -171,6 +171,10 @@ const isGrantedAccessToWebApp = (_username, _client_id) => {
   return objIdentity.aWebApp[i].didGrant===true;
 }
 
+const deleteMe = () => {
+  removeCache(CACHE_ME);
+}
+
 export {
   CACHE_ME,
   getMyIdentities,
@@ -181,5 +185,6 @@ export {
   updateIdentity,
   registerWebAppWithIdentity,
   grantAccessToWebApp,
-  isGrantedAccessToWebApp
+  isGrantedAccessToWebApp,
+  deleteMe
 };

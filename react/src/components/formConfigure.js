@@ -2,7 +2,8 @@ import ViewFooter from "./viewFooter";
 import ViewHeader from "./viewHeader";
 import ViewDataShare from "./viewDataShare";
 import FormReserve from "./formReserve";
-import {srv_claimDomain, srv_getDomainPrivateInfo} from "../services/configure";
+import DialogOwnership from "./dialogOwnership"
+import {srv_claimDomain, srv_updateDomain, srv_getDomainPrivateInfo, srv_renewDNS, srv_verifyDNS} from "../services/configure";
 
 const fakeIdentity = {
     username: "<user_1234567890>",
@@ -27,12 +28,21 @@ class FormConfigure extends FormReserve {
             app_id: props.app_id? props.app_id : "",
             app_secret: "",
 
+            // valid?
+            is_verified: false,
+            dns_token: null,
+            dns_token_expires_at: null,
+
             // theme
             theme: this.props.theme,
 
             // config state vars
             background: "",
             logo: "",
+            text_color: "",
+            button_color: "",
+            button_text_color: "",
+            dark_mode: false,
 
             // oAuth 2.0 redirects
             redirect_uri: "",
@@ -47,12 +57,14 @@ class FormConfigure extends FormReserve {
                 label: "Username",
                 property: "username"
             }, {
-                label: "Wallet address",
+                label: "Wallet Address",
                 property: "wallet_address"
             }],
 
             // UI / UX
             isPreview: false,
+            isDialogOwnershipVisible: false,
+            message: ""                                         // msg displayed in Dialog..
         });
 
     }
@@ -72,6 +84,10 @@ class FormConfigure extends FormReserve {
             this.setState({redirect_uri: dataDomain.data.redirect_uri});
             this.setState({token_lifespan: dataDomain.data.token_lifespan});
 
+            this.setState({is_verified: dataDomain.data.is_verified});
+            this.setState({dns_token: dataDomain.data.dns_token});
+            this.setState({dns_token_expires_at: dataDomain.data.dns_token_expires_at});
+
             if(dataDomain.data.app_secret) {
                 this.setState({app_secret: dataDomain.data.app_secret});
             }
@@ -87,7 +103,23 @@ class FormConfigure extends FormReserve {
                     _objTheme.webapp[key]=dataDomain.data.theme[key];
                 }                
                 this.setState({theme: _objTheme});
+                this.setState({dark_mode: _objTheme.webapp.dark_mode});
+                this.setState({text_color: _objTheme.webapp.color.text});
+                this.setState({button_color: _objTheme.webapp.color.button});
+                this.setState({button_text_color: _objTheme.webapp.color.button_text});
+
+                // only set logo if not default 
+                if(_objTheme.webapp.logo !=="/assets/images/www_logo.png") {
+                    this.setState({logo: _objTheme.webapp.logo});
+                }
+
+                // only set background if not default 
+                if(_objTheme.webapp.background !=="/assets/images/siwc_background.jpg") {
+                    this.setState({background: _objTheme.webapp.background});                    
+                }
             }
+
+            this._enableFormDomain(this.state.domain_name);
         }
     }
 
@@ -112,14 +144,14 @@ class FormConfigure extends FormReserve {
 
     _enableFormDomain(_input) {
         let isCallbackOK = this.validateCallback(this.state.redirect_uri);
-        let isDomainNameOK = this.validateDomainName(this.state.domain_name);
+        let isDomainNameOK = this.validateDomainName(this.state.display_name);
         let isDomainOK = this.validateDomain(_input)!==null;
         this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK});
     }
 
     _enableFormCallback(_input) {
         let isCallbackOK = this.validateCallback(_input);
-        let isDomainNameOK = this.validateDomainName(this.state.domain_name);
+        let isDomainNameOK = this.validateDomainName(this.state.display_name);
         let isDomainOK = this.validateDomain(this.state.domain_name)!==null;
         this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK});
     }
@@ -165,8 +197,11 @@ class FormConfigure extends FormReserve {
             scope: this.state.aScope
         };
 
+        // theme
         if(this.state.background!=="") {objConfig.background= this.state.background}
         if(this.state.logo!=="") {objConfig.logo= this.state.logo}
+
+        // dev callbacks
         if(this.state.redirect_uri_dev!=="") {objConfig.redirect_uri_dev= this.state.redirect_uri_dev}
         if(this.state.redirect_error_dev!=="") {objConfig.redirect_error_dev= this.state.redirect_error_dev}
 
@@ -183,7 +218,69 @@ class FormConfigure extends FormReserve {
     }
 
     async async_updateDomain( ) {
+        let objConfig = {
+            
+            // which domain id?
+            app_id: this.state.app_id,
 
+            // take all that can be updated
+            display_name: this.state.display_name,
+
+            // callbacks
+            redirect_uri: this.state.redirect_uri,
+            redirect_error: this.state.redirect_error,
+            
+            // token
+            token_lifespan:  this.state.token_lifespan,
+
+            // theme 
+            dark_mode: this.state.dark_mode,
+
+            // datashare
+            scope: this.state.aScope
+        };
+
+        if(this.state.background!=="") {objConfig.background= this.state.background}
+        if(this.state.logo!=="") {objConfig.logo= this.state.logo}
+        if(this.state.text_color!=="") {objConfig.text_color= this.state.text_color}
+        if(this.state.button_color!=="") {objConfig.button_color= this.state.button_color}
+        if(this.state.button_text_color!=="") {objConfig.button_text_color= this.state.button_text_color}
+
+        if(this.state.redirect_uri_dev!=="") {objConfig.redirect_uri_dev= this.state.redirect_uri_dev}
+        if(this.state.redirect_error_dev!=="") {objConfig.redirect_error_dev= this.state.redirect_error_dev}
+
+        srv_updateDomain(objConfig, this.props.AuthenticationCookieToken)
+            .then(res => {
+                if(res.data===null && res.message) {
+                    this.props.fnShowMessage(res.message);
+                }
+                else {
+                    this.props.onRedirect("/app")
+                }                
+            })
+    }
+
+    async async_renewDomain() {
+        let dataDomain=await srv_renewDNS(this.state.app_id, this.props.AuthenticationCookieToken);
+        if(dataDomain && dataDomain.data && dataDomain.data.dns_token) {
+            this.setState({dns_token: dataDomain.data.dns_token});
+            this.setState({message: "Validate this DNS record to prove ownership"});
+            this.setState({isDialogOwnershipVisible: true})    
+        }
+    }
+
+    async async_verifyDomain() {
+        let dataDomain=await srv_verifyDNS(this.state.app_id, this.props.AuthenticationCookieToken);
+        if(dataDomain && dataDomain.data) {
+            this.setState({is_verified: dataDomain.data.is_verified===true});
+
+            if(dataDomain.data.is_verified) {
+                this.setState({isDialogOwnershipVisible: false});
+            }
+            else {
+                this.setState({message: "Could not verify, please check your DNS!"});
+            }
+        }
     }
 
     renderPreview () {
@@ -372,7 +469,7 @@ class FormConfigure extends FormReserve {
                     })}
 
                     {this.renderRow({
-                        id: "color_text", 
+                        id: "text_color", 
                         type: "text", 
                         label: "Text color", 
                         hint: "Color of texts in the Authentication form (default = #333) ", 
@@ -381,7 +478,7 @@ class FormConfigure extends FormReserve {
                     })}
 
                     {this.renderRow({
-                        id: "color_button", 
+                        id: "button_color", 
                         type: "text", 
                         label: "Button color", 
                         hint: "Color of buttons' background in the Authentication form (default = #003366) ", 
@@ -390,7 +487,7 @@ class FormConfigure extends FormReserve {
                     })}
                     
                     {this.renderRow({
-                        id: "color_button_text", 
+                        id: "button_text_color", 
                         type: "text", 
                         label: "Button text color", 
                         hint: "Color of buttons' texts in the Authentication form (default = #f0f0f0) ", 
@@ -441,12 +538,36 @@ class FormConfigure extends FormReserve {
                         </div>
 
                     : 
-                        <div 
-                            className={"btn btn-primary " + (this.state.canValidate? "" : "disabled")}
-                            onClick = {this.async_updateDomain.bind(this)}
-                        >                                
-                            Update...
-                        </div>
+                        <>
+                            <div 
+                                className={"btn btn-quiet " + (this.state.canValidate? "" : "disabled")}
+                                onClick = {this.async_updateDomain.bind(this)}
+                            >                                
+                                Update
+                            </div>
+
+                        {this.state.is_verified===false ? 
+                            <div 
+                                className="btn btn-primary "
+                                onClick = {this.async_renewDomain.bind(this)}
+                            >                                
+                                Prove ownership
+                            </div>
+                        :""}
+
+                        {this.state.isDialogOwnershipVisible? 
+                            <DialogOwnership
+                                domain_name = {this.state.domain_name}
+                                app_id = {this.state.app_id}
+                                app_secret = {this.state.app_secret}
+                                dns_token = {this.state.dns_token}
+                                onClose = {()  => this.setState({isDialogOwnershipVisible: false})}
+                                onValidate = {()  => this.async_verifyDomain()}
+                                message= {this.state.message}
+                            />
+                        :""}
+
+                        </>
                     }
 
                 </div>

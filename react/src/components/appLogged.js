@@ -2,8 +2,10 @@ import AppBase from "./appBase";
 import ViewDomain from "./viewDomain";
 import ViewWalletConnect from "./viewWalletConnect";
 import {srv_getDomains} from "../services/configure";
+import {deleteMe} from "../services/me";
 
 import jsonwebtoken from "jsonwebtoken";
+import Cookies from 'js-cookie';
 
 class AppLogged extends AppBase {
 
@@ -74,8 +76,16 @@ class AppLogged extends AppBase {
     }
 
 /*
- *        App Configure Renders 
+ *        UI
  */
+
+    onDisconnect() {
+        // 
+
+        deleteMe();
+        Cookies.remove(this.props.AuthenticationCookieName, { path: ''});
+        window.location="/auth/login";
+    }
     
     onSelectIdentity() {
         
@@ -124,6 +134,7 @@ class AppLogged extends AppBase {
                                 logo = "/assets/images/icon_plus.png"
                                 domain_name = "<yourdomain.com>"
                                 display_name = "Claim a domain!"
+                                isVerified= {null}
                                 onClick = {( ) => {
                                     this.props.onRedirect("/app/configure")
                                 }}
@@ -140,6 +151,7 @@ class AppLogged extends AppBase {
                                     logo = {item.theme.logo}
                                     domain_name = {item.domain_name}
                                     display_name = {item.display_name}
+                                    isVerified= {item.is_verified}
                                     app_id = {item.app_id}
                                     onClick = {(evt) => {
                                         let idElt=evt.currentTarget;
@@ -159,8 +171,16 @@ class AppLogged extends AppBase {
         return (
             <div className="siww_configure-header">
                 <h1>Sign-in with Wallet</h1>
-                <div className="connected">
-                    {this.state.authenticated_wallet_address? "Connected with "+( this.state.authenticated_wallet_id + " ("+this.getShortenAnonAddress(this.state.authenticated_wallet_address)+")") : "Not authenticated"}
+                <div className="align-right">
+                    <div className="connected">
+                        {this.state.authenticated_wallet_address? "Connected with "+( this.state.authenticated_wallet_id + " ("+this.getShortenAnonAddress(this.state.authenticated_wallet_address)+")") : "Not authenticated"}
+                    </div>
+                    <div 
+                        className="btn btn-tiny"
+                        onClick = {this.onDisconnect.bind(this)}
+                    >
+                        Disconnect
+                    </div>
                 </div>
             </div>
         );
