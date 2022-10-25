@@ -17,9 +17,9 @@ class ViewDomain extends Component {
                 {this.props.isVerified!==null? 
                     <div className="domain-checked">
                         {this.props.isVerified? 
-                        <span >✔</span>
+                        <span className="green">✔</span>
                         :
-                        <span title="Ownership not yet confirmed">⚠</span>
+                        <span  className="red" title="Ownership not yet confirmed">⚠</span>
                         }</div>
                 :""}
                 <div className="domain-name" >{this.props.display_name}</div>

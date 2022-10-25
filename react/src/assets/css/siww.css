@@ -30,6 +30,11 @@
 
     --scroll-bar-bg-color: transparent;
     --scroll-bar-color: #aaa;
+
+    --green: #20e720;
+    --orange: #ffbb55;
+    --red: #ff6a50;
+    --grey: #ccc;
 }
 
 body {
@@ -80,6 +85,13 @@ a {
 .align-center {
     text-align: center;
     width:100%;
+}
+
+.green {
+    color: var(--green);
+}
+.red {
+    color: var(--red);
 }
 
 .siww-oauth-login {

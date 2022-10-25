@@ -23,7 +23,7 @@ constructor(props) {
 
     componentDidMount() {
         super.componentDidMount();
-        if(this.props.didSocketConnect && !this.state.didInitSIWC) {
+        if(!this.state.didInitSIWC) {
             this.initChain(this.props.chain);
         }        
     }
@@ -31,8 +31,8 @@ constructor(props) {
     componentDidUpdate(prevProps) {
         super.componentDidUpdate(prevProps);
         
-        // socket ready? let's use SIWC
-        if(this.props.didSocketConnect && !this.state.didInitSIWC) {
+        //  ready? let's use SIWC
+        if(!this.state.didInitSIWC) {
             this.initChain(this.props.chain);
         }        
     }

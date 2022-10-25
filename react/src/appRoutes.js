@@ -67,10 +67,6 @@ class AppRoutes extends Component {
                         host={this.props.host}
                         chain="cardano"
 
-                        // sockets
-                        didSocketConnect={this.props.didSocketConnect}
-                        getSocket={this.props.getSocket}
-
                         // default themes
                         theme={getTheme()}
                         styles={getStyles()}
@@ -93,10 +89,7 @@ class AppRoutes extends Component {
                         AuthenticationCookieName={this.props.AuthenticationCookieName}
                         AuthenticationCookieToken={this.props.AuthenticationCookieToken}
                         AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
-
-                        // sockets
-                        didSocketConnect={this.props.didSocketConnect}
-                        getSocket={this.props.getSocket}
+                        onUpdateCookie = {this.props.onUpdateCookie}
 
                         // webapp
                         webAppId = {this.props.webAppId}
@@ -128,10 +121,7 @@ class AppRoutes extends Component {
                         AuthenticationCookieName={this.props.AuthenticationCookieName}
                         AuthenticationCookieToken={this.props.AuthenticationCookieToken}
                         AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
-
-                        // sockets
-                        didSocketConnect={this.props.didSocketConnect}
-                        getSocket={this.props.getSocket}
+                        onUpdateCookie = {this.props.onUpdateCookie}
 
                         // webapp    
                         theme={getTheme()}
@@ -156,10 +146,7 @@ class AppRoutes extends Component {
                         AuthenticationCookieName={this.props.AuthenticationCookieName}
                         AuthenticationCookieToken={this.props.AuthenticationCookieToken}
                         AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
-
-                        // sockets
-                        didSocketConnect={this.props.didSocketConnect}
-                        getSocket={this.props.getSocket}
+                        onUpdateCookie = {this.props.onUpdateCookie}
 
                         // themes
                         theme={getTheme()}
@@ -184,10 +171,7 @@ class AppRoutes extends Component {
                         AuthenticationCookieName={this.props.AuthenticationCookieName}
                         AuthenticationCookieToken={this.props.AuthenticationCookieToken}
                         AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
-
-                        // sockets
-                        didSocketConnect={this.props.didSocketConnect}
-                        getSocket={this.props.getSocket}
+                        onUpdateCookie = {this.props.onUpdateCookie}
 
                         // webapp    
                         webAppId = {this.props.webAppId}

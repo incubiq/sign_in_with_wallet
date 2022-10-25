@@ -265,7 +265,6 @@ class AuthAuthorize extends AuthAuthenticate {
     render() {
         return (
             <div id="siww-login-container" style={this.props.styles.container}>
-            {this.props.didSocketConnect ? 
                 <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                     <ViewHeader 
@@ -289,11 +288,6 @@ class AuthAuthorize extends AuthAuthenticate {
                     {this.renderFooter()}
 
                 </div>
-            :
-                <div className="loading fullHeight">
-                    <div className="loadingText">Waiting for socket connection...</div>
-                </div>
-            }
         </div>
         )
     }

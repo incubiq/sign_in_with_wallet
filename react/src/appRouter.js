@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Cookies from 'js-cookie';
-import io from 'socket.io-client';
 
 import AppRoutes from "./appRoutes";
 import {srv_getSIWW} from "./services/base";
@@ -13,12 +12,9 @@ import {registerWebAppWithIdentity, getMyIdentities} from "./services/me";
 import "./assets/css/app.css";
 import "./assets/css/siww.css";
 
-let gDidSocketConnect=false;
 let gDidMount=false;
-const socket = io("/client");       
 
 export default function AppRouter(props) {
-  const [didSocketConnect, setDidSocketConnect] = useState(false); 
 
   // Our backend basic info
   const [version, setVersion] = useState(""); 
@@ -68,21 +64,6 @@ export default function AppRouter(props) {
             // do we have a requesting webapp? if yes, we prepare all for it
             let _client_id=decodeURIComponent(decodeURIComponent(getmyuri("app_id", window.location.search)));
             async_initializeDomain(_client_id);
-
-            // open sockets
-            socket.on("connect", _args => { 
-              if(gDidMount && !gDidSocketConnect) {
-                if(socket && socket.connected) {
-                  setDidSocketConnect(true);
-                  gDidSocketConnect=true;  
-                  
-                  // Receive the authentication cookie
-                  socket.on('auth_cookie', _cookie => {
-                    setCookieToken(_cookie.token);
-                  })       
-                }
-              }
-            });              
           }
         })
     }
@@ -126,22 +107,25 @@ export default function AppRouter(props) {
     }
   }
 
+  const onUpdateCookie = (_cookie) => {
+    setCookieName(_cookie.name);
+    setCookieToken(_cookie.token);
+
+    Cookies.set(_cookie.name, _cookie.token, {
+      expires: "72h", 
+      path: '' 
+    });
+  }
+
   const onRedirect = async (_route) => {
     let _client_id=decodeURIComponent(decodeURIComponent(getmyuri("app_id", _route)));
     await async_initializeDomain(_client_id);
     navigate(_route);
   }
 
-  const getSocket = ( ) => {
-    return socket;
-  }
-
   return (
       <>     
         <AppRoutes 
-          // socket
-          didSocketConnect = {didSocketConnect}
-          getSocket = {getSocket}
 
           // utils
           version = {version}
@@ -153,6 +137,7 @@ export default function AppRouter(props) {
           AuthenticationCookieName = {cookieName}
           AuthenticationCookieToken = {cookieToken}
           AuthenticationCookieSecret = {cookieSecret}
+          onUpdateCookie = {onUpdateCookie}
 
           // cache
           CacheSecret = {cacheSecret}

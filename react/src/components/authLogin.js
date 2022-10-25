@@ -45,8 +45,10 @@ class AuthLogin extends AuthAuthenticate {
 
                 <div className="siww_configure-header">
                     <h1>Sign-in with Wallet</h1>
-                    <div className="connected">
-                        {this.state.wallet_id? "Connected with "+( this.state.wallet_id + " ("+this.getShortenAnonAddress(this.state.wallet_address)+")") : "Not authenticated"}
+                    <div className="align-right">
+                        <div className="connected">
+                            {this.state.wallet_id? "Connected with "+( this.state.wallet_id + " ("+this.getShortenAnonAddress(this.state.wallet_address)+")") : "Not authenticated"}
+                        </div>
                     </div>
                 </div>
 

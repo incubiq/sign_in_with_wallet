@@ -164,37 +164,25 @@ class AuthAuthenticate extends AuthConnect {
         if(objIdentityForAuth) {
             this.setState({hover:"Using "+objIdentityForAuth.wallet_id+" wallet as the signing identity..."});
 
-            // get soket... hopefully it s here!
-            let _socket=this.props.getSocket();
-            if(!_socket || !_socket.id) {
-                console.log("Socket not initialized");
-                return;
-            }
-
             // now pass details to server, so we get a cookie
             srv_prepare({
                 provider: objIdentityForAuth.provider,
                 wallet_id: objIdentityForAuth.wallet_id,
                 wallet_addr: objIdentityForAuth.wallet_address,    
-                socket_id: _socket.id,
                 app_id: this.props.webAppId
             })
-                .then(data => {
+                .then(dataObj => {
                     // ok??
-                    if(!data || !data.data) {
+                    if(!dataObj || !dataObj.data) {
                         let _err={
                             data: null,
-                            status: data.status,
-                            statusText: data.statusText
+                            status: dataObj.status,
+                            statusText: dataObj.statusText
                         }
                         throw _err;
                     }
                     else {
-//                        this.async_onAuthCookieReceived(res.data.token);
-
-                        // visual effect (wait for cookie)
-        
-                        // we wait to be called back on sockets...
+                        this.props.onUpdateCookie(dataObj.data.cookie);
                     }
 
                 }).catch(err =>{
@@ -371,7 +359,6 @@ class AuthAuthenticate extends AuthConnect {
     render() {
         return (
             <div id="siww-login-container" style={this.props.styles.container}>
-            {this.props.didSocketConnect ? 
                 <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                     <ViewHeader 
@@ -390,11 +377,6 @@ class AuthAuthenticate extends AuthConnect {
                     {this.renderFooter()}
 
                 </div>
-            :
-                <div className="loading fullHeight">
-                    <div className="loadingText">Waiting for socket connection...</div>
-                </div>
-            }
         </div>
         )
     }
