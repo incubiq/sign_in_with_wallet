@@ -55,16 +55,25 @@ const express = require('express');
         app.use(passport.initialize());
         app.use(passport.session());
 
-        // ensure we are registered with SIWC for authentication sessions
-        
-        const regSIWW = require('./authenticate/register_siww');
-        regSIWW.async_registerDomain(gConfig.siww)
+        // ensure we are registered with SIWW for authentication sessions        
+        const regSIWW = require('./authenticate/services_siww');        
+        regSIWW.async_getDomainInfo(gConfig.siww)
             .then(function(_dataDomain){
 
-                // only register routes after reg with SIWC
-                initializeRedirections(app);
-                initializeRoutes(app);
-                initializeViews(app);        
+                if(!_dataDomain || !_dataDomain.data || _dataDomain.data.app_id!==gConfig.siww.clientID) {
+                    throw {
+                        data: null,
+                        status: 400,
+                        statusText: "SIWW does not know me..."
+                    }
+
+                }
+                else {
+                    // only register routes after we have guarantee SIWW know us
+                    initializeRedirections(app);
+                    initializeRoutes(app);
+                    initializeViews(app);        
+                }
             })
             .catch(function(err) {
                 console.log(err.statusText);

@@ -68,6 +68,7 @@ class AppConfigure extends AppLogged {
 
                         domain_name= {this.state.claimed_domain}
                         app_id= {this.state.app_id}
+                        app_secret= {this.state.app_secret}
                         AuthenticationCookieToken={this.props.AuthenticationCookieToken}
                     />                    
                 }

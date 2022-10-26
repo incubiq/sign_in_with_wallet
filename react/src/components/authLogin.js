@@ -47,7 +47,7 @@ class AuthLogin extends AuthAuthenticate {
                     <h1>Sign-in with Wallet</h1>
                     <div className="align-right">
                         <div className="connected">
-                            {this.state.wallet_id? "Connected with "+( this.state.wallet_id + " ("+this.getShortenAnonAddress(this.state.wallet_address)+")") : "Not authenticated"}
+                            <span>Not authenticated</span>
                         </div>
                     </div>
                 </div>
@@ -61,7 +61,9 @@ class AuthLogin extends AuthAuthenticate {
                     :
                     this.state.aWallet && this.state.aWallet.length>0? 
                         <div className="siww-panel">
-                            <div>Click/tap to connect with a wallet first</div>
+                            <div>Please connect with a wallet</div>
+                            <div className="hint">Your wallet is used to authenticate you into your dashboard.<br /><br /> Claim webApps under this wallet/identity, then configure oAuth access.</div>
+                            <br />
                             <ViewWallets 
                                 theme = {this.state.theme}
                                 aWallet= {this.state.aWallet}

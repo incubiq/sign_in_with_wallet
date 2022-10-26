@@ -117,7 +117,7 @@ class FormReserve extends Component {
                     }}
                 />
                 <div
-                    className="hint"
+                    className="hint align-left"
                 >
                     {objParam.hint}
                 </div>

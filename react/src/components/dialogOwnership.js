@@ -38,13 +38,13 @@ class DialogOwnership extends Component {
                             <div className="row">
                                 <div className="label">Entry</div>
                                 <input type="text" className="value " disabled="disabled" value={this.props.domain_name} />
-                                <div className="hint">this is the name of the TXT record to add</div>
+                                <div className="hint">this is the Name of the TXT record to add</div>
                             </div>
 
                             <div className="row">
-                                <div className="label">value</div>
+                                <div className="label">Value</div>
                                 <input type="text" className="value " disabled="disabled" value={"siww="+this.props.dns_token} />
-                                <div className="hint">copy this value into the content of your TXT record</div>
+                                <div className="hint">copy this value into the Content of your TXT record</div>
                             </div>
 
                             <div className="align-center">

@@ -5,7 +5,7 @@ const routeBase = require('./utils');
 const authToken = require('../authenticate/token');
 const passportSIWW = require("../authenticate/passport_siww");    
 //const passport = require('passport');
-const regSIWW = require('../authenticate/register_siww');
+const regSIWW = require('../authenticate/services_siww');
 const libUser = require('../authenticate/user');              // Our User mgt minimal library
 const Q = require('q');
 
@@ -53,43 +53,6 @@ const Q = require('q');
 // ************************************************
 //      Real authentication starts here!
 // ************************************************
-    router.get('/prepare/siww', function(req, res, next) {
-        
-        let fnReg=function() {
-            var deferred = Q.defer();
-            regSIWW.async_getDomainInfo(gConfig.siww)
-                .then(_dataIsReg => {
-                    if(_dataIsReg.data && _dataIsReg.data.app_id) {
-                        deferred.resolve();
-                    }
-                    else {
-                        // need to register again!!
-                        regSIWW.async_registerDomain(gConfig.siww)
-                            .then(_dataDomain => {
-                                
-                                // TODO !! restart the passport siww
-//                                const StrategySIWW = require("./passport_siww_strategy");
-//                                passportSIWW.use(StrategySIWW.getNewStrategy());
-
-                                // redirect
-                                deferred.resolve();
-                            })
-                            .catch(err => {
-                                deferred.reject();
-                            });
-                    }
-                })
-                .catch(err => {
-                    deferred.reject();
-                });
-            return deferred.promise;
-        }
-
-        // ensure we have connection with SIWC
-        fnReg().then(function(){
-            res.redirect("/auth/siww");
-        })
-    });
 
 //    router.get('/siwc',_loginSIWW);
 //    router.get('/siwc/callback',_loginSIWW);

@@ -26,7 +26,7 @@ class FormConfigure extends FormReserve {
             display_name: "",
 
             app_id: props.app_id? props.app_id : "",
-            app_secret: "",
+            app_secret: props.app_secret? props.app_secret : "",
 
             // valid?
             is_verified: false,
@@ -114,7 +114,7 @@ class FormConfigure extends FormReserve {
                 }
 
                 // only set background if not default 
-                if(_objTheme.webapp.background !=="/assets/images/siwc_background.jpg") {
+                if(_objTheme.webapp.background !=="/assets/images/siww_background.jpg") {
                     this.setState({background: _objTheme.webapp.background});                    
                 }
             }
@@ -245,6 +245,10 @@ class FormConfigure extends FormReserve {
         if(this.state.text_color!=="") {objConfig.text_color= this.state.text_color}
         if(this.state.button_color!=="") {objConfig.button_color= this.state.button_color}
         if(this.state.button_text_color!=="") {objConfig.button_text_color= this.state.button_text_color}
+
+        // redirects must start with a /
+        if(objConfig.redirect_uri.substring(0,1)!=="/") {objConfig.redirect_uri="/"+objConfig.redirect_uri;}
+        if(objConfig.redirect_error.substring(0,1)!=="/") {objConfig.redirect_error="/"+objConfig.redirect_error;}
 
         if(this.state.redirect_uri_dev!=="") {objConfig.redirect_uri_dev= this.state.redirect_uri_dev}
         if(this.state.redirect_error_dev!=="") {objConfig.redirect_error_dev= this.state.redirect_error_dev}
@@ -412,6 +416,33 @@ class FormConfigure extends FormReserve {
                             return that._enableFormName(_input);
                         }
                     })}
+
+                    {this.state.is_verified? 
+                    <>
+                        <div className="category">
+                            oAuth ID and Secret
+                        </div>
+
+                        {this.renderRow({
+                            id: "app_id", 
+                            type: "text", 
+                            label: "Application ID", 
+                            hint: "application ID (use it in your oAuth configuration call) ", 
+                            placeholder: "",
+                            isDisabled: true
+                        })}
+
+                        {this.renderRow({
+                            id: "app_secret", 
+                            type: "text", 
+                            label: "Application Secret", 
+                            hint: "application Secret (keep it safe - use it in your oAuth configuration call) ", 
+                            placeholder: "",
+                            isDisabled: true
+                        })}
+
+                    </>
+                :""}
 
                     <div className="category">
                         oAuth 2.0 callbacks

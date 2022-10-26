@@ -173,7 +173,15 @@ class AppLogged extends AppBase {
                 <h1>Sign-in with Wallet</h1>
                 <div className="align-right">
                     <div className="connected">
-                        {this.state.authenticated_wallet_address? "Connected with "+( this.state.authenticated_wallet_id + " ("+this.getShortenAnonAddress(this.state.authenticated_wallet_address)+")") : "Not authenticated"}
+                        {this.state.authenticated_wallet_address? 
+                        <>
+                            <span>Connected with</span>
+                            &nbsp;<b>{this.state.authenticated_wallet_id}</b>&nbsp;
+                            <span>({this.getShortenAnonAddress(this.state.authenticated_wallet_address)})</span>
+                        </>
+                        : 
+                        <span>Not authenticated</span>
+                        }
                     </div>
                     <div 
                         className="btn btn-tiny"
@@ -194,8 +202,8 @@ class AppLogged extends AppBase {
                 <div className="siww-panel">
                     {this.state.authenticated_wallet_address? 
                         <>
-                            {this.renderIdentities()}
                             {this.renderDomains()}                        
+                            {this.renderIdentities()}
                         </>                        
                     : 
                         <>

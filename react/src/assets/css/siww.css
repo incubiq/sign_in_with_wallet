@@ -82,6 +82,10 @@ a {
     width:100%;
 }
 
+.align-left {
+    text-align: left;
+}
+
 .align-center {
     text-align: center;
     width:100%;
@@ -764,11 +768,10 @@ a {
     text-align: left;
   }
 
-  .siww_configure .hint {
+  .hint {
     display: block;
     font-size: 11px;
     line-height: 11px;
-    text-align: left;
     font-style: italic;
     color: #888;
   }
