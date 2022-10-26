@@ -101,7 +101,7 @@ class AppLogged extends AppBase {
                 <div className="siww-section">
                     <h2>Your known identities</h2>
                 </div>
-                <div className="connectCont">
+                <div className="connectCont align-left">
                     <ul className="connectWallets"> 
                         {this.state.aIdentity.map((item, index) => (
                             <ViewWalletConnect 
@@ -127,7 +127,7 @@ class AppLogged extends AppBase {
                 <div className="siww-section">
                     <h2>Your registered domains</h2>
                 </div>
-                <div className="connectCont">
+                <div className="connectCont align-left">
                     <ul className="domain-list"> 
                         <li className="domain-panel" >
                             <ViewDomain 

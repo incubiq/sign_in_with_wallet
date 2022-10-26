@@ -271,6 +271,7 @@ class AuthAuthorize extends AuthAuthenticate {
                         app_id= {this.props.webAppId}
                         oauthClientName = {this.props.webAppName}
                         oauthDomain = {this.props.webAppDomain}
+                        is_verified = {this.props.webApp.is_verified===true}
                         isOauth = {true}
                         SIWWLogo = {this.state.theme.logo}
                         theme = {this.state.theme}

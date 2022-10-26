@@ -20,8 +20,15 @@ class ViewHeader extends Component {
                                 <span>{this.props.oauthDomain !==""? this.props.oauthDomain : "https://???"}</span>
                             </div>
                         </div>
-                        <div className="login-separator">↔</div>
-                        <div className="hidden" id="idClient">{this.props.app_id}</div>
+
+                        <div>
+                            <div className="hidden" id="idClient">{this.props.app_id}</div>
+                            <div className="login-separator">↔</div>
+                            {this.props.is_verified===false? 
+                                <div className="red" title="Ownership of this application is not yet confirmed">⚠</div>
+                            :""}
+                        </div>
+
                     </>
                     :""}
 

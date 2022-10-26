@@ -16,14 +16,14 @@ constructor(props) {
             aWallet: [],                 // all available wallets to connect to  (gathered from connect engine)
 
             // init vars
-            didInitSIWC: false,
+            didInitSIWW: false,
             didAccessWallets: false,
         });
     }
 
     componentDidMount() {
         super.componentDidMount();
-        if(!this.state.didInitSIWC) {
+        if(!this.state.didInitSIWW) {
             this.initChain(this.props.chain);
         }        
     }
@@ -32,13 +32,13 @@ constructor(props) {
         super.componentDidUpdate(prevProps);
         
         //  ready? let's use SIWC
-        if(!this.state.didInitSIWC) {
+        if(!this.state.didInitSIWW) {
             this.initChain(this.props.chain);
         }        
     }
 
     initChain(_chain) {
-        this.setState({didInitSIWC: true});
+        this.setState({didInitSIWW: true});
         switch(_chain) {
             case "cardano":
                 this.connectCardano();

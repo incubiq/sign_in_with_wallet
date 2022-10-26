@@ -8,9 +8,6 @@ import {createPartialIdentity, updatePartialIdentity, getMyIdentities, getIdenti
 import jsonwebtoken from "jsonwebtoken";
 
 let didMount=false;
-const VIEWMODE_IDENTITY="identity";
-const VIEWMODE_DATASHARE="datashare";
-
 let mustConfirm=false;          // shall we wait for user confirmation?
 
 class AuthAuthenticate extends AuthConnect {
@@ -60,8 +57,18 @@ class AuthAuthenticate extends AuthConnect {
         super.componentDidUpdate(prevProps);
         let didCall=false;
 
-        // we have a cookie and user was not yet authenticated?
-        if(this.props.AuthenticationCookieToken!==null && this.state.iSelectedIdentity===null && !mustConfirm) {
+        // (i) we have a cookie;  and (ii) user was not yet authenticated ; and (at least one wallet is connected)  ; and (iv) confirmation not required
+        // => we process this cookie for authentication
+        let isOneConnected=false;
+        this.state.aWallet.forEach(item => {
+            if(item.hasConnected) {
+                isOneConnected=true;
+            }
+        })
+        if(this.props.AuthenticationCookieToken!==null && 
+            this.state.iSelectedIdentity===null &&
+            isOneConnected && 
+            !mustConfirm) {
             didCall=true;
             this.async_onAuthCookieReceived(this.props.AuthenticationCookieToken);
         }
@@ -365,6 +372,7 @@ class AuthAuthenticate extends AuthConnect {
                         app_id= {this.props.webAppId}
                         oauthClientName = {this.props.webAppName}
                         oauthDomain = {this.props.webAppDomain}
+                        is_verified = {this.props.webApp.is_verified===true}
                         isOauth = {true}
                         SIWWLogo = {this.state.theme.logo}
                         theme = {this.state.theme}

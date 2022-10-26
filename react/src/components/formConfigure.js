@@ -417,7 +417,7 @@ class FormConfigure extends FormReserve {
                         }
                     })}
 
-                    {this.state.is_verified? 
+                    {this.state.is_verified===true || this.state.domain_name.substring(0,9)==="localhost" ? 
                     <>
                         <div className="category">
                             oAuth ID and Secret
@@ -577,7 +577,7 @@ class FormConfigure extends FormReserve {
                                 Update
                             </div>
 
-                        {this.state.is_verified===false ? 
+                        {this.state.is_verified===false && this.state.domain_name.substring(0,9)!=="localhost" ? 
                             <div 
                                 className="btn btn-primary "
                                 onClick = {this.async_renewDomain.bind(this)}
