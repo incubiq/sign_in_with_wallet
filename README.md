@@ -26,12 +26,12 @@ To start the react app:
 
 To start the backend app:
 - place yourself in the backend_siww dir 
-- run npm start
+- run npm start server.js
 - the app will run by default on "http://localhost:3010"
 
 To start the sample test app:
 - place yourself in the backend_sample dir 
-- run npm start
+- run npm start server.js
 - the app will run by default on "http://localhost:3003"
 
 # Tests

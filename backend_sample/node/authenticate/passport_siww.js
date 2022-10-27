@@ -6,12 +6,13 @@ const libUser = require('./user');              // Our User mgt minimal library
 
     // register strategy
     passport.use(new SIWWStrategy({
-        clientID: cSIWW.clientID,
-        clientSecret: cSIWW.clientSecret,
-        callbackURL: gConfig.origin+cSIWW.callbackURL,
-        authorizationURL: cSIWW.host+ "oauth/dialog/authorize",
-        tokenURL: cSIWW.host+"oauth/token",
-        profileURL: cSIWW.host+"oauth/resources/profile"
+        clientID: cSIWW.clientID,                                    // our app_id
+        clientSecret: cSIWW.clientSecret,                            // our app_secret (only used if enableProof is true)
+        callbackURL: gConfig.origin+cSIWW.callbackURL,               // our callback URL
+        enableProof: true,                                           // set to true to make use of the app_secret to secure calls (false = unsecured calls)
+        authorizationURL: cSIWW.host+ "oauth/dialog/authorize",      // where we call SIWW for authorization (fixed URL)
+        tokenURL: cSIWW.host+"oauth/token",                          // where we call SIWW for getting oAuth token (fixed URL)
+        profileURL: cSIWW.host+"oauth/resources/profile"             // where we call SIWW for receivinend use's profile (fixed URL)
     },
     function(accessToken, refreshToken, profile, done) {
         try {
