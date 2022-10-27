@@ -24,10 +24,10 @@ export default function AppRouter(props) {
   // Authentication cookie
   const [cookieName, setCookieName] = useState(null); 
   const [cookieToken, setCookieToken] = useState(null); 
-  const [cookieSecret, setCookieSecret] = useState("somekey_1234567890");     // secret to decode cookie - TODO ... need to pass the key from server (DO NOT KEEP this into prod)
+  const [cookieSecret, setCookieSecret] = useState(null);
 
   // Localstore encrypt secret
-  const [cacheSecret, setCacheSecret] = useState("cacheEncryptionKey_1234567890");     // secret to encode localstore - TODO ... need to pass the key from server (DO NOT KEEP this into prod)
+  const [cacheSecret, setCacheSecret] = useState(null);
 
   // Target WebApp info
   const [webAppId, setWebAppId] = useState(null); 
@@ -52,6 +52,10 @@ export default function AppRouter(props) {
             setVersion(dataInfo.data.version);
             setIsDebug(dataInfo.data.isDebug);
             setHost(dataInfo.data.host);
+
+            //TODO ... need to pass the key from server in a more secure way than this
+            setCacheSecret(dataInfo.data.cache_secret);
+            setCookieSecret(dataInfo.data.jwt_secret);
 
             // do we have a cookie?? if yes, we may already be authenticated
             let _name=dataInfo.data.isDebug? 'jwt_DEBUG_token_SIWW' : 'jwt_token_SIWW';

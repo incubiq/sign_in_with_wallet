@@ -13,7 +13,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/backend_sample/server.js",
-            "args": ["env="]            
+            "args": ["app_secret=someotherkey_1234567890"]            
         },
  
         {
@@ -24,7 +24,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/backend_siww/server.js",
-            "args": ["env="]            
+            "args": ["cache_secret=mysecretforcache", "jwt_secret=mysecretforjwt"]            
         }
     ]
 }

@@ -7,7 +7,6 @@ const srv_prepare = async(obj) => {
     provider: obj.provider,
     wallet_id: obj.wallet_id,
     wallet_addr: obj.wallet_addr,
-    socket_id: obj.socket_id,
     app_id: obj.app_id
   });
 }

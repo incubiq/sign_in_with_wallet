@@ -5,15 +5,6 @@ process.env.NODE_ENV = 'prod';
  *      Config
  */
 
-// just to check all arguments passed by node
-process.argv.forEach(function (val, index, array) {
-    console.log(index + ': ' + val);
-    if(index==2) {
-        if(val.substr(0,4)=="env=")
-        process.env.NODE_ENV=val.substr(4, val.length);           // set the config if passed in param
-    }
-});
-
 // global config params of backend server app
 let _port=3003;
 global.gConfig={
@@ -23,13 +14,13 @@ global.gConfig={
 
     // cookie / auth
     appName: "TestApp_LoginSIWC",       // app Name used for naming the cookie
-    jwtKey: "mykey_1234567890",         // some basic key for encoding
+    jwtKey: "",                         // some basic key for encoding cookies (will get it from SIWW)
     authentication_expire: "72h",       // 72 hours expiration of our cookie
 
     // params for the SIWW session (includes where SIWW is hosted)
     siww: {
-        clientID: "7TdKmdPQ1663168239000",          // for test....
-        clientSecret: "someotherkey_1234567890",               // need change...
+        clientID: "7TdKmdPQ1663168239000",
+        clientSecret: "",                       // get it from params at launch
         callbackURL:"auth/siww/callback",
         host: "http://localhost:3010/",         // change this later... (will need https:// when on final server)
         domain: "localhost:3010"
@@ -39,6 +30,20 @@ global.gConfig={
     isDebug: true,                      // change to false to test PROD version
     version: "0.1.0"
 };
+
+
+// just to check all arguments passed by node
+process.argv.forEach(function (val, index, array) {
+    console.log(index + ': ' + val);
+    if(index==2) {
+        if(val.substr(0,4)=="env=") {
+            process.env.NODE_ENV=val.substr(4, val.length);           // set the config if passed in param
+        }
+        if(val.substr(0,11)=="app_secret=") {
+            gConfig.siww.clientSecret=val.substr(11, val.length);
+        }
+    }
+});
 
 /*
  *      App

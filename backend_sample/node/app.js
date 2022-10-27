@@ -1,6 +1,5 @@
 const root='../';
 const sampleApp='./';
-const siwcApp='./siwc/';
 const express = require('express');
 
 /*
@@ -57,7 +56,19 @@ const express = require('express');
 
         // ensure we are registered with SIWW for authentication sessions        
         const regSIWW = require('./authenticate/services_siww');        
-        regSIWW.async_getDomainInfo(gConfig.siww)
+        regSIWW.async_getInfo(gConfig.siww)
+        .then(dataInfo => {
+            if(!dataInfo || !dataInfo.data) {
+                console.log(err.statusText);
+                console.log("Stopping init...");
+                return;
+            }
+
+            // get the secret key for decoding cookies 
+            gConfig.jwtKey=dataInfo.data.jwt_secret;
+
+            // get domain info
+            regSIWW.async_getDomainInfo(gConfig.siww)
             .then(function(_dataDomain){
 
                 if(!_dataDomain || !_dataDomain.data || _dataDomain.data.app_id!==gConfig.siww.clientID) {
@@ -79,6 +90,8 @@ const express = require('express');
                 console.log(err.statusText);
                 console.log("Stopping init...");
             });
+        })
+
     }
 
 /*
