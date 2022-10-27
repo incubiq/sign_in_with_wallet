@@ -1,7 +1,11 @@
 import AppBase from "./appBase";
 
-//import siwc from "@incubiq/siwc";                     // real prod
-import siwc_connect from "../siwc/siwc_connect";        // for test only
+// for test only
+//import siww from "../siwc/siww";        
+//const SIWW=new siww();
+
+// real prod
+const SIWW = require('@incubiq/siww');
 
 class AuthConnect extends AppBase {
 
@@ -56,7 +60,7 @@ constructor(props) {
  */
 
     connectCardano() {
-        this.siww=new siwc_connect();
+        this.siww=SIWW.getConnector("cardano");
         this.registerSIWCCallbacks();
     }
 

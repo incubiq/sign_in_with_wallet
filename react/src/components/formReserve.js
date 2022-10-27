@@ -107,8 +107,10 @@ class FormReserve extends Component {
                         let _obj={};
                         _obj[objParam.id] = _event.target.value;
                         that.setState(_obj);
-                        let _isValid=objParam.fnValidate(_event.target.value);
-                        that.changeIcon(_event.target.value, _isValid, "icon_"+objParam.id);
+                        if(objParam.fnValidate) {
+                            let _isValid=objParam.fnValidate(_event.target.value);
+                            that.changeIcon(_event.target.value, _isValid, "icon_"+objParam.id);    
+                        }
 
                         // enable form button?
                         if(objParam.fnEnableForm) {

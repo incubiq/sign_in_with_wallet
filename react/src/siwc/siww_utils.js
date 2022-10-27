@@ -2,10 +2,10 @@
 import { randomStringForEntropy } from '@stablelib/random';    
 
 /*
- *      Sign-In With Cardano / Utilities
+ *      Sign-In With Wallet / Utilities
  */
 
-    // to avoind being stuck in a request for an unresponsive wallet
+    // to avoid being stuck in a request for an unresponsive wallet
     export const replyFast = async (_waitTimeMs, fn, ...args) => {        
         let p=new Promise(function(resolve, reject) {
             setTimeout(function(){
@@ -24,14 +24,28 @@ import { randomStringForEntropy } from '@stablelib/random';
     }
 
     // domain name must be valid
-    export const checkIsValidDomain = (domain) => { 
-        let _isValid=(domain!==null);
-        if(_isValid) {            
-            var re = new RegExp(/^((?:(?:(?:\w[.\-+]?)*)\w)+)((?:(?:(?:\w[.\-+]?){0,62})\w)+)\.(\w{2,6})$/); 
-            _isValid=domain.match(re) || (domain==="localhost" || domain==="localhost:3000" || domain==="localhost:3001");
+    export const checkIsValidDomain = (url) => { 
+        if(!url) {return false}
+
+        //remove all http:// or https:// in front...
+        url = url.toLowerCase();
+        if (url.substr(0, 7) === "http://") {
+            url = url.substr(7, url.length);
+        } else {
+            if (url.substr(0, 8) === "https://") {
+                url = url.substr(8, url.length);
+            }
         }
-        if(!_isValid) {console.log("invalid domain: "+domain)}
-        return _isValid;
+
+        var re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
+        if (url.match(re) && url.split(".").length-1 === 1) {
+            return true;
+        }
+        
+        if(url === "localhost" || url.substr(0,10) === "localhost:") {
+            return true;
+        }
+        return false;
     } 
 
     // statements must not have \n (hiding some text that user will not see until scroll)
@@ -41,9 +55,15 @@ import { randomStringForEntropy } from '@stablelib/random';
         return _isValid;
     } 
 
-    // chain must be cardano mainnet or testnet
-    export const checkIsValidChain = (_chain) => { 
-        let _isValid=_chain!==null && (_chain==="Cardano mainnet" || _chain==="Cardano testnet");
+    // chain must be accepted
+    export const checkIsValidChain = (_chain, aAcceptedChains) => { 
+        let _isValid=false;        
+        if(!aAcceptedChains || !_chain) {return false}
+        aAcceptedChains.forEach(item => {
+            if(item===_chain) {
+                _isValid=true;
+            }
+        });
         if(!_isValid) {console.log("invalid chain: "+_chain)}
         return _isValid;
     } 

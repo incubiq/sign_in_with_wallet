@@ -211,8 +211,8 @@ class FormConfigure extends FormReserve {
                     this.props.fnShowMessage(res.message);
                 }
                 else {
-
-                    // are we good here??
+                    // we are good here
+                    this.props.onRedirect("/app")
                 }                
             })
     }

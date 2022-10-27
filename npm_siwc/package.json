@@ -1,7 +1,7 @@
 {
   "name": "@incubiq/siwc",
   "description": "Sign-In with Cardano JS libs",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "Eric Duneau <eric@incubiq.com>",
   "license": "MIT",
   "keywords": [

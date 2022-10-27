@@ -46,6 +46,11 @@ export class siww_connect {
         })
     }
 
+    // must overwrite on implementation class
+    getAcceptedChains() {
+        return [];
+    }
+
 //
 //      Initialization
 //
@@ -99,8 +104,9 @@ export class siww_connect {
             throw err;
         }
     }
+
 //
-//      All APIs to implement 
+//      Generic APIs
 //
 
     // get default wallet info (from browser)
@@ -192,7 +198,7 @@ export class siww_connect {
     }        
 
 //
-//      All APIs to implement 
+//      All APIs to code (in implementation class)
 //
 
     async async_onListAccessibleWallets() {
@@ -213,7 +219,7 @@ export class siww_connect {
 
 
 //
-//      Messages
+//      Messages (still in progress)
 //
 
     // An input message must have all those params:
@@ -232,7 +238,7 @@ export class siww_connect {
         if(!checkIsValidDomain(objParam.domain)) {return false;}
         if(!objParam.address) {return false;}
         if(!checkIsValidStatement(objParam.message)) {return false;}
-        if(!checkIsValidChain(objParam.chain)) {return false;}
+        if(!checkIsValidChain(objParam.chain, this.getAcceptedChains())) {return false;}
         if(!checkIsDateValid(objParam.issued_at, objParam.valid_for)) {return false;}
         return true;
     }

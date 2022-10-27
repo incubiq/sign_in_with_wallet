@@ -230,7 +230,7 @@ class AuthAuthorize extends AuthAuthenticate {
                 <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
                     <div className="siww_message">
                         <div id="idRedirectMessage" className="transitoryMessage">
-                            On your way to {this.props.webAppname}...
+                            On your way to {this.props.webAppName}...
                         </div>
 
                         <span>Stay safe online with {this.state.theme.name}</span>
@@ -271,7 +271,7 @@ class AuthAuthorize extends AuthAuthenticate {
                         app_id= {this.props.webAppId}
                         oauthClientName = {this.props.webAppName}
                         oauthDomain = {this.props.webAppDomain}
-                        is_verified = {this.props.webApp.is_verified===true}
+                        is_verified = {this.props.webApp.isVerified===true}
                         isOauth = {true}
                         SIWWLogo = {this.state.theme.logo}
                         theme = {this.state.theme}

@@ -52,6 +52,12 @@ import {
   */
 } from "@emurgo/cardano-serialization-lib-asmjs"
 
+const CHAIN_NAME = "Cardano"
+const PROVIDER_NAME = "SIWC"
+
+const CARDANO_MAINNET = "Cardano mainnet"
+const CARDANO_TESTNET = "Cardano testnet"
+
 export class siwc_connect  extends siww_connect {
 
 //
@@ -59,19 +65,30 @@ export class siwc_connect  extends siww_connect {
 //
 
     createDefaultWallet(_idWallet) {
-        return {
-            chain: "Cardano",
-            provider: "SIWC",
+        let objDefault={
+            chain: CHAIN_NAME,
+            provider: PROVIDER_NAME,
             id: _idWallet,                                            // id of wallet
             api: null,
-            apiVersion: window?.cardano?.[_idWallet].apiVersion,      // get API version of wallet,
-            name: window?.cardano?.[_idWallet].name,                  // get name of wallet
-            logo: window?.cardano?.[_idWallet].icon,                  // get wallet logo
+            apiVersion: null,
+            name: null,
+            logo: null,
             isEnabled: false,
             hasReplied: false,
             networkId: 0,
             address: null
         }
+        if(window && window.cardano) {
+            objDefault.apiVersion=window.cardano[_idWallet].apiVersion;     // get API version of wallet
+            objDefault.name=window.cardano[_idWallet].name;                 // get name of wallet
+            objDefault.logo=window.cardano[_idWallet].icon;                 // get get wallet logo
+        }
+
+        return objDefault
+    }
+
+    getAcceptedChains() {
+        return [CARDANO_MAINNET, CARDANO_TESTNET];
     }
 
 //
@@ -85,7 +102,7 @@ export class siwc_connect  extends siww_connect {
     async async_onListAccessibleWallets() {
         try {
             let _aWallet=[];
-            if(window.cardano) {
+            if(window && window.cardano) {
                 for (const key in window.cardano) {
                     if(window.cardano[key].hasOwnProperty("apiVersion")) {
                         let objWallet = await this.async_getDefaultWalletInfo(key);
@@ -139,7 +156,7 @@ export class siwc_connect  extends siww_connect {
 
             _objWallet.networkId = await _objWallet.api.getNetworkId();
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
-            _objWallet.chain= _objWallet.networkId === 0 ? "Cardano testnet" : "Cardano mainnet";
+            _objWallet.chain= _objWallet.networkId === 0 ? CARDANO_TESTNET : CARDANO_MAINNET;
             _objWallet.balance = await this._async_getBalance(_objWallet.api);
             _objWallet.utxos=await this._async_getUtxo(_objWallet.api)
             _objWallet.isEnabled=true;

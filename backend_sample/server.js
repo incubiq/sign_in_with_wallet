@@ -26,10 +26,10 @@ global.gConfig={
     jwtKey: "mykey_1234567890",         // some basic key for encoding
     authentication_expire: "72h",       // 72 hours expiration of our cookie
 
-    // params for the SIWC session (includes where SIWC is hosted)
+    // params for the SIWW session (includes where SIWW is hosted)
     siww: {
         clientID: "7TdKmdPQ1663168239000",          // for test....
-        clientSecret: "somekey_1234567890",               // need change...
+        clientSecret: "someotherkey_1234567890",               // need change...
         callbackURL:"auth/siww/callback",
         host: "http://localhost:3010/",         // change this later... (will need https:// when on final server)
         domain: "localhost:3010"
