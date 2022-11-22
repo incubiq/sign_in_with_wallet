@@ -46,7 +46,7 @@ class AppLogged extends AppBase {
                     else {
                         that.setState({authenticated_wallet_address: _obj.wallet_address});
                         that.setState({authenticated_wallet_id: _obj.wallet_id});
-                        that.setState({hover: "You are logged as Admin"});
+                        that.setState({hover: "You are logged as Admin of our domains"});
     
                         srv_getDomains(null, that.props.AuthenticationCookieToken)
                         .then(_data => {
@@ -170,7 +170,7 @@ class AppLogged extends AppBase {
     renderHeader () {
         return (
             <div className="siww_configure-header">
-                <h1>Sign-in with Wallet</h1>
+                <h1><a href="/">Sign with Wallet</a></h1>
                 <div className="align-right">
                     <div className="connected">
                         {this.state.authenticated_wallet_address? 

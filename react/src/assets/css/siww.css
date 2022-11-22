@@ -47,7 +47,12 @@ body {
 }
 
 a {
-    color: var(--accent-1) !important;
+    color: var(--accent-1);
+}
+
+h1 a {
+    color: #78798f;
+    text-decoration: none;
 }
 
 ::-webkit-scrollbar-corner { background: rgba(0,0,0,0.5); }

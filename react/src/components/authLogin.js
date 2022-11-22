@@ -44,7 +44,7 @@ class AuthLogin extends AuthAuthenticate {
                 </form>
 
                 <div className="siww_configure-header">
-                    <h1>Sign-in with Wallet</h1>
+                    <h1><a href="/">Sign with Wallet</a></h1>
                     <div className="align-right">
                         <div className="connected">
                             <span>Not authenticated</span>
