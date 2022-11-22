@@ -1,4 +1,4 @@
-# Sign-in with Cardano (SIWC)
+# Sign-in with Wallet (SIWW)
 
 {% hint style="info" %}
 **Requirements:**
@@ -8,7 +8,7 @@
 * A Cardano account accessible from the wallet
 {% endhint %}
 
-Sign-In with Cardano (SIWC) is a form of authentication that enables users to control their digital identity with their Cardano account instead of relying on a traditional intermediary such as Facebook, LinkedIn, Twitter or other web 2 social apps. SIWC effort standardizes the authentication method with best practices by implementing the oAuth 2.0 protocol and making use of web3 resources, in our case wallets and message signature.
+Sign-In with Wallet(SIWW) is a form of authentication that enables users to authenticate into applications via their wallet credentials instead of relying on a traditional intermediary such as Facebook, LinkedIn, Twitter or other web 2 social apps. SIWW effort standardizes the authentication method with best practices by implementing the oAuth 2.0 protocol and making use of web3 resources, in our case wallets and message signature. The first implementation is made on the Cardano blockchain, including the connection with most Cardano wallets.
 
 {% hint style="warning" %}
 was tested with Nami wallet

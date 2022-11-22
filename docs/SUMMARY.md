@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Sign-in with Cardano (SIWC)](README.md)
+* [Sign-in with Wallet (SIWW)](README.md)
 
 ## Specifications
 
