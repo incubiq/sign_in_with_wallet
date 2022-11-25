@@ -1,11 +1,10 @@
 import AppBase from "./appBase";
 import ViewDomain from "./viewDomain";
 import ViewWalletConnect from "./viewWalletConnect";
+import AuthBanner from "./authBanner";
 import {srv_getDomains} from "../services/configure";
-import {deleteMe} from "../services/me";
 
 import jsonwebtoken from "jsonwebtoken";
-import Cookies from 'js-cookie';
 
 class AppLogged extends AppBase {
 
@@ -30,36 +29,58 @@ class AppLogged extends AppBase {
         });
     }
 
+    logUser() {
+        let that=this;
+        this.async_getUserFromCookie()
+            .then(_obj => {
+                if(!_obj) {
+                    that.props.onRedirect("auth/login");
+                }
+                else {
+                    that.setState({authenticated_wallet_address: _obj.wallet_address});
+                    that.setState({authenticated_wallet_id: _obj.wallet_id});
+                    that.setState({hover: "You are logged as Admin of our domains"});
+
+                    srv_getDomains(null, that.props.AuthenticationCookieToken)
+                    .then(_data => {
+                        that.setState({aClaimedDomain: _data.data.aClaimed})
+                        that.setState({aReservedDomain: _data.data.aPending})                    
+                    })
+                }
+            });
+
+    }
+
     // init who the user is...
     componentDidMount() {
         super.componentDidMount();
         if(this.props.AuthenticationCookieToken) {
 
-            // we are logged...
-
-            let that=this;
-            this.async_getUserFromCookie()
-                .then(_obj => {
-                    if(!_obj) {
-                        that.props.onRedirect("auth/login");
-                    }
-                    else {
-                        that.setState({authenticated_wallet_address: _obj.wallet_address});
-                        that.setState({authenticated_wallet_id: _obj.wallet_id});
-                        that.setState({hover: "You are logged as Admin of our domains"});
-    
-                        srv_getDomains(null, that.props.AuthenticationCookieToken)
-                        .then(_data => {
-                            that.setState({aClaimedDomain: _data.data.aClaimed})
-                            that.setState({aReservedDomain: _data.data.aPending})                    
-                        })
-                    }
-                });
+            // we need to log the user
+            this.logUser();
         }
         else {
-            this.props.onRedirect("auth/login");
+
+            // we wait 1.5sec to see if user can be logged.. if not.. we go back to auth/login
+            let that=this;
+            setTimeout(function() {
+                // still no token? stop waiting
+                if(!that.props.AuthenticationCookieToken) {
+                    that.props.onRedirect("auth/login");
+                }
+            }, 1500);
         }
     }
+
+    componentDidUpdate(prevProps) {
+        super.componentDidUpdate(prevProps);
+
+        // have we recevid a new auth token?
+        if(this.props.AuthenticationCookieToken!==null && this.props.AuthenticationCookieToken!==prevProps.AuthenticationCookieToken) {
+            // we need to log the user
+            this.logUser();
+        }
+    }     
 
     async async_getUserFromCookie( ){
         return new Promise(resolve => {
@@ -78,14 +99,6 @@ class AppLogged extends AppBase {
 /*
  *        UI
  */
-
-    onDisconnect() {
-        // 
-
-        deleteMe();
-        Cookies.remove(this.props.AuthenticationCookieName, { path: ''});
-        window.location="/auth/login";
-    }
     
     onSelectIdentity() {
         
@@ -169,28 +182,11 @@ class AppLogged extends AppBase {
 
     renderHeader () {
         return (
-            <div className="siww_configure-header">
-                <h1><a href="/">Sign with Wallet</a></h1>
-                <div className="align-right">
-                    <div className="connected">
-                        {this.state.authenticated_wallet_address? 
-                        <>
-                            <span>Connected with</span>
-                            &nbsp;<b>{this.state.authenticated_wallet_id}</b>&nbsp;
-                            <span>({this.getShortenAnonAddress(this.state.authenticated_wallet_address)})</span>
-                        </>
-                        : 
-                        <span>Not authenticated</span>
-                        }
-                    </div>
-                    <div 
-                        className="btn btn-tiny"
-                        onClick = {this.onDisconnect.bind(this)}
-                    >
-                        Disconnect
-                    </div>
-                </div>
-            </div>
+            <AuthBanner 
+                authenticated_wallet_address = {this.state.authenticated_wallet_address}
+                authenticated_wallet_id = {this.state.authenticated_wallet_id}
+                AuthenticationCookieName = {this.props.AuthenticationCookieName}
+            />            
         );
     }
 

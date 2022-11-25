@@ -61,7 +61,7 @@ export default function AppRouter(props) {
             let _name=dataInfo.data.isDebug? 'jwt_DEBUG_token_SIWW' : 'jwt_token_SIWW';
             setCookieName(_name);
             let _token=Cookies.get(_name);  
-            if(_token) {
+            if(_token && _token!==cookieToken) {
               setCookieToken(_token);
             }
           

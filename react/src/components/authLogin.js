@@ -1,5 +1,6 @@
 import AuthAuthenticate from "./authAuthenticate";
 import ViewWallets from "./viewWallets";
+import AuthBanner from "./authBanner";
 
 // class for logging into SIWW backend (for user "admin" purposes)
 class AuthLogin extends AuthAuthenticate {
@@ -21,14 +22,13 @@ class AuthLogin extends AuthAuthenticate {
             let eltForm=document.getElementById('form-silentLogin');
             if(eltForm) {
                 document.cookie = this.props.AuthenticationCookieName + "=" + _token + ";path=/";
-                document.getElementById('form-silentLogin').submit();
+                eltForm.submit();
             }            
         }
         else {
             // cookie not valid... we need to ask for another one
             return;
         }
-
     }
 
     render() {
@@ -43,14 +43,11 @@ class AuthLogin extends AuthAuthenticate {
                     />
                 </form>
 
-                <div className="siww_configure-header">
-                    <h1><a href="/">Sign with Wallet</a></h1>
-                    <div className="align-right">
-                        <div className="connected">
-                            <span>Not authenticated</span>
-                        </div>
-                    </div>
-                </div>
+                <AuthBanner 
+                    authenticated_wallet_address = {null}
+                    authenticated_wallet_id = {null}
+                    AuthenticationCookieName = {this.props.AuthenticationCookieName}
+                />
 
                 <div className="center-vh">
 
