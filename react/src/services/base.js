@@ -1,5 +1,5 @@
 
-const API_HOST= "http://localhost:3010";
+const API_HOST= window.location.hostname==="localhost"? "http://localhost:3010": "";
 const API_PUBLICROUTE= "/api/v1/public/";
 const API_PRIVATEROUTE= "/api/v1/private/";
 const API_WEB3ROUTE= "/web3/";

@@ -109,7 +109,7 @@ class FormConfigure extends FormReserve {
                 this.setState({button_text_color: _objTheme.webapp.color.button_text});
 
                 // only set logo if not default 
-                if(_objTheme.webapp.logo !=="/assets/images/www_logo.png") {
+                if(_objTheme.webapp.logo !=="/assets/images/logo_www.png") {
                     this.setState({logo: _objTheme.webapp.logo});
                 }
 

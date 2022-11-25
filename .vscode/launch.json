@@ -24,7 +24,19 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/backend_siww/server.js",
-            "args": ["cache_secret=mysecretforcache", "jwt_secret=mysecretforjwt"]            
+            "args": ["CACHE_SECRET=mysecretforcache", "JWT_SECRET=mysecretforjwt", "DATABASE=/database"]            
+        }, 
+
+        
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "TEST",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/_tmp/docker_test/server.js",
+            "args": []            
         }
     ]
 }

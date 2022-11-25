@@ -5,6 +5,7 @@ import { randomStringForEntropy } from '@stablelib/random';
  *      Sign-In With Wallet / Utilities
  */
 
+
     // to avoid being stuck in a request for an unresponsive wallet
     export const replyFast = async (_waitTimeMs, fn, ...args) => {        
         let p=new Promise(function(resolve, reject) {
@@ -69,7 +70,7 @@ import { randomStringForEntropy } from '@stablelib/random';
     } 
 
     // date must be valid and still active
-    export const checkIsDateValid = (_dateFromUTC, _secDuration) => { 
+    export const checkIsValidDate = (_dateFromUTC, _secDuration) => { 
         let _isValid=(_dateFromUTC && _secDuration && _secDuration>0);        // minimum of good params in
         if(_isValid) {
             let now = new Date(); 

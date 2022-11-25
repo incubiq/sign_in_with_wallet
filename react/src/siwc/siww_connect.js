@@ -2,7 +2,7 @@
  *      Sign-In With Wallet 
  */
 
-import {replyFast, checkIsValidDomain, checkIsValidStatement, checkIsValidChain, checkIsDateValid, generateNonce}  from './siww_utils'
+import {replyFast, checkIsValidDomain, checkIsValidStatement, checkIsValidChain, checkIsValidDate, generateNonce}  from './siww_utils'
 
 export class siww_connect {
 
@@ -239,7 +239,7 @@ export class siww_connect {
         if(!objParam.address) {return false;}
         if(!checkIsValidStatement(objParam.message)) {return false;}
         if(!checkIsValidChain(objParam.chain, this.getAcceptedChains())) {return false;}
-        if(!checkIsDateValid(objParam.issued_at, objParam.valid_for)) {return false;}
+        if(!checkIsValidDate(objParam.issued_at, objParam.valid_for)) {return false;}
         return true;
     }
 

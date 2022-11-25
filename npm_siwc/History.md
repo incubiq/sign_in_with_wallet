@@ -1,4 +1,9 @@
 
+0.0.8 / 2022-11-23
+==================
+
+  * Updated readme / removing doc (replaced by @incubiq/siww)
+
 0.0.7 / 2022-10-27
 ==================
 

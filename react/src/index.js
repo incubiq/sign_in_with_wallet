@@ -5,6 +5,10 @@ import { BrowserRouter } from "react-router-dom";
 
 import AppRouter from "./appRouter";
 
+// hardcode for those shit libs...
+process.versions={node: "17.0.1"}
+
+
 const rootElement = document.getElementById("root");
 ReactDOM.render(
   <React.StrictMode>

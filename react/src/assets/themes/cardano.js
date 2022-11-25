@@ -3,11 +3,11 @@ const getTheme = () => {
   return {
       name: "Cardano",
       symbol: "SIWC",
-      logo: "/assets/images/cardano_logo.png",
+      logo: "/assets/images/logo_siwc.png",
       webapp: {
         dark_mode: false,
         background:  "/assets/images/siww_background.jpg",
-        logo: "/assets/images/www_logo.png",
+        logo: "/assets/images/logo_www.png",
         color: {
             text: "#333",
             button: "#003366",
