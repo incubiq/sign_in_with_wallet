@@ -18,6 +18,7 @@ export class siww_connect {
             name: null,
             logo: null,
             isConnected: false,
+            isOnProd: false,
             hasReplied: false,
             networkId: 0,
             address: null
@@ -32,6 +33,7 @@ export class siww_connect {
             id: _objWallet.id,
             name: _objWallet.name,
             isEnabled: _objWallet.isEnabled,
+            isOnProd: _objWallet.isOnProd,
             hasReplied: _objWallet.hasReplied,
             logo: _objWallet.logo,
             address: _objWallet.address

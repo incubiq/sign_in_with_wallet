@@ -37,7 +37,10 @@ class ViewWalletConnect extends Component {
             if(isMounted) {
                 this.setState({isConnecting: true});
                 if(this.props.fnShowMessage) {
-                    this.props.fnShowMessage("Connecting to your <b>"+_id+"</b> wallet...", true);
+                    this.props.fnShowMessage({
+                        message: "Connecting to your <b>"+_id+"</b> wallet...", 
+                        hasTimerEffect: true
+                    });
                 }    
             }
 
@@ -46,7 +49,10 @@ class ViewWalletConnect extends Component {
             if(isMounted) {
                 this.setState({isConnecting: false});
                 if(this.props.fnShowMessage) {
-                    this.props.fnShowMessage("Connected to your <b>"+_id+"</b> wallet...", false);
+                    this.props.fnShowMessage({
+                        message: "Connected to your <b>"+_id+"</b> wallet...", 
+                        hasTimerEffect: false
+                    });
                 }
             }
         }
@@ -65,7 +71,7 @@ class ViewWalletConnect extends Component {
         }
 
         if(msg) {
-            this.props.fnShowMessage(msg);
+            this.props.fnShowMessage({message: msg});
         }
     }
 

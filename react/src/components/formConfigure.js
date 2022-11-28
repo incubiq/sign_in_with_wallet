@@ -163,7 +163,9 @@ class FormConfigure extends FormReserve {
     togglePreview(event) {
         let eltPreview=document.getElementById("configuration_preview");
         eltPreview.className=this.state.isPreview? "hidden": "preview"
-        this.props.fnShowMessage(this.state.isPreview? "Fill-up data and scroll down to claim domain" : "Preview of the Authentication dialog...");
+        this.props.fnShowMessage({
+            message: (this.state.isPreview) ? "Fill-up data and scroll down to claim domain" : "Preview of the Authentication dialog..."
+        });
         this.setState({isPreview: !this.state.isPreview});
     }
 
@@ -173,7 +175,7 @@ class FormConfigure extends FormReserve {
             this.setState({domain_name: dataDomain.data.domain_name});
             this.setState({app_id: dataDomain.data.app_id});
 
-            this.props.fnShowMessage("Fill-up data and scroll down to claim domain");
+            this.props.fnShowMessage({message: "Fill-up data and scroll down to claim domain"});
             this._enableFormDomain(dataDomain.data.domain_name);
         }
     }
@@ -208,7 +210,7 @@ class FormConfigure extends FormReserve {
         srv_claimDomain(objConfig, this.props.AuthenticationCookieToken)
             .then(res => {
                 if(res.data===null && res.message) {
-                    this.props.fnShowMessage(res.message);
+                    this.props.fnShowMessage({message: res.message});
                 }
                 else {
                     // we are good here
@@ -256,7 +258,7 @@ class FormConfigure extends FormReserve {
         srv_updateDomain(objConfig, this.props.AuthenticationCookieToken)
             .then(res => {
                 if(res.data===null && res.message) {
-                    this.props.fnShowMessage(res.message);
+                    this.props.fnShowMessage({message: res.message});
                 }
                 else {
                     this.props.onRedirect("/app")

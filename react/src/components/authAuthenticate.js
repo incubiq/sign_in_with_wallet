@@ -2,6 +2,7 @@ import AuthConnect from "./authConnect";
 import ViewHeader from "./viewHeader";
 import ViewWallets from "./viewWallets";
 
+import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 import {srv_prepare} from "../services/authenticate";
 import {createPartialIdentity, updatePartialIdentity, getMyIdentities, getIdentityFromUsername, getIdentityFromWallet, grantAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
 
@@ -221,6 +222,15 @@ class AuthAuthenticate extends AuthConnect {
             super.onSIWCNotify_WalletConnected(objParam);
             let _wallet = objParam && objParam.wallet? objParam.wallet : null;
     
+            // accept debug only if on localhost
+            if(!_wallet.isOnProd && this.props.isDebug!==true) {
+                this.showMessage({
+                    message: "Authentication failure - Make sure your wallet points to a PROD network!", 
+                    criticality: CRITICALITY_SEVERE
+                });   
+                return;
+            }
+
             // make sure we have this user's identity in storage + update logo in case it changed
             if(getIdentityFromWallet(_wallet.id, _wallet.provider)===null) {
                 createPartialIdentity({
@@ -319,9 +329,10 @@ class AuthAuthenticate extends AuthConnect {
 /*
  *          UI generic
  */
-    showMessage(_msg, _hasTimerEffect) { 
-        this.setState({hover: _msg});
-        this.setState({inTimerEffect: _hasTimerEffect===true});
+    showMessage(objMsg) { 
+        this.setState({hover: objMsg.message});
+        this.setState({criticality: objMsg.criticality? objMsg.criticality : CRITICALITY_LOW});
+        this.setState({inTimerEffect: objMsg.hasTimerEffect===true});
     }
 
     callbackEffect () {
@@ -356,7 +367,9 @@ class AuthAuthenticate extends AuthConnect {
             }
 
             if(msg) {
-                this.showMessage(msg)
+                this.showMessage({
+                    message: msg
+                })
             }
         }
         catch(err) {

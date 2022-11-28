@@ -1,5 +1,6 @@
 import {Component} from "react";
 import ViewProgressBar from "./viewProgressBar";
+import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 
 class ViewFooter extends Component {
 
@@ -19,7 +20,7 @@ class ViewFooter extends Component {
                     <a className="footer-link" style={style} href="/" target="_blank">Sign-in with {this.props.theme.name}</a>                                        
                 </div>
                 <div 
-                    className="message"
+                    className={this.props.criticality === CRITICALITY_SEVERE? "message bold red" : (this.props.criticality === CRITICALITY_SEVERE)? "message bold" : "message"}
                     dangerouslySetInnerHTML={{__html: this.props.message && this.props.message!=="" ? this.props.message : "&nbsp;"}} 
                 >
                 </div>

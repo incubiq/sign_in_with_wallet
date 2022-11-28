@@ -1,7 +1,10 @@
 import React, {Component} from "react";
 import ViewFooter from "./viewFooter";
+import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 
 import {getMyIdentities} from "../services/me";
+
+
 
 class AppBase extends Component {
 
@@ -27,6 +30,7 @@ class AppBase extends Component {
             inTimerEffect: false,
             delayEffect: 4000,
             incEffect: 50,
+            criticality: CRITICALITY_LOW
         } 
     }
 
@@ -46,8 +50,16 @@ class AppBase extends Component {
 
     }
 
-    showMessage(_msg){
-        this.setState({hover: _msg});
+    showMessage(objMsg){
+        if(!objMsg || !objMsg.message) {
+            return;
+        }
+
+        this.setState({hover: objMsg.message});
+        if(!objMsg.criticality) {
+            objMsg.criticality=CRITICALITY_LOW;
+        }
+        this.setState({criticality: objMsg.criticality});
     }
 
 /*
@@ -64,6 +76,7 @@ class AppBase extends Component {
                 delayEffect = {this.state.delayEffect}
                 incEffect = {this.state.incEffect}
                 callback = {this.callbackEffect.bind(this)}
+                criticality = {this.state.criticality}
             />
         );
     }

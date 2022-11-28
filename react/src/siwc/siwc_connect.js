@@ -74,6 +74,7 @@ export class siwc_connect  extends siww_connect {
             name: null,
             logo: null,
             isEnabled: false,
+            isOnProd: false,
             hasReplied: false,
             networkId: 0,
             address: null
@@ -155,6 +156,7 @@ export class siwc_connect  extends siww_connect {
             }
 
             _objWallet.networkId = await _objWallet.api.getNetworkId();
+            _objWallet.isOnProd=_objWallet.networkId===1;
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
             _objWallet.chain= _objWallet.networkId === 0 ? CARDANO_TESTNET : CARDANO_MAINNET;
             _objWallet.balance = await this._async_getBalance(_objWallet.api);

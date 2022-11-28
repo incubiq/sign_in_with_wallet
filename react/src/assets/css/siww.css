@@ -97,10 +97,14 @@ h1 a {
 }
 
 .green {
-    color: var(--green);
+    color: var(--green) !important;
 }
 .red {
-    color: var(--red);
+    color: var(--red) !important;
+}
+
+.bold {
+    font-weight: bold !important;
 }
 
 .siww-oauth-login {

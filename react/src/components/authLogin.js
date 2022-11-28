@@ -77,6 +77,8 @@ class AuthLogin extends AuthAuthenticate {
                         </div>
                     }
                 </div>               
+                
+                {this.renderFooter()}
             </>
         );
     }
