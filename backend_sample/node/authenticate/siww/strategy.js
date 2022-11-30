@@ -46,13 +46,13 @@ var OAuth2Strategy = require('passport-oauth2')
         options = options || {};
         var version = options.graphAPIVersion || 'v1';
 
-        options.authorizationURL = options.authorizationURL || 'https://siww.com/oauth/dialog/authorize';
-        options.tokenURL = options.tokenURL || 'https://siww.com/oauth/token';
+        options.authorizationURL = options.authorizationURL || 'https://signwithwallet.com/oauth/dialog/authorize';
+        options.tokenURL = options.tokenURL || 'https://signwithwallet.com/oauth/token';
         options.scopeSeparator = options.scopeSeparator || ',';
 
         OAuth2Strategy.call(this, options, verify);
         this.name = 'SIWW';
-        this._profileURL = options.profileURL || 'https://siww.com/oauth/resources/profile';
+        this._profileURL = options.profileURL || 'https://signwithwallet.com/oauth/resources/profile';
         this._profileFields = options.profileFields || null;
         this._enableProof = options.enableProof;
         this._clientSecret = options.clientSecret;
@@ -228,7 +228,7 @@ var OAuth2Strategy = require('passport-oauth2')
     
         var aFields = [];    
         profileFields.forEach(function(f) {
-            // return raw SIWC profile field to support the many fields that don't map cleanly to Portable Contacts
+            // return raw SIWW profile field to support the many fields that don't map cleanly to Portable Contacts
             if (typeof map[f] === 'undefined') { return aFields.push(f); };
             if (Array.isArray(map[f])) {
                 Array.prototype.push.apply(aFields, map[f]);

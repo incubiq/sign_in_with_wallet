@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "private": false,
   "dependencies": {
+    "@incubiq/passport-wallet": "^0.1.0",
     "body-parser": "1.18.3",
     "cookie-parser": "1.4.4",
     "cookie-session": "^1.4.0",

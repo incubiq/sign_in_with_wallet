@@ -1,11 +1,11 @@
 {
-  "name": "SIWC",
+  "name": "SIWW_React_app",
   "version": "0.1.0",
   "private": false,
   "license": "ISC",
   "dependencies": {
     "@emurgo/cardano-serialization-lib-asmjs": "^10.0.4-beta.4",
-    "@incubiq/siww": "^0.1.4",
+    "@incubiq/siww": "^0.1.5",
     "@stablelib/random": "^1.0.1",
     "cbor": "^8.1.0",
     "crypto-js": "^4.1.1",
