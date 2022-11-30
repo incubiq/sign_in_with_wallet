@@ -47,8 +47,9 @@ class FormConfigure extends FormReserve {
             // oAuth 2.0 redirects
             redirect_uri: "",
             redirect_error: "",
-            redirect_uri_dev: "",
-            redirect_error_dev: "",
+
+            // localhost tunnel
+            tunnel:"",
 
             // 
             token_lifespan: (3*24*60*60*1000),              // 3 days
@@ -76,6 +77,14 @@ class FormConfigure extends FormReserve {
         }
     }
     
+    
+    componentDidUpdate(prevProps) {
+        super.componentDidUpdate(prevProps);
+        if(this.props.app_id!==null && this.props.app_id!==prevProps.app_id) {
+            this.async_initializeDomain(this.props.app_id);            
+        }
+    }     
+
     async async_initializeDomain(_client_id) {
         let dataDomain=await srv_getDomainPrivateInfo(_client_id, this.props.AuthenticationCookieToken);
         if(dataDomain && dataDomain.data) {
@@ -93,6 +102,9 @@ class FormConfigure extends FormReserve {
             }
             if(dataDomain.data.redirect_error) {
                 this.setState({redirect_error: dataDomain.data.redirect_error});
+            }
+            if(dataDomain.data.tunnel)  {
+                this.setState({tunnel: dataDomain.data.tunnel});
             }
             if(dataDomain.data.aScope)  {
                 this.setState({aScope: dataDomain.data.aScope});
@@ -128,32 +140,43 @@ class FormConfigure extends FormReserve {
  */
 
     validateDomainName(name) {
+        if(!name) {return false}
         return name.trim().length>=2;
     }
  
     validateCallback(cb) {
+        if(!cb) {return false}
         return cb.trim().length>=4;
     }
 
     _enableFormName(_input) {
         let isCallbackOK = this.validateCallback(this.state.redirect_uri);
         let isDomainNameOK = this.validateDomainName(_input);
-        let isDomainOK = this.validateDomain(this.state.domain_name)!==null;
-        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK});
+        let isDomainOK = this.props.isLocalhost? this.validateUrl(this.state.domain_name)!==null :  this.validateDomain(this.state.domain_name)!==null;
+        let isTunnelOK = this.props.isLocalhost? this.validateUrl(this.state.tunnel)!==null :  true;
+        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK});
     }
 
     _enableFormDomain(_input) {
         let isCallbackOK = this.validateCallback(this.state.redirect_uri);
         let isDomainNameOK = this.validateDomainName(this.state.display_name);
-        let isDomainOK = this.validateDomain(_input)!==null;
-        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK});
+        let isDomainOK = this.props.isLocalhost? this.validateUrl(_input)!==null :  this.validateDomain(_input)!==null;
+        let isTunnelOK = this.props.isLocalhost? this.validateUrl(this.state.tunnel)!==null :  true;
+        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK});
     }
 
     _enableFormCallback(_input) {
         let isCallbackOK = this.validateCallback(_input);
         let isDomainNameOK = this.validateDomainName(this.state.display_name);
-        let isDomainOK = this.validateDomain(this.state.domain_name)!==null;
-        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK});
+        let isDomainOK = this.props.isLocalhost? this.validateUrl(this.state.domain_name)!==null :  this.validateDomain(this.state.domain_name)!==null;
+        let isTunnelOK = this.props.isLocalhost? this.validateUrl(this.state.tunnel)!==null :  true;
+        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK});
+    }
+
+    _enableFormTunnel(_input) {
+        // all other props are disabled anyway, so check oly on tunnel
+        let isTunnelOK = this.props.isLocalhost? this.validateUrl(_input)!==null :  true;
+        this.setState({canValidate: isTunnelOK});
     }
 
 /*
@@ -242,6 +265,10 @@ class FormConfigure extends FormReserve {
             scope: this.state.aScope
         };
 
+        if(this.props.isLocalhost) {
+            objConfig.tunnel=this.state.tunnel;
+        }
+
         if(this.state.background!=="") {objConfig.background= this.state.background}
         if(this.state.logo!=="") {objConfig.logo= this.state.logo}
         if(this.state.text_color!=="") {objConfig.text_color= this.state.text_color}
@@ -251,9 +278,6 @@ class FormConfigure extends FormReserve {
         // redirects must start with a /
         if(objConfig.redirect_uri.substring(0,1)!=="/") {objConfig.redirect_uri="/"+objConfig.redirect_uri;}
         if(objConfig.redirect_error.substring(0,1)!=="/") {objConfig.redirect_error="/"+objConfig.redirect_error;}
-
-        if(this.state.redirect_uri_dev!=="") {objConfig.redirect_uri_dev= this.state.redirect_uri_dev}
-        if(this.state.redirect_error_dev!=="") {objConfig.redirect_error_dev= this.state.redirect_error_dev}
 
         srv_updateDomain(objConfig, this.props.AuthenticationCookieToken)
             .then(res => {
@@ -397,6 +421,9 @@ class FormConfigure extends FormReserve {
                         isDisabled: true,
                         isCompulsory: true,
                         fnValidate: function (_input) {
+                            if(that.props.isLocalhost) {
+                                return that.validateUrl(_input);
+                            }
                             return that.validateDomain(_input);
                         },
                         fnEnableForm: function (_input) {
@@ -411,6 +438,7 @@ class FormConfigure extends FormReserve {
                         hint: "Name of your app, as will be shown to end-users during authentication", 
                         placeholder: "My App",
                         isCompulsory: true,
+                        isDisabled: that.props.isLocalhost===true,
                         fnValidate: function (_input) {
                             return that.validateDomainName(_input);
                         },
@@ -419,7 +447,7 @@ class FormConfigure extends FormReserve {
                         }
                     })}
 
-                    {this.state.is_verified===true || this.state.domain_name.substring(0,9)==="localhost" ? 
+                    {this.state.is_verified===true || this.props.isLocalhost ? 
                     <>
                         <div className="category">
                             oAuth ID and Secret
@@ -446,6 +474,29 @@ class FormConfigure extends FormReserve {
                     </>
                 :""}
 
+                {this.props.isLocalhost===true ? 
+                    <>
+                    <div className="category">
+                        Localhost Tunnel
+                    </div>
+
+                    {this.renderRow({
+                        id: "tunnel", 
+                        type: "text", 
+                        label: "Tunnel", 
+                        hint: "Enter ngrok or localt tunnel URL",  
+                        placeholder: "https://great-day-89.loca.lt",
+                        isCompulsory: true,
+                        fnValidate: function (_input) {
+                            return that.validateUrl(_input);
+                        },
+                        fnEnableForm: function (_input) {
+                            return that._enableFormTunnel(_input);
+                        }
+                    })}
+                    </>
+                :""}
+
                     <div className="category">
                         oAuth 2.0 callbacks
                     </div>
@@ -457,6 +508,7 @@ class FormConfigure extends FormReserve {
                         hint: "Redirect URI for the oAuth callback", 
                         placeholder: "/auth/siww/callback",
                         isCompulsory: true,
+                        isDisabled: that.props.isLocalhost===true,
                         fnValidate: function (_input) {
                             return that.validateCallback(_input);
                         },
@@ -471,18 +523,20 @@ class FormConfigure extends FormReserve {
                         label: "Redirect Error", 
                         hint: "Redirect URI in case of oAuth error",  
                         placeholder: "/auth/siww/error",
+                        isDisabled: that.props.isLocalhost===true,
                         isCompulsory: false
                     })}
-
+                
                     <div className="category">
                         Scopes
                     </div>
+
                     {this.renderScopes(this.state.aScope)}
 
                     <div className="category">
                         Theme
                     </div>
-
+                
                     {this.renderRow({
                         id: "background", 
                         type: "text", 
@@ -579,7 +633,7 @@ class FormConfigure extends FormReserve {
                                 Update
                             </div>
 
-                        {this.state.is_verified===false && this.state.domain_name.substring(0,9)!=="localhost" ? 
+                        {this.state.is_verified===false && !this.props.isLocalhost? 
                             <div 
                                 className="btn btn-primary "
                                 onClick = {this.async_renewDomain.bind(this)}

@@ -154,6 +154,18 @@ class AppLogged extends AppBase {
                             />
                         </li>
 
+                        <li className="domain-panel" >
+                            <ViewDomain 
+                                logo = "/assets/images/icon_test.png"
+                                domain_name = "<localhost>"
+                                display_name = "Config local test"
+                                isVerified= {null}
+                                onClick = {( ) => {
+                                    this.props.onRedirect("/app/configure?app_id=localhost")
+                                }}
+                            />
+                        </li>
+
                         {this.state.aClaimedDomain.map((item, index) => (
                             <li 
                                 className="domain-panel" 

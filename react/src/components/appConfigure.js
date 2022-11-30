@@ -66,6 +66,7 @@ class AppConfigure extends AppLogged {
                         styles={this.props.styles}
                         isPreview={this.state.isPreview}
 
+                        isLocalhost= {this.props.webAppId==="localhost"}
                         domain_name= {this.state.claimed_domain}
                         app_id= {this.state.app_id}
                         app_secret= {this.state.app_secret}

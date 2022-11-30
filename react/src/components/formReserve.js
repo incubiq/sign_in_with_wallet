@@ -22,11 +22,14 @@ class FormReserve extends Component {
     componentDidMount() {
     }
 
+    componentDidUpdate(prevProps) {
+    }
+
 /*
  *          Data entry validation
  */
 
-    validateDomain(url) {
+    _getUrlWithoutHttp(url) {
         if(!url) {return null}
 
         //remove all http:// or https:// in front...
@@ -38,6 +41,22 @@ class FormReserve extends Component {
                 url = url.substr(8, url.length);
             }
         }
+        return url;
+    }
+
+    validateUrl(url){
+        if(!url) {return null}
+        url=this._getUrlWithoutHttp(url);
+        var re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
+        if (url.match(re) && url.split(".").length>0) {
+            return url;
+        }
+        return null;
+    }
+
+    validateDomain(url) {
+        if(!url) {return null}
+        url=this._getUrlWithoutHttp(url);
 
         var re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
         if (url.match(re) && url.split(".").length-1 === 1) {
