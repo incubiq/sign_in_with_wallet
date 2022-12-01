@@ -8,9 +8,10 @@ process.env.NODE_ENV = 'prod';
 // global config params of backend server app
 let _port=3003;
 global.gConfig={
+
     // web domain
     port: _port,                         // port on which backend will run (when in debug mode)
-    origin: "http://localhost:"+_port+"/",
+    origin: "http://localhost:"+_port+"/",      // test with LOCAL SIWW server
 
     // cookie / auth
     appName: "TestApp_LoginSIWC",       // app Name used for naming the cookie
@@ -19,11 +20,14 @@ global.gConfig={
 
     // params for the SIWW session (includes where SIWW is hosted)
     siww: {
-        clientID: "7TdKmdPQ1663168239000",
+
         clientSecret: "",                       // get it from params at launch
         callbackURL:"auth/siww/callback",
-        host: "http://localhost:3010/",         // change this later... (will need https:// when on final server)
-        domain: "localhost:3010"
+
+        // test with LOCAL SIWW server
+        clientID: "7TdKmdPQ1663168239000",
+        host: "http://localhost:3010/",
+        domain: "localhost:3010",
     },
 
     // misc
@@ -31,6 +35,12 @@ global.gConfig={
     version: "0.1.0"
 };
 
+if(true) {
+    global.gConfig.origin="https://c13d-2a00-23c7-b71c-7b01-a121-6c61-1916-e461.ngrok.io/"
+    global.gConfig.siww.clientID="localhost";
+    global.gConfig.siww.host="https://signwithwallet.com/";
+    global.gConfig.siww.domain="signwithwallet.com";    
+}
 
 // just to check all arguments passed by node
 process.argv.forEach(function (val, index, array) {
@@ -59,6 +69,8 @@ app.enable('trust proxy');
 let server = http.createServer(app);
 server.listen(gConfig.port);
 console.log("Running on port "+gConfig.port);
+
+gConfig.app=app;
 
 module_app.initializeApp({
     app: app,

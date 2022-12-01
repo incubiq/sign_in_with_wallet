@@ -45,13 +45,10 @@ class FormReserve extends Component {
     }
 
     validateUrl(url){
-        if(!url) {return null}
+        if(!url) {return false}
         url=this._getUrlWithoutHttp(url);
-        var re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
-        if (url.match(re) && url.split(".").length>0) {
-            return url;
-        }
-        return null;
+        let bIsOK=url==="localhost" || /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/.test(url);
+        return bIsOK;
     }
 
     validateDomain(url) {
@@ -59,7 +56,7 @@ class FormReserve extends Component {
         url=this._getUrlWithoutHttp(url);
 
         var re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
-        if (url.match(re) && url.split(".").length-1 === 1) {
+        if (/^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/.test(url)) {
             return url;
         }
         
@@ -92,7 +89,7 @@ class FormReserve extends Component {
             _eltIcon.src=_isValid? "/assets/images/icon_check.png" : "/assets/images/icon_warning.png"
         }
         else {
-            _eltIcon.src="/assets/images/icon_compulsory.png"
+            _eltIcon.src="/assets/images/icon_warning.png"
         }
     }
 
@@ -109,7 +106,7 @@ class FormReserve extends Component {
                         id={"icon_"+objParam.id} 
                         className="icon"
                         src={
-                            that.state[objParam.id]===""? "/assets/images/icon_compulsory.png": 
+                            that.state[objParam.id]===""? "/assets/images/icon_warning.png": 
                             objParam.fnValidate(that.state[objParam.id]) ? "/assets/images/icon_check.png" : 
                             "/assets/images/icon_warning.png"}
                     />
