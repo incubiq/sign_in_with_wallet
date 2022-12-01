@@ -1,6 +1,8 @@
 const request = require('request');
 const Q = require('q');
 
+// For our calls to the SIWW backend (get basic info / domain info if/when required)
+
 module.exports = {
     async_getInfo,
     async_getDomainInfo,
@@ -27,7 +29,7 @@ module.exports = {
         return deferred.promise;
     }
 
-    // are we registered with SIWC backend?
+    // is our domain registered with SIWW backend?
     function async_getDomainInfo(configSIWC) {
         var deferred = Q.defer();
         request.get(

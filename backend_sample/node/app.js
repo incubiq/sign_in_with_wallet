@@ -91,7 +91,6 @@ const express = require('express');
                 console.log("Stopping init...");
             });
         })
-
     }
 
 /*
@@ -170,25 +169,6 @@ const express = require('express');
  */
 
     function initializeRoutes(app) {
-
-        //
-        // Routes for SIWC backend (would normally be on separate server)
-        //
-        /*
-        const passportJwtSIWC = require(siwcApp+'authenticate/jwt');      // same passport JWT in both (client AND oAuth server)
-        const routeOAuth = require(siwcApp+'routes/route_oauth2');
-        const routeOAuthRes = require(siwcApp+'routes/route_oauth2_resources');
-
-        // oauth2 server for sign-in from target websites
-        app.use('/oauth', routeOAuth);
-        app.use('/oauth/resources',
-            fnNoRedirect,
-            passportJwtSIWC.authenticate('jwt', {
-                session: false,
-            }),
-            routeOAuthRes
-        );
-        */
 
         // 
         // Routes for SAMPLE APP

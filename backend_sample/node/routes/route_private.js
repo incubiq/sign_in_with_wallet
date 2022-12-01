@@ -4,7 +4,7 @@ const router = express.Router();
 const routeBase = require('./utils');
 
 /*
- *      GET sample call
+ *      Private routes
  */
 
 // For checking we are logged in correctly

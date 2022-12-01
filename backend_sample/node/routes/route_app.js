@@ -3,6 +3,8 @@ const router = express.Router();
 
 const libCookie = require('../authenticate/cookie'); 
 
+// route for when the user is logged in to the sample app
+
 router.get('/', function(req, res, next) {
     libCookie.async_getUserInfoFromCookie(req, gConfig.jwtKey)
     .then(function(dataUser){

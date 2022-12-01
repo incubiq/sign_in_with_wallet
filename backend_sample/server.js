@@ -1,12 +1,11 @@
 
-process.env.NODE_ENV = 'prod';
-
 /*
  *      Config
  */
 
-// global config params of backend server app
 let _port=3003;
+
+// global config params of backend server app
 global.gConfig={
 
     // web domain
@@ -25,15 +24,15 @@ global.gConfig={
         callbackURL:"auth/siww/callback",
 
         // test with LOCAL SIWW server
-        clientID: "localhost",
-//        clientID: "7TdKmdPQ1663168239000",
+//        clientID: "localhost",
+        clientID: "7TdKmdPQ1663168239000",
         host: "http://localhost:3010/",
         domain: "localhost:3010",
     },
 
     // misc
-    isDebug: true,                      // change to false to test PROD version
-    version: "0.1.0"
+    isDebug: true,                      // change to false for PROD version
+    version: "0.1.1"
 };
 
 // Toggle ON/OFF for PROD (true) or Local (false) test
@@ -43,10 +42,8 @@ if(true) {
 
     // keep this unchanged
     global.gConfig.siww.clientID="localhost";
-    global.gConfig.siww.host= "http://localhost:3010/";
-    global.gConfig.siww.domain= "localhost:3010";
-//    global.gConfig.siww.host="https://signwithwallet.com/";
-//    global.gConfig.siww.domain="signwithwallet.com";    
+    global.gConfig.siww.host="https://signwithwallet.com/";
+    global.gConfig.siww.domain="signwithwallet.com";    
 }
 
 // just to check all arguments passed by node
@@ -79,11 +76,8 @@ console.log("Localhost running on port "+gConfig.port);
 console.log("Sample app running here:  "+global.gConfig.origin);
 console.log("SIWW located here:  "+global.gConfig.siww.host);
 
-gConfig.app=app;
-
 module_app.initializeApp({
     app: app,
-    env: process.env.NODE_ENV,
     config: gConfig
 });
 

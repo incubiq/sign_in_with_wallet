@@ -1,13 +1,9 @@
 
 const express = require('express');
 const router = express.Router();
-const routeBase = require('./utils');
 const authToken = require('../authenticate/token');
 const passportSIWW = require("../authenticate/passport_siww");    
-//const passport = require('passport');
-const regSIWW = require('../authenticate/services_siww');
 const libUser = require('../authenticate/user');              // Our User mgt minimal library
-const Q = require('q');
 
 /*
  *      Authentication routes
@@ -23,39 +19,10 @@ const Q = require('q');
         res.redirect('/app');
     };
 
-    // A really dummy authentication for now....
-    const passport = require('passport');
-    router.post('/silentauth', (req, res, next) => {
-        passport.authenticate('local',
-        (err, user, info) => {
-            if (err || !req.body.username) {
-                return next({
-                    data: null,
-                    message: "Could not login",
-                    status: 400
-                });
-            }
-        
-            // fake a user
-            req.user={
-                username: req.body.username
-            };
-
-            // create user...
-
-            // log user
-            _completeLogin(req, res);
-
-        })(req, res, next);
-
-    });
-
 // ************************************************
 //      Real authentication starts here!
 // ************************************************
 
-//    router.get('/siwc',_loginSIWW);
-//    router.get('/siwc/callback',_loginSIWW);
     router.get('/siww',passport.authenticate('SIWW', {session: false}));        // will call SIWW /oauth/dialog/authorize
     router.get('/siww/callback', passportSIWW.authenticate('SIWW', {
         failureRedirect: '/auth/unauthorized',
@@ -63,7 +30,6 @@ const Q = require('q');
     }), function (req, res) {
         _completeLogin(req, res);
     });
-
 
     //
     router.get('/isauthorized', function (req, res, next) {
@@ -95,7 +61,7 @@ const Q = require('q');
             title: "Oh dear!",
             background: "/assets/background_error.jpeg",
             content: "<div>Looks like you were not authorized to access this page!</div>" +
-                '<a href="/auth/prepare/siwc"><div class="signin-btn btn social-btn btn-primary" style="background-color: #28c4cc;" tabindex="5">Sign In With Cardano</div></a>'
+                '<a href="/auth/prepare/siwc"><div class="signin-btn btn social-btn btn-primary" style="background-color: #28c4cc;" tabindex="5">Sign In With Wallet</div></a>'
         });
     });
 
@@ -110,4 +76,30 @@ const Q = require('q');
         });
     });
 
+    // A really dummy authentication....
+    const passport = require('passport');
+    router.post('/silentauth', (req, res, next) => {
+        passport.authenticate('local',
+        (err, user, info) => {
+            if (err || !req.body.username) {
+                return next({
+                    data: null,
+                    message: "Could not login",
+                    status: 400
+                });
+            }
+        
+            // fake a user
+            req.user={
+                username: req.body.username
+            };
+
+            // create user...
+
+            // log user
+            _completeLogin(req, res);
+
+        })(req, res, next);
+    });
+        
 module.exports = router;
