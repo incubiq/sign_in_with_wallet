@@ -88,6 +88,7 @@ class FormConfigure extends FormReserve {
     async async_initializeDomain(_client_id) {
         let dataDomain=await srv_getDomainPrivateInfo(_client_id, this.props.AuthenticationCookieToken);
         if(dataDomain && dataDomain.data) {
+            this.setState({app_id: _client_id});
             this.setState({display_name: dataDomain.data.display_name});
             this.setState({domain_name: dataDomain.data.domain_name});
             this.setState({redirect_uri: dataDomain.data.redirect_uri});
@@ -154,7 +155,7 @@ class FormConfigure extends FormReserve {
         let isDomainNameOK = this.validateDomainName(_input);
         let isDomainOK = this.props.isLocalhost? this.validateUrl(this.state.domain_name)!==null :  this.validateDomain(this.state.domain_name)!==null;
         let isTunnelOK = this.props.isLocalhost? this.validateUrl(this.state.tunnel)!==null :  true;
-        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK});
+        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK && this.state.app_id!==""});
     }
 
     _enableFormDomain(_input) {
@@ -162,7 +163,7 @@ class FormConfigure extends FormReserve {
         let isDomainNameOK = this.validateDomainName(this.state.display_name);
         let isDomainOK = this.props.isLocalhost? this.validateUrl(_input)!==null :  this.validateDomain(_input)!==null;
         let isTunnelOK = this.props.isLocalhost? this.validateUrl(this.state.tunnel)!==null :  true;
-        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK});
+        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK && this.state.app_id!==""});
     }
 
     _enableFormCallback(_input) {
@@ -170,13 +171,13 @@ class FormConfigure extends FormReserve {
         let isDomainNameOK = this.validateDomainName(this.state.display_name);
         let isDomainOK = this.props.isLocalhost? this.validateUrl(this.state.domain_name)!==null :  this.validateDomain(this.state.domain_name)!==null;
         let isTunnelOK = this.props.isLocalhost? this.validateUrl(this.state.tunnel)!==null :  true;
-        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK});
+        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK && this.state.app_id!==""});
     }
 
     _enableFormTunnel(_input) {
         // all other props are disabled anyway, so check oly on tunnel
         let isTunnelOK = this.props.isLocalhost? this.validateUrl(_input)!==null :  true;
-        this.setState({canValidate: isTunnelOK});
+        this.setState({canValidate: isTunnelOK && this.state.app_id!==""});
     }
 
 /*
@@ -536,51 +537,60 @@ class FormConfigure extends FormReserve {
                     <div className="category">
                         Theme
                     </div>
-                
-                    {this.renderRow({
-                        id: "background", 
-                        type: "text", 
-                        label: "Background", 
-                        hint: "URL of a background image for branding the authentication page", 
-                        placeholder: "https://mydomain.com/background.jpg",
-                        isCompulsory: false
-                    })}
 
-                    {this.renderRow({
-                        id: "logo", 
-                        type: "text", 
-                        label: "Logo", 
-                        hint: "Logo of your web app, as will be shown to end-users during authentication", 
-                        placeholder: "https://mydomain.com/logo_256x256.jpg",
-                        isCompulsory: false
-                    })}
-
-                    {this.renderRow({
-                        id: "text_color", 
-                        type: "text", 
-                        label: "Text color", 
-                        hint: "Color of texts in the Authentication form (default = #333) ", 
-                        placeholder: "#333",
-                        isCompulsory: false
-                    })}
-
-                    {this.renderRow({
-                        id: "button_color", 
-                        type: "text", 
-                        label: "Button color", 
-                        hint: "Color of buttons' background in the Authentication form (default = #003366) ", 
-                        placeholder: "#003366",
-                        isCompulsory: false
-                    })}
+                    {this.props.isLocalhost===false ? 
+                    <>
                     
-                    {this.renderRow({
-                        id: "button_text_color", 
-                        type: "text", 
-                        label: "Button text color", 
-                        hint: "Color of buttons' texts in the Authentication form (default = #f0f0f0) ", 
-                        placeholder: "#f0f0f0",
-                        isCompulsory: false
-                    })}
+                        {this.renderRow({
+                            id: "background", 
+                            type: "text", 
+                            label: "Background", 
+                            hint: "URL of a background image for branding the authentication page", 
+                            placeholder: "https://mydomain.com/background.jpg",
+                            isCompulsory: false
+                        })}
+
+                        {this.renderRow({
+                            id: "logo", 
+                            type: "text", 
+                            label: "Logo", 
+                            hint: "Logo of your web app, as will be shown to end-users during authentication", 
+                            placeholder: "https://mydomain.com/logo_256x256.jpg",
+                            isCompulsory: false
+                        })}
+
+                        {this.renderRow({
+                            id: "text_color", 
+                            type: "text", 
+                            label: "Text color", 
+                            hint: "Color of texts in the Authentication form (default = #333) ", 
+                            placeholder: "#333",
+                            isCompulsory: false
+                        })}
+
+                        {this.renderRow({
+                            id: "button_color", 
+                            type: "text", 
+                            label: "Button color", 
+                            hint: "Color of buttons' background in the Authentication form (default = #003366) ", 
+                            placeholder: "#003366",
+                            isCompulsory: false
+                        })}
+                        
+                        {this.renderRow({
+                            id: "button_text_color", 
+                            type: "text", 
+                            label: "Button text color", 
+                            hint: "Color of buttons' texts in the Authentication form (default = #f0f0f0) ", 
+                            placeholder: "#f0f0f0",
+                            isCompulsory: false
+                        })}
+                    </>
+                    :
+                        <div className="hint align-left">
+                            Localhost does not support theme customisation
+                        </div>
+                    }
                     
 {/*
                     {this.renderRow({
