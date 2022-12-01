@@ -3,6 +3,8 @@ import ViewWallets from "./viewWallets";
 import AuthBanner from "./authBanner";
 
 // class for logging into SIWW backend (for user "admin" purposes)
+// this is NOT used for oAuth login as an end user
+
 class AuthLogin extends AuthAuthenticate {
 
     constructor(props) {
@@ -77,7 +79,7 @@ class AuthLogin extends AuthAuthenticate {
                         </div>
                     }
                 </div>               
-                
+
                 {this.renderFooter()}
             </>
         );

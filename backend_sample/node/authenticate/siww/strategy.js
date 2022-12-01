@@ -152,7 +152,7 @@ var OAuth2Strategy = require('passport-oauth2')
             let json;
 
             if (err) {
-
+                console.log("Authentication Error :");
                 if (err.data) {
                     try {
                         json = JSON.parse(err.data);

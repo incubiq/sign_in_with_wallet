@@ -2,12 +2,15 @@ const passport = require('passport');
 const libUser = require('./user');              // Our User mgt minimal library
 
 // when debuggings
-//const SIWWStrategy = require("./siww/index").Strategy;
+const SIWWStrategy = require("./siww/index").Strategy;
 
 // using npm prod
-const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;
+//const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;
 
     let cSIWW = gConfig.siww;
+
+    // special case for localhost, change the secret...
+    if(cSIWW.clientID==="localhost") {cSIWW.clientSecret="localhost"}
 
     // register strategy
     passport.use(new SIWWStrategy({

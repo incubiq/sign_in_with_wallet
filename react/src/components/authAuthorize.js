@@ -9,6 +9,8 @@ import {getMyIdentities, grantAccessToWebApp, isGrantedAccessToWebApp} from "../
 const VIEWMODE_IDENTITY="identity";
 const VIEWMODE_DATASHARE="datashare";
 
+// class used for authorizing a user via oauth
+
 class AuthAuthorize extends AuthAuthenticate {
 
 /*

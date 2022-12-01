@@ -106,7 +106,8 @@ class AppRoutes extends Component {
                 } exact />
 
             <Route  path="/auth/login" element={
-                <Suspense 
+            // route for logging user as admin in admin panel            
+            <Suspense 
                     fallback={this.renderBackground()}>
                     <AuthLogin
 
@@ -130,8 +131,8 @@ class AppRoutes extends Component {
                 </Suspense> 
                 } exact />
 
-
             <Route  path="/app" element={
+            // route for a logged user into the admin panel
                 <Suspense 
                     fallback={this.renderBackground()}>
                     <AppLogged
@@ -156,6 +157,7 @@ class AppRoutes extends Component {
                 } exact />
 
             <Route  path="/app/configure" element={
+            // route for configuring a domain by an admin
                 <Suspense 
                     fallback={this.renderBackground()}>
                     <AppConfigure

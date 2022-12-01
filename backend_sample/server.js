@@ -25,7 +25,8 @@ global.gConfig={
         callbackURL:"auth/siww/callback",
 
         // test with LOCAL SIWW server
-        clientID: "7TdKmdPQ1663168239000",
+        clientID: "localhost",
+//        clientID: "7TdKmdPQ1663168239000",
         host: "http://localhost:3010/",
         domain: "localhost:3010",
     },
@@ -35,11 +36,17 @@ global.gConfig={
     version: "0.1.0"
 };
 
+// Toggle ON/OFF for PROD (true) or Local (false) test
 if(true) {
-    global.gConfig.origin="https://c13d-2a00-23c7-b71c-7b01-a121-6c61-1916-e461.ngrok.io/"
+    // update next line with correct ngrok, and set the localhost config to this same ngrok (in SIWW config panel as admin)
+    global.gConfig.origin=" https://55a3-2a00-23c7-b71c-7b01-a121-6c61-1916-e461.ngrok.io/"         
+
+    // keep this unchanged
     global.gConfig.siww.clientID="localhost";
-    global.gConfig.siww.host="https://signwithwallet.com/";
-    global.gConfig.siww.domain="signwithwallet.com";    
+    global.gConfig.siww.host= "http://localhost:3010/";
+    global.gConfig.siww.domain= "localhost:3010";
+//    global.gConfig.siww.host="https://signwithwallet.com/";
+//    global.gConfig.siww.domain="signwithwallet.com";    
 }
 
 // just to check all arguments passed by node
@@ -68,7 +75,9 @@ app.enable('trust proxy');
 
 let server = http.createServer(app);
 server.listen(gConfig.port);
-console.log("Running on port "+gConfig.port);
+console.log("Localhost running on port "+gConfig.port);
+console.log("Sample app running here:  "+global.gConfig.origin);
+console.log("SIWW located here:  "+global.gConfig.siww.host);
 
 gConfig.app=app;
 

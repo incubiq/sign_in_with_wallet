@@ -1,5 +1,9 @@
 import {Component} from "react";
 
+let isProgressRunning=false;
+let progressInterval=null;
+let progressTimer=null;
+
 class ViewProgressBar extends Component {
 
 /*
@@ -10,7 +14,6 @@ class ViewProgressBar extends Component {
         super(props);   
 
         this.state={
-            downloadTimer: null,
             isVisible: false
         }        
     }
@@ -18,33 +21,39 @@ class ViewProgressBar extends Component {
     componentDidMount() {
         this.setState({isVisible: true});
         let eltBar=document.getElementById(this.props.id);
-        this.go({
-            delay: this.props.delay? this.props.delay: 4000,
-            eltCancel: null, 
-            eltBar: eltBar,
-            onElapsed: function() {
-                // do we have a callback to call?
-                if(this.props.callback) {
-                    this.props.callback();
-                }
-
-                // wait a bit more.. update UI
-                if(this.props.idMessage && this.state.isVisible) {
-                    let eltMsg=document.getElementById(this.props.idMessage);
-                    if(eltMsg) {
-                        eltMsg.innerHTML="A few more seconds..."    
+        if(!isProgressRunning) {
+            isProgressRunning=true;
+            this.go({
+                delay: this.props.delay? this.props.delay: 4000,
+                eltCancel: null, 
+                eltBar: eltBar,
+                onElapsed: function() {
+                    // do we have a callback to call?
+                    if(this.props.callback) {
+                        this.props.callback();
                     }
-                }
-            }.bind(this)
-        });        
+    
+                    // wait a bit more.. update UI
+                    if(this.props.idMessage && this.state.isVisible) {
+                        let eltMsg=document.getElementById(this.props.idMessage);
+                        if(eltMsg) {
+                            eltMsg.innerHTML="A few more seconds..."    
+                        }
+                    }
+                }.bind(this)
+            });            
+        }
     }
+
+    stopTimers() {
+        isProgressRunning=false;
+        if(progressInterval) {clearInterval(progressInterval); progressInterval=null;}
+        if(progressTimer) {clearTimeout(progressTimer); progressTimer=null;}
+   }
 
     componentWillUnmount() {
         this.setState({isVisible: false});
-        if(this.state.downloadTimer) {
-            clearInterval(this.state.downloadTimer);
-            this.setState({downloadTimer : null});
-        }
+        this.stopTimers();
     }
 
 /*
@@ -52,20 +61,18 @@ class ViewProgressBar extends Component {
  */
 
     go(objOptions) {
-        let timer=window.setTimeout(() => {
+        progressTimer=window.setTimeout(function() {
             if(objOptions.onElapsed)  {
                 console.log("continuing!");
+                this.stopTimers();
                 objOptions.onElapsed();
             }
-        }, objOptions.delay);
+        }.bind(this), objOptions.delay);
 
         if(objOptions.eltCancel) {
             objOptions.eltCancel.addEventListener("click", function () {
-                if(timer) {
-                    window.clearTimeout(timer);
-                    timer=null;
-                }
-            });
+                this.stopTimers();
+            }.bind(this));
         }
         this.fnLoadingEffect(objOptions);
     }
@@ -73,17 +80,14 @@ class ViewProgressBar extends Component {
     fnLoadingEffect (objOptions) {
         var inc=this.props.inc? this.props.inc : 40;
         var timeleft = 0;
-        if(this.state.downloadTimer===null && objOptions.eltBar!==null) {
-            let _timer= setInterval(function(){
+        if(progressInterval===null && objOptions.eltBar!==null) {
+            progressInterval= setInterval(function(){
                 if(timeleft >= 100){
-                    clearInterval(this.state.downloadTimer);
-                    this.downloadTimer=null;
+                    this.stopTimers();
                 }
                 objOptions.eltBar.style.width = timeleft+"%";
                 timeleft += (100/inc);
             }.bind(this), (objOptions.delay/inc));    
-
-            this.setState({downloadTimer: _timer});
         }
     }
 
