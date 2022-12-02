@@ -1,11 +1,12 @@
 const passport = require('passport');
 const libUser = require('./user');              // Our User mgt minimal library
 
-// when debuggings
-//const SIWWStrategy = require("./siww/index").Strategy;
+//const SIWWStrategy = require("./siww/index").Strategy;                    // when debugging, use the local strategy
+const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;          // normal case, using NPM prod passport-wallet strategy
 
-// using NPM prod passport-wallet strategy
-const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;
+/*
+ *      Making use of passport-wallet authentication strategy
+ */
 
     let cSIWW = gConfig.siww;
 
@@ -28,22 +29,15 @@ const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;
                 return done(null, false, {});       // got in error...
             }
 
-            var firstName= profile && profile.name && profile.name.givenName ? profile.name.givenName : profile.displayName.substr(0,profile.displayName.indexOf(" "));
-            var lastName= profile && profile.name && profile.name.familyName ? profile.name.familyName : profile.displayName.substr(1+profile.displayName.lastIndexOf(" "), profile.displayName.length);
-            var email=profile && profile.emails && profile.emails.length>0 ? (profile.emails[0] ? profile.emails[0].value : null) : null;
-            var picture=profile && profile.photos && profile.photos.length>0 ? (profile.photos[0] ? profile.photos[0].value : null) : null;
+            let firstName= profile && profile.name && profile.name.givenName ? profile.name.givenName : profile.displayName.substr(0,profile.displayName.indexOf(" "));
+            let lastName= profile && profile.name && profile.name.familyName ? profile.name.familyName : profile.displayName.substr(1+profile.displayName.lastIndexOf(" "), profile.displayName.length);
+            let email=profile && profile.emails && profile.emails.length>0 ? (profile.emails[0] ? profile.emails[0].value : null) : null;
+            let picture=profile && profile.photos && profile.photos.length>0 ? (profile.photos[0] ? profile.photos[0].value : null) : null;
+            let wallet_address= profile && profile.wallet_address ? profile.wallet_address : null;
 
             // TODO define what to validate here
-            /*
-            if(!email || email.indexOf("@")===-1) {
-                throw {
-                    data: null,
-                    status: 400,
-                    statusText: "no email"
-                };
-            }
-            */
 
+            // happy with validations? Create the user
             libUser.async_createUser({
                 username: profile.username, 
                 firstName: firstName,
@@ -52,7 +46,7 @@ const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;
                 picture: picture,
                 provider_id: profile.provider,
                 provider_wallet: profile.wallet,
-                wallet_address: profile.wallet_address,
+                wallet_address: wallet_address,
                 isValidated: true
             })
                 .then(function(obj){

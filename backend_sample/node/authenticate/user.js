@@ -1,7 +1,7 @@
 
 module.exports = {
     async_findUser,
-    async_createUser
+    async_createUser    
 };
 
 /*
@@ -17,3 +17,4 @@ module.exports = {
         // here create user in DB and return this info
         return {data: objUser}
     }
+    

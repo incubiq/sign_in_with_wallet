@@ -1,14 +1,11 @@
 
-const express = require('express');
-const router = express.Router();
-
 module.exports = {
     async_apiGet,
     async_apiPost
 };
 
 /*
- *      Base route fcts
+ *      Base route fcts and helpers
  */
 
 function _error(res, err) {
@@ -17,7 +14,6 @@ function _error(res, err) {
         status: err.status,
         message: err.message
     });        
-
 }
 
 async function async_apiGet(req, res, fn, obj){

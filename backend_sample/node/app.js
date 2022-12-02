@@ -1,4 +1,3 @@
-const root='../';
 const sampleApp='./';
 const express = require('express');
 
@@ -19,6 +18,7 @@ const express = require('express');
         let app=objParam.app;
         let config=objParam.config;
 
+        // utilities
         const cors = require('cors');
         const bodyParser= require('body-parser');
         const cookieParser=require('cookie-parser');
@@ -87,7 +87,7 @@ const express = require('express');
                 }
             })
             .catch(function(err) {
-                console.log(err.statusText);
+                console.log(err && err.message? err.message : err.statusText);
                 console.log("Stopping init...");
             });
         })
@@ -170,9 +170,7 @@ const express = require('express');
 
     function initializeRoutes(app) {
 
-        // 
         // Routes for SAMPLE APP
-        //
         const passportJwt = require(sampleApp+'authenticate/jwt');
         const routeAuth = require(sampleApp+'routes/route_auth');
         const routePublicAPI = require(sampleApp+'routes/route_public');
@@ -189,19 +187,20 @@ const express = require('express');
         // authentication route
         app.use('/auth', routeAuth);
 
-        // public route
+        // public API route
         app.use('/api/v1/public', routePublicAPI);
 
-        // sample private apis...
+        // private API route
         app.use('/api/v1/private',
             fnNoRedirect,
             passportJwt.authenticate('jwt', {
                 session: false,
+                failureRedirect: '/api/v1/public/unauthorized_api'
             }),
             routePrivateAPI
         );
 
-        // app after login
+        // app (after login)
         app.use('/app', 
             passportJwt.authenticate('jwt', {
                 session: false,
@@ -216,20 +215,11 @@ const express = require('express');
 
     function initializeViews(app) {
 
-        /* CONNECT TO REACT APP */
         const express = require('express');
         const path = require('path');
         const exphbs = require('express-handlebars-multi');
 
-        let indexProd="../../react/build/"         // this is where we get all static files from REACT app (if want to debug app with backend calls, run it from localhost:3000, not from here)
         let dirApp=path.join(__dirname, sampleApp);        
-        let dirASsets=path.join(__dirname, "../");        
-        app.use('/assets', express.static(path.join(dirASsets, 'assets')));
-
-        let tmpPath=path.join(__dirname, indexProd);        
-        app.use('/app', express.static(tmpPath));
-        app.use('/app/*', express.static(tmpPath));
-
         var aLayout=[path.join(dirApp, 'views/layouts/')];
         var aPartial=[path.join(dirApp, 'views/partials/')];
         var aView=[path.join(dirApp, 'views/')];
@@ -274,7 +264,9 @@ const express = require('express');
         app.set('views', aView);
 
         // static files..
-        app.use(express.static(path.join(__dirname, root)));            
+        let dirRoot=path.join(__dirname, "../");        
+        app.use(express.static(dirRoot));            
+        app.use('/assets', express.static(path.join(dirRoot, 'assets')));
 
         // catch and forward specific error handler
         app.use(function (req, res, next) {
@@ -299,6 +291,5 @@ const express = require('express');
                     "<div>" + message + "</div>" +
                     "<div>Error code: " + status + "</div>"
             });
-        })        
-        
+        })                
     }
