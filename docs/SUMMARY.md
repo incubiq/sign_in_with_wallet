@@ -17,7 +17,11 @@
   * [3. Create a message](use-cases/js-client-implementation/signing-messages.md)
   * [4. Send a message](use-cases/js-client-implementation/signing-messages-1.md)
 * [NodeJS - Backend implementation](use-cases/nodejs-backend-implementation/README.md)
-  * [1. TODO](use-cases/nodejs-backend-implementation/todo.md)
+  * [1. Setup passport-wallet](use-cases/nodejs-backend-implementation/todo.md)
+  * [2. Connect to SIWW](use-cases/nodejs-backend-implementation/2.-connect-to-siww.md)
+  * [3. Manage your authentication token](use-cases/nodejs-backend-implementation/3.-manage-your-authentication-token.md)
+  * [4. Add authentication routes](use-cases/nodejs-backend-implementation/4.-add-authentication-routes.md)
+  * [5. Full sample app](use-cases/nodejs-backend-implementation/5.-full-sample-app.md)
 
 ## Extras
 

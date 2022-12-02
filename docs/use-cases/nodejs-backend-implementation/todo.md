@@ -1,5 +1,7 @@
-# 1. TODO
+# 1. Setup passport-wallet
 
-{% hint style="info" %}
-**Good to know:** TODO!
-{% endhint %}
+A **passport-wallet** strategy was developed to simplify a backend authentication via SIWW. Install this authentication strategy first.
+
+```
+npm install @incubiq/passport-wallet
+```
