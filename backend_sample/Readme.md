@@ -1,25 +1,21 @@
-# Sample use of SIWC
+# Sample use of SIWW
 
-
-This package is in development and is not guaranteed stable yet. You can find the broader context on this repo : https://github.com/Yeepeekoo/sign_in_with_cardano and a documentation, also in progress, here: https://eric-duneau.gitbook.io/siwc/ 
-
-A full NodeJS backend is being developped with a compatible Passport library for signing a user via a wallet into web2 apps. This will be shared publicly nearer to completion, planned for mid Q4 2022.
+This package is provided as an example of integration with signwithwallet.com
+More information about the setup and implementation can also be found here: https://incubiq.gitbook.io/siww/use-cases/nodejs-backend-implementation
 
 ## Install
 
-Download the /backend_sample/ source code in a directory, and run npm install
+1/ Download the /backend_sample/ source code in a directory
+2/ Run npm install => it will run on localhost:3003
+3/ ngrok https 3003 => Use ngrok to have an external URL accessible from other websites
+4/ Go to signwithwallet.com and in the admin page, edit the localhost config to add your ngrok session as the tunnel option
+5/ run your ngrok URL in the browser, and make use of the delegated  authentication provided by signwithwallet.com 
 
 ## How it works
 
-This NodeJS server runs by default on localhost:3003 ; It requires a SIWW (Sign-In With Wallet) server running alongside to pass the authentication stage (see backend_siww). It implement a basic authentication via oAuth, making use of the SIWW passport extension.
+This NodeJS server runs by default on localhost:3003 ; It connects to https://signwithwallet.com (otherwise called Sign-In With Wallet or SIWW in the documentation) which provides the delegated authenticatin via web3 wallet signing. 
 
-Steps to perform an oAuth authentication via a Cardano wallet:
- 1/ call the route /auth/prepare/siwc
-  - this route will ensure that the current domain is registered with SIWW (we do this at each authentication call because SIWW does not keep a log of all connecting apps since it does not have any DB)
-  - when domain registration is made, it auto redirects to route /auth/siwc which will make use of nodejs passport for the proper oAuth authentication
-
- 2/ route /auth/siwc is called
-  - it kick starts the passport SIWC authentication process.
+This sample code implements a full oAuth2 authentication via services provided by both signwithwallet.com and the other associated open source components. If you are interested in more details on nodeJS passport implementation, we rcommend reading this page: https://www.zachgollwitzer.com/posts/passport-js-course
 
 ## License
 
