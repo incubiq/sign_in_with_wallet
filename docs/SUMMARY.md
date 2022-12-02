@@ -6,7 +6,7 @@
 
 * [Abstract](specifications/creating-your-first-project.md)
 * [Motivation](specifications/creating-your-first-task.md)
-* [Detailed specs](specifications/advanced-permissions.md)
+* [Open source libraries](specifications/advanced-permissions.md)
 * [Security](specifications/security.md)
 
 ## Use Cases
