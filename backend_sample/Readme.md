@@ -1,14 +1,18 @@
 # Sample use of SIWW
 
-This package is provided as an example of integration with signwithwallet.com
+This package is provided as an example of integration with signwithwallet.com.
 More information about the setup and implementation can also be found here: https://incubiq.gitbook.io/siww/use-cases/nodejs-backend-implementation
 
 ## Install
 
 1/ Download the /backend_sample/ source code in a directory
+
 2/ Run npm install => it will run on localhost:3003
+
 3/ ngrok https 3003 => Use ngrok to have an external URL accessible from other websites
+
 4/ Go to signwithwallet.com and in the admin page, edit the localhost config to add your ngrok session as the tunnel option
+
 5/ run your ngrok URL in the browser, and make use of the delegated  authentication provided by signwithwallet.com 
 
 ## How it works
