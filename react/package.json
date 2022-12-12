@@ -4,6 +4,7 @@
   "private": false,
   "license": "ISC",
   "dependencies": {
+    "@emurgo/cardano-message-signing-asmjs": "^1.0.1",
     "@emurgo/cardano-serialization-lib-asmjs": "^10.0.4-beta.4",
     "@incubiq/siww": "^0.1.5",
     "@stablelib/random": "^1.0.1",

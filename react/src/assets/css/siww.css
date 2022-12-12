@@ -123,6 +123,7 @@ h1 a {
 
 .siww-header {
     border-bottom: 1px solid #eee;
+    background-color: #f8f8fb;
 }
 
 .siww-header .siww-panel {
@@ -357,6 +358,16 @@ h1 a {
     background-color: #888;
 }
 
+.modal {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 15px;
+    background: rgba(255,255,255);
+    color: var(--dark-text);
+    box-shadow: 0px 6px 22px var(--shadow);
+    overflow: hidden;    
+}
+
 .modal-login {
     width: calc(40% + 120px);
     max-width: 500px;
@@ -443,7 +454,7 @@ h1 a {
     height: 20px;
 }
 
-.scopes-list {
+.row-list {
     font-size: 0.8em;
     margin: auto;
     margin-top: 10px;
@@ -453,28 +464,28 @@ h1 a {
     display: table;
     padding-inline-start: 20px;
 }
-.scopes-list li {
+.row-list li {
     margin-bottom: 0;
     display: table-row;
 }
 
-.scopes-list li .group {
+.row-list li .group {
     line-height: 16px;    
 }
 
-.scopes-list .scope-name{
+.row-list .row-name{
     display: table-cell;
     min-width: 120px;
     color: #555;
 }
 
-.scopes-list .scope-value{
+.row-list .row-value{
     display: table-cell;
     color: #aaa;
     font-size: 12px;
 }
 
-.scopes-list .scope-property{
+.row-list .row-property{
     display: table-cell;
     color: #aaa;
     font-size: 12px;
@@ -619,48 +630,6 @@ h1 a {
 
 .siww-login-download .extapp-download-button img {
     width: 66%;
-}
-
-@media screen and (max-width: 767px) {
-    .footer {
-        display:none;
-    }
-
-    .modal-login {
-        width: 90%;
-    }
-}
-
-/* on mobile devices */
-@media screen and (max-width: 414px) {
-    .center-vh {
-        width:100%;
-        top: 25%;
-        left: 0;
-        transform: none;
-        border-radius: 0;
-    }
-
-    .client-login-logo {
-        height: 70px;
-    }
-
-    .display-app-logo {
-        width: 90px;
-    }
-
-    .display-app-logo .login-subtitle{
-        font-size: 65%;
-    }
-}
-
-
-/* launch app from URL */
-
-/* we are on a mobile device */
-@media (pointer:none), (pointer:coarse) {
-    #refresh-qr-button{display: none;}
-    #appAuthByQRCode {display: inline-block;}
 }
 
 
@@ -842,6 +811,13 @@ h1 a {
     right: 0;
   }
 
+  .siww_configure .addAuthorization {
+    position: fixed;
+    top: 25%;
+    left: 10%;
+    width: 80%;
+  }
+
   .siww_warning_banner  {
     background-color: yellow;
     font-weight: bold;
@@ -849,3 +825,58 @@ h1 a {
     border: 1px solid #888;
     margin: 4px;
   }
+
+@media screen and (max-width: 767px) {
+    .footer {
+        display:none;
+    }
+
+    .modal-login {
+        width: 90%;
+    }
+}
+
+/* on mobile devices */
+@media screen and (max-width: 414px) {
+    .center-vh {
+        width:100%;
+        top: 25%;
+        left: 0;
+        transform: none;
+        border-radius: 0;
+    }
+
+    .client-login-logo {
+        height: 70px;
+    }
+
+    .display-app-logo {
+        width: 90px;
+    }
+
+    .display-app-logo .login-subtitle{
+        font-size: 65%;
+    }
+
+    .siww_configure .label {
+        min-width: 100px;
+    }
+    .siww_configure .row .value {
+        width: 200px;
+      }
+
+    .siww_configure .row.compulsory .value {
+        width: calc(200px - 16px);
+      }
+    
+}
+
+
+/* launch app from URL */
+
+/* we are on a mobile device */
+@media (pointer:none), (pointer:coarse) {
+    #refresh-qr-button{display: none;}
+    #appAuthByQRCode {display: inline-block;}
+}
+

@@ -14,7 +14,7 @@ global.gConfig={
 
     // cookie / auth
     appName: "TestApp_LoginSIWC",       // app Name used for naming the cookie
-    jwtKey: "",                         // some basic key for encoding cookies (will get it from SIWW)
+    jwtKey: "any",                      // some basic key for encoding cookies (will get it from SIWW)
     authentication_expire: "72h",       // 72 hours expiration of our cookie
 
     // params for the SIWW session (includes where SIWW is hosted)
@@ -35,17 +35,6 @@ global.gConfig={
     version: "0.1.1"
 };
 
-// Toggle ON/OFF for PROD (true) or Local (false) test
-if(true) {
-    // update next line with correct ngrok, and set the localhost config to this same ngrok (in SIWW config panel as admin)
-    global.gConfig.origin=" https://55a3-2a00-23c7-b71c-7b01-a121-6c61-1916-e461.ngrok.io/"         
-
-    // keep this unchanged
-    global.gConfig.siww.clientID="localhost";
-    global.gConfig.siww.host="https://signwithwallet.com/";
-    global.gConfig.siww.domain="signwithwallet.com";    
-}
-
 // just to check all arguments passed by node
 process.argv.forEach(function (val, index, array) {
     console.log(index + ': ' + val);
@@ -53,8 +42,20 @@ process.argv.forEach(function (val, index, array) {
         if(val.substr(0,4)=="env=") {
             process.env.NODE_ENV=val.substr(4, val.length);           // set the config if passed in param
         }
-        if(val.substr(0,11)=="app_secret=") {
-            gConfig.siww.clientSecret=val.substr(11, val.length);
+         
+        if(val.substr(0,4)=="ENV=") {
+            var _config = require('./'+val.substr(4, val.length));
+            global.gConfig.siww.clientSecret=_config.APP_SECRET;
+            if(_config.PROD) {
+                global.gConfig.siww.clientID="localhost";
+                global.gConfig.siww.host="https://signwithwallet.com/";
+                global.gConfig.siww.domain="signwithwallet.com";        
+                global.gConfig.origin=_config.NGROK;
+                console.log("Configured for prod");
+            }
+            else {
+                console.log("Configured for local");
+            }
         }
     }
 });

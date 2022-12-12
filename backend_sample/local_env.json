@@ -1,0 +1,5 @@
+{
+    "APP_SECRET": "someotherkey_1234567890",
+    "PROD":   false,
+    "NGROK":   "https://5209-2a00-23c7-b71c-7b01-781b-8a89-eb12-a4fe.ngrok.io/"
+}

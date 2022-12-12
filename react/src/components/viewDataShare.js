@@ -29,11 +29,11 @@ class ViewDataShare extends Component {
                 :
                 ""}
 
-                <ul className="scopes-list">
+                <ul className="row-list">
                     {this.props.aScope.map((item, index) => (  
                         <li key={index}>
-                            <span className="scope-name">{item.label}</span>
-                            <span className={"scope-value "+item.property} id={"scope_"+item.property}>
+                            <span className="row-name">{item.label}</span>
+                            <span className={"row-value "+item.property} id={"scope_"+item.property}>
                                 { this.getCondensedText(this.props.aIdentity[this.props.iSelectedIdentity][item.property]) }
                             </span>
                         </li>

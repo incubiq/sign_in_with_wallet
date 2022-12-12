@@ -50,7 +50,9 @@ import {
   hash_plutus_data,
   ScriptDataHash, Ed25519KeyHash, NativeScript, StakeCredential
   */
-} from "@emurgo/cardano-serialization-lib-asmjs"
+} from "@emurgo/cardano-serialization-lib-asmjs";
+
+//import {signData} from "@emurgo/cardano-message-signing-asmjs";
 
 const CHAIN_NAME = "Cardano"
 const PROVIDER_NAME = "SIWC"
@@ -252,7 +254,23 @@ export class siwc_connect  extends siww_connect {
         return null;        
     }
 
-
+    // unfinished tests...
+    async async_signMessage(_idWallet, objSiwcMsg, type){
+        let aMsg=[];
+        aMsg.push( "Version:"+ objSiwcMsg.version);
+        aMsg.push( "Version:"+ objSiwcMsg.version);
+        aMsg.push( "Message:"+ objSiwcMsg.message);
+        let msg=aMsg.join("/n");
+        let COSESign1Message=null;
+        
+        try {
+            COSESign1Message=await window.cardano.signData(objSiwcMsg.address, msg);
+        }
+        catch(err) {
+            return null;
+        }
+        return COSESign1Message;
+    }
 }
 
 export default siwc_connect;
