@@ -1,6 +1,12 @@
-# 1. Initialize SIWC client lib
+# 1. Initialize SIWW client lib
 
-**siwc\_connect.js** is the client library which allows the connection to the Cardano wallet, installed as a browser plugin. This library needs to be instantiated (new) and initialized (call initialize function with all required params). it comes with a utility library **siwc\_utils.js**.
+A JS library for connecting to wallets is provided as open source. To install it, runt he following command:
+
+```
+npm install @incubiq/siww
+```
+
+This client library allows the connection to any Cardano wallet, installed as a browser plugin. You will need to get the blockchain connector first, and then initialize it with any required parameter.
 
 Note as per the code below, that we have preferred to use callback functions rather than be constrained to wait for async calls to succeed (or fail). This is not usual, but since the user may take a very long time before accepting requests from the wallet, we have favored this option.
 
