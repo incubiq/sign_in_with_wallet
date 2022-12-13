@@ -37,9 +37,6 @@ export default function AppRouter(props) {
 
   const navigate = useNavigate();
 
-  // some basic inits
-  setCacheEncryption(cacheSecret);
-
   useEffect(() => {
     if(!gDidMount) {
 
@@ -56,6 +53,7 @@ export default function AppRouter(props) {
             //TODO ... need to pass the key from server in a more secure way than this
             setCacheSecret(dataInfo.data.cache_secret);
             setCookieSecret(dataInfo.data.jwt_secret);
+            setCacheEncryption(dataInfo.data.cache_secret);
 
             // do we have a cookie?? if yes, we may already be authenticated
             let _name=dataInfo.data.isDebug? 'jwt_DEBUG_token_SIWW' : 'jwt_token_SIWW';

@@ -1,8 +1,8 @@
 const passport = require('passport');
 const libUser = require('./user');              // Our User mgt minimal library
 
-//const SIWWStrategy = require("./siww/index").Strategy;                    // when debugging, use the local strategy
-const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;          // normal case, using NPM prod passport-wallet strategy
+const SIWWStrategy = require("./siww/index").Strategy;                    // when debugging, use the local strategy
+//const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;          // normal case, using NPM prod passport-wallet strategy
 
 /*
  *      Making use of passport-wallet authentication strategy
@@ -34,6 +34,7 @@ const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;          // n
             let email=profile && profile.emails && profile.emails.length>0 ? (profile.emails[0] ? profile.emails[0].value : null) : null;
             let picture=profile && profile.photos && profile.photos.length>0 ? (profile.photos[0] ? profile.photos[0].value : null) : null;
             let wallet_address= profile && profile.wallet_address ? profile.wallet_address : null;
+            let authorizations= profile && profile.authorizations? profile.authorizations : [];
 
             // TODO define what to validate here
 
@@ -47,6 +48,7 @@ const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;          // n
                 provider_id: profile.provider,
                 provider_wallet: profile.wallet,
                 wallet_address: wallet_address,
+                authorizations: authorizations,
                 isValidated: true
             })
                 .then(function(obj){

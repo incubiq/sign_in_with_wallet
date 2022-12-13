@@ -1,11 +1,23 @@
 
 
-Welcome wallet <b>{{param.username}}</b>!
-<br />
+Welcome user <b>{{param.username}}</b>!
 <br />
 You are logged-in!
 <br />
-Authenticated with provider <b>{{param.provider}}</b> via wallet <b>{{param.wallet_id}}</b>
+<br />
+Authenticated with 
+<ul>
+    <li>Connector: <b>{{param.provider}}</b></li>
+    <li>Wallet: <b>{{param.wallet_id}}</b></li>
+    <li>Address: <b>{{param.wallet_address}}</b></li>
+</ul>
+<br />
+Authorizations:
+<ul>
+{{#each param.authorizations}}
+    <li>{{name}} - {{#if isValid}}TRUE{{else}}FALSE{{/if}}</li>
+{{/each}}
+</ul>
 
 <br />
 <br />

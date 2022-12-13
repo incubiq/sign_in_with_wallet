@@ -50,6 +50,7 @@ module.exports = {
                         provider: decoded.provider,
                         wallet_id: decoded.provider_wallet,
                         wallet_address:  decoded.wallet_address,
+                        authorizations: decoded.authorizations
                     }
 
                     deferred.resolve({

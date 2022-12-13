@@ -22,6 +22,9 @@
             profile.wallet = user.provider? user.provider.wallet_id: null;
             profile.id = user.username;
 
+            // authorizations
+            profile.authorizations = user.authorizations;
+
             // datashare (from scope)
             profile.wallet_address = user.data? user.data.wallet_address: null;
             profile.username = user.data? user.data.username : null;

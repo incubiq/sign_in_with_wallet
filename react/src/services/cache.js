@@ -31,6 +31,9 @@ const getCache = (entry, optional_objParam) => {
             localCache=null;
         }
     }
+    else {
+      localCache = JSON.parse(localCache);
+    }
     return localCache;
 }
 
@@ -51,6 +54,9 @@ const setCache = (entry, json, optional_objParam) => {
   try{
       if(isEncrypted) {
         value="_ENCRYPT_"+value;
+      }
+      else {
+        value=JSON.stringify(value);
       }
       localStorage.setItem(entry, value);
   }

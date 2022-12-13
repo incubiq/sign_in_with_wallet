@@ -116,16 +116,16 @@ var OAuth2Strategy = require('passport-oauth2')
  *
  * This function constructs a normalized profile, with the following properties:
  *
- *   - `provider`         always set to `SIWW`
+ *   - `provider`         the connector used for wallet signing (SIWC, etc...)
  *   - `wallet_chain`     the signing wallet's chain (eg "cardano")
  *   - `wallet_id`        the signing wallet's name (eg "nami")
  *   - `wallet_address`   the signing wallet's address (eg "addr123....")
  *   - `id`               the user's SIWW ID
  *   - `username`         the user's SIWW username
- *   - `displayName`      the user's full name
- *   - `name.familyName`  the user's last name
- *   - `name.givenName`   the user's first name
- *   - `emails`           the proxied or contact email address granted by the user
+ *   - `displayName`      not used (wallet does not know)
+ *   - `name.familyName`  not used (wallet does not know)
+ *   - `name.givenName`   not used (wallet does not know)
+ *   - `emails`           not used (wallet does not know)
  *
  * @param {string} accessToken
  * @param {function} done

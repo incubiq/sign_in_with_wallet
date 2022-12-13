@@ -35,6 +35,7 @@ module.exports = {
         let payload = {
             username: (req!=null && req.user!=null && req.user.username!=null) ? req.user.username.toString() : null,
             provider: (req!=null && req.user!=null && req.user.provider_id!=null) ? req.user.provider_id : null,
+            authorizations: (req!=null && req.user!=null && req.user.authorizations!=null) ? req.user.authorizations : null,
             provider_wallet: (req!=null && req.user!=null && req.user.provider_wallet!=null) ? req.user.provider_wallet : null,
             wallet_address: (req!=null && req.user!=null && req.user.wallet_address!=null) ? req.user.wallet_address : null,
             firstName: (req!=null && req.user!=null && req.user.firstName!=null) ? req.user.firstName : null,
