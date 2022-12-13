@@ -1,0 +1,8 @@
+{
+    "git.repositoryScanMaxDepth": -1,
+    "git.repositoryScanIgnoredFolders": [
+        "node_modules",
+        "_tmp",
+        "temp"
+    ]
+}
