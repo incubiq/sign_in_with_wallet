@@ -38,10 +38,20 @@ class FormAuthorize extends Component {
                     }}
                 />
 
+                {this.props.onRevokeAccess? 
+                    <button 
+                        className="btn btn-transparent" 
+                        style= {style}
+                        onClick = {this.props.onRevokeAccess}
+                    >
+                        Revoke access
+                    </button>
+                :""}
+
                 <button 
                     className="btn btn-quiet" 
                     style= {style}
-                    onClick = {this.doLogin}
+                    onClick = {this.props.onContinue}
                 >
                     Continue
                 </button>

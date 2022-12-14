@@ -4,7 +4,7 @@ import ViewWallets from "./viewWallets";
 
 import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 import {srv_prepare} from "../services/authenticate";
-import {createPartialIdentity, updatePartialIdentity, getMyIdentities, getIdentityFromUsername, getIdentityFromWallet, grantAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
+import {createPartialIdentity, updatePartialIdentity, getMyIdentities, getIdentityFromUsername, getIdentityFromWallet} from "../services/me";
 
 import jsonwebtoken from "jsonwebtoken";
 

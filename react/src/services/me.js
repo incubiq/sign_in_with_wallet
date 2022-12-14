@@ -157,7 +157,28 @@ const grantAccessToWebApp = (_username, _client_id) => {
       aWebApp: objIdentity.aWebApp
     });  
   }
+  return getIdentityFromUsername(_username);
 }
+
+const revokeAccessToWebApp= (_username, _client_id) => {
+  let objIdentity=_findIdentityFromUsername(_username);
+  if(!objIdentity || !objIdentity.aWebApp || objIdentity.aWebApp.length===0) {
+    return null;
+  }
+
+  let i=objIdentity.aWebApp.findIndex(function (x) {return x.app_id===_client_id});
+  if(i===-1) {
+    return null;
+  }
+
+  if(objIdentity.aWebApp[i].didGrant) {
+    objIdentity.aWebApp[i].didGrant=false;
+    updateIdentity(_username, {
+      aWebApp: objIdentity.aWebApp
+    });  
+  }
+  return getIdentityFromUsername(_username);
+} 
 
 const isGrantedAccessToWebApp = (_username, _client_id) => {
   let objIdentity=_findIdentityFromUsername(_username);
@@ -185,6 +206,7 @@ export {
   updateIdentity,
   registerWebAppWithIdentity,
   grantAccessToWebApp,
+  revokeAccessToWebApp,
   isGrantedAccessToWebApp,
   deleteMe
 };

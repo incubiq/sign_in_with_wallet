@@ -4,7 +4,7 @@ import ViewDataShare from "./viewDataShare";
 import ViewIdentities from "./viewIdentities";
 import FormAuthorize from "./formAuthorize";
 
-import {getMyIdentities, grantAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
+import {getMyIdentities, grantAccessToWebApp, revokeAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
 
 const VIEWMODE_IDENTITY="identity";
 const VIEWMODE_DATASHARE="datashare";
@@ -64,8 +64,11 @@ class AuthAuthorize extends AuthAuthenticate {
 
     // calling this will move the UI to the redirection section (final step)
     authorizeDataShare(_username) {
-        // set granting to local storage
+        
+        // set granting to local storage and refresh what we know about user
         grantAccessToWebApp(_username, this.props.webAppId);
+        this.setState({aIdentity: getMyIdentities()});
+
         this.setState({isAuthorized: true});
         this.setState({hover:"Redirecting..."});
         this.setState({inTimerEffect: true});
@@ -225,6 +228,16 @@ class AuthAuthorize extends AuthAuthenticate {
         }
     }
 
+    doRevokeAccess ( ){
+        this.setState({isAuthorized: false});
+
+        // revoke access, store, and refresh what we know about user
+        revokeAccessToWebApp(this.state.username, this.props.webAppId);
+        this.setState({aIdentity: getMyIdentities()});
+        this.setState({inTimerEffect: false});
+        this.setState({hover: "Revoked access, please grant the access again to authenticate"});
+    }
+
     renderRedirect() {
 
         return (
@@ -245,7 +258,8 @@ class AuthAuthorize extends AuthAuthenticate {
                         theme = {this.state.theme}
                         app_id = {this.props.webAppId}
                         aScope = {this.state.aScope}
-                        onClick = {this.doLogin.bind(this)}
+                        onContinue = {this.doLogin.bind(this)}
+                        onRevokeAccess = {this.doRevokeAccess.bind(this)}
                     />
                 </div>
 
