@@ -1,8 +1,8 @@
 const passport = require('passport');
 const libUser = require('./user');              // Our User mgt minimal library
 
-//const SIWWStrategy = require("./siww/index").Strategy;                    // when debugging, use the local strategy
-const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;          // normal case, using NPM prod passport-wallet strategy
+const SIWWStrategy = require("./siww/index").Strategy;                    // when debugging, use the local strategy
+//const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;          // normal case, using NPM prod passport-wallet strategy
 
 /*
  *      Making use of passport-wallet authentication strategy
@@ -45,7 +45,8 @@ const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;          // n
                 lastName: lastName,
                 email: email,
                 picture: picture,
-                provider_id: profile.provider,
+                connector: profile.connector,
+                blockchain: profile.blockchain,
                 provider_wallet: profile.wallet,
                 wallet_address: wallet_address,
                 authorizations: authorizations,

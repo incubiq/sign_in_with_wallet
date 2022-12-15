@@ -234,9 +234,9 @@ class AuthAuthenticate extends AuthConnect {
             }
 
             // make sure we have this user's identity in storage + update logo in case it changed
-            if(getIdentityFromWallet(_wallet.id, _wallet.provider)===null) {
+            if(getIdentityFromWallet(_wallet.id, _wallet.connector)===null) {
                 createPartialIdentity({
-                    provider: _wallet.provider,
+                    connector: _wallet.connector,
                     blockchain: _wallet.chain,
                     wallet_address: _wallet.address,
                     wallet_id: _wallet.id,
@@ -244,7 +244,7 @@ class AuthAuthenticate extends AuthConnect {
                 });    
             }
             else {
-                updatePartialIdentity(_wallet.id, _wallet.provider, {
+                updatePartialIdentity(_wallet.id, _wallet.connector, {
                     wallet_logo: _wallet.logo
                 });    
             }
@@ -256,7 +256,7 @@ class AuthAuthenticate extends AuthConnect {
                         wallet_address: _wallet.address,
                         wallet_id: _wallet.id,
                         blockchain: _wallet.chain,
-                        connector: _wallet.provider
+                        connector: _wallet.connector
                     });        
                 }
             }
@@ -268,7 +268,7 @@ class AuthAuthenticate extends AuthConnect {
                         wallet_address: _wallet.address,
                         wallet_id: _wallet.id,
                         blockchain: _wallet.chain,
-                        connector: _wallet.provider
+                        connector: _wallet.connector
                     });        
                 }
             }    

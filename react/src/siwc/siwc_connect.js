@@ -54,9 +54,9 @@ import {
 
 //import {signData} from "@emurgo/cardano-message-signing-asmjs";
 
-const CHAIN_NAME = "Cardano"
-const PROVIDER_NAME = "SIWC"
+const CONNECTOR_NAME = "SIWC"
 
+const CARDANO_NETWORK = "cardano"
 const CARDANO_MAINNET = "Cardano mainnet"
 const CARDANO_TESTNET = "Cardano testnet"
 
@@ -68,8 +68,8 @@ export class siwc_connect  extends siww_connect {
 
     createDefaultWallet(_idWallet) {
         let objDefault={
-            chain: CHAIN_NAME,
-            provider: PROVIDER_NAME,
+            chain: CARDANO_NETWORK,
+            connector: CONNECTOR_NAME,
             id: _idWallet,                                            // id of wallet
             api: null,
             apiVersion: null,
@@ -160,7 +160,7 @@ export class siwc_connect  extends siww_connect {
             _objWallet.networkId = await _objWallet.api.getNetworkId();
             _objWallet.isOnProd=_objWallet.networkId===1;
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
-            _objWallet.chain= _objWallet.networkId === 0 ? CARDANO_TESTNET : CARDANO_MAINNET;
+            _objWallet.chain= CARDANO_NETWORK;
             _objWallet.balance = await this._async_getBalance(_objWallet.api);
             _objWallet.utxos=await this._async_getUtxo(_objWallet.api)
             _objWallet.isEnabled=true;

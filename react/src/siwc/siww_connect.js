@@ -13,7 +13,7 @@ export class siww_connect {
     createDefaultWallet(_idWallet) {
         return {
             chain: null,
-            provider: "SIWW",
+            connector: "SIWW",
             id: _idWallet,
             name: null,
             logo: null,
@@ -27,7 +27,7 @@ export class siww_connect {
 
     getSanitizedWallet(_objWallet) {
         return {
-            provider: _objWallet.provider,
+            connector: _objWallet.connector,
             chain: _objWallet.chain,
             networkId: _objWallet.networkId,
             id: _objWallet.id,

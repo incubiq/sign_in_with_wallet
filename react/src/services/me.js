@@ -6,7 +6,8 @@ import {getCache, setCache, removeCache} from './cache'
 //  - wallet_address: ...
 //  - wallet_id: ...
 //  - wallet_logo: ...
-//  - provider
+//  - connector
+//  - blockchain
 //  - webapp: [{ 
 //    app_id: ...
 //    aScope: [{label: ... , property: ...}]
@@ -21,11 +22,11 @@ const getMyIdentities = () => {
     return objMe? objMe.identities : [];
 }
 
-const _findIdentityFromWallet = (_wallet_id, _provider) => {
+const _findIdentityFromWallet = (_wallet_id, _connector) => {
   let aId=getMyIdentities();
-  if(_wallet_id && _provider && aId && aId.length>0) {
+  if(_wallet_id && _connector && aId && aId.length>0) {
     for (var i=0; i<aId.length; i++) {
-      if (aId[i].wallet_id===_wallet_id && aId[i].provider === _provider) {
+      if (aId[i].wallet_id===_wallet_id && aId[i].connector === _connector) {
         return aId[i];
       }
     }
@@ -49,8 +50,8 @@ const getIdentityFromUsername = (_username) => {
   return _findIdentityFromUsername(_username);
 }
 
-const getIdentityFromWallet = (_walletId, _provider) => {
-  return _findIdentityFromWallet(_walletId, _provider);
+const getIdentityFromWallet = (_walletId, _connector) => {
+  return _findIdentityFromWallet(_walletId, _connector);
 }
 
 const createPartialIdentity = (_objIdentity) => {
@@ -60,22 +61,22 @@ const createPartialIdentity = (_objIdentity) => {
       identities: []
     };
   }
-  if(_findIdentityFromWallet(_objIdentity.wallet_id, _objIdentity.provider)===null) {
+  if(_findIdentityFromWallet(_objIdentity.wallet_id, _objIdentity.connector)===null) {
     objMe.identities.push(_objIdentity);
     setCache(CACHE_ME, objMe);
   }
   return objMe;
 }
 
-const updatePartialIdentity = (_wallet_id, _provider, _objUpdate) => {
-  let objIdentity=_findIdentityFromWallet(_wallet_id, _provider)
+const updatePartialIdentity = (_wallet_id, _connector, _objUpdate) => {
+  let objIdentity=_findIdentityFromWallet(_wallet_id, _connector)
   if(objIdentity) {
     for (const key in _objUpdate) {
       objIdentity[key]=_objUpdate[key];
     }
     let aId=getMyIdentities();
     for (var i=0; i<aId.length; i++) {
-      if(aId[i].wallet_id===_wallet_id && aId[i].provider===_provider) {
+      if(aId[i].wallet_id===_wallet_id && aId[i].connector===_connector) {
         aId[i]=objIdentity;
       }
     }

@@ -25,7 +25,8 @@ router.get('/', function(req, res, next) {
             },
             param: {
                 username: dataUser.data.username,
-                provider: dataUser.data.provider,
+                connector: dataUser.data.connector,
+                blockchain: dataUser.data.blockchain,
                 authorizations: dataUser.data.authorizations,
                 wallet_id: dataUser.data.wallet_id,
                 wallet_address: dataUser.data.wallet_address,
