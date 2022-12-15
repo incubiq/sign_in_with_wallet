@@ -692,12 +692,18 @@ class FormConfigure extends FormReserve {
                 </ul>
 
                 <div className="row compulsory align-left">
-                    <div className="btn btn-tiny"
+                    <div className={this.state.is_verified===true? "btn btn-tiny" : "btn btn-tiny disabled"}
                         onClick = {this.toggleAddAuthorization.bind(this)}
                     >
                         <img className="icon" src="/assets/images/icon_plus.png" />
                         <span>Add an authorization level...</span>
                     </div>
+                    {this.state.is_verified===false ?
+                        <div class="hint align-left">
+                            <img class="icon" src="/assets/images/icon_warning.png" />
+                            <span>Verify your domain to enable authorization levels</span>
+                        </div>
+                    :""}
 
                     {this.renderAuthorizationDialog()}
 
