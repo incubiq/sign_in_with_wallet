@@ -1,5 +1,5 @@
 import React, { Component, Suspense } from "react";
-import {Route, Routes } from 'react-router-dom';
+import {Route, Routes, Navigate  } from 'react-router-dom';
 
 // default theming
 import {getTheme, getStyles} from "./assets/themes/cardano"; 
@@ -73,6 +73,10 @@ class AppRoutes extends Component {
                     />
                 </Suspense> 
                 } exact />
+
+
+            {/* For now, we Redirect all authentication calls to /SIWW to /Cardano */}
+            <Route  path="/auth/siww" element={ <Navigate to={"/auth/cardano"+window.location.search} /> } />
 
             <Route  path="/auth/cardano" element={
                 <Suspense 
