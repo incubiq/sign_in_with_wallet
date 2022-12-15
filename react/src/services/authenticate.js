@@ -4,7 +4,8 @@ import {API_HOST, API_WEB3ROUTE, API_OAUTHROUTE, srv_postRoute} from "./base";
 // call this to request an Authentication cookie to SIWW
 const srv_prepare = async(obj) => {
   return await srv_postRoute(API_HOST+API_WEB3ROUTE+'prepare', {
-    provider: obj.provider,
+    connector: obj.connector,
+    blockchain: obj.blockchain,
     wallet_id: obj.wallet_id,
     wallet_addr: obj.wallet_addr,
     app_id: obj.app_id

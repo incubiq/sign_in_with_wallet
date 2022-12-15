@@ -122,14 +122,15 @@ class AuthAuthenticate extends AuthConnect {
                     // this identity myust be here in cache, or we will create...
                     if(getIdentityFromUsername(decoded.username)===null) {
                         createPartialIdentity({
-                            provider: decoded.provider,
+                            provider: decoded.connector,
+                            blockchain: decoded.blockchain,
                             wallet_address: decoded.wallet_address,
                             wallet_id: decoded.wallet_id
                         });    
                     }
     
                     // cookie contains new username (created by backend) => store it
-                    updatePartialIdentity(decoded.wallet_id, decoded.provider, {
+                    updatePartialIdentity(decoded.wallet_id, decoded.connector, {
                         username: decoded.username,
                         wallet_address: decoded.wallet_address
                     });
@@ -174,7 +175,8 @@ class AuthAuthenticate extends AuthConnect {
 
             // now pass details to server, so we get a cookie
             srv_prepare({
-                provider: objIdentityForAuth.provider,
+                connector: objIdentityForAuth.connector,
+                blockchain: objIdentityForAuth.blockchain,
                 wallet_id: objIdentityForAuth.wallet_id,
                 wallet_addr: objIdentityForAuth.wallet_address,    
                 app_id: this.props.webAppId
@@ -235,6 +237,7 @@ class AuthAuthenticate extends AuthConnect {
             if(getIdentityFromWallet(_wallet.id, _wallet.provider)===null) {
                 createPartialIdentity({
                     provider: _wallet.provider,
+                    blockchain: _wallet.chain,
                     wallet_address: _wallet.address,
                     wallet_id: _wallet.id,
                     wallet_logo: _wallet.logo
@@ -252,7 +255,8 @@ class AuthAuthenticate extends AuthConnect {
                     this._prepareSIWC({
                         wallet_address: _wallet.address,
                         wallet_id: _wallet.id,
-                        provider: _wallet.provider
+                        blockchain: _wallet.chain,
+                        connector: _wallet.provider
                     });        
                 }
             }
@@ -263,7 +267,8 @@ class AuthAuthenticate extends AuthConnect {
                     this._prepareSIWC({
                         wallet_address: _wallet.address,
                         wallet_id: _wallet.id,
-                        provider: _wallet.provider
+                        blockchain: _wallet.chain,
+                        connector: _wallet.provider
                     });        
                 }
             }    
