@@ -2,41 +2,32 @@
 
 ## Introduction
 
-A web2 <-> web3 integration for authenticating end-users into web2 apps via their crypto wallet. First implementation based on Cardano wallets, but kep as generic as possible to allow plugging other wallets later.
+A web2 <-> web3 integration for authenticating end-users into web2 apps via their crypto wallet. First implementation based on Cardano wallets, but kept as generic as possible to allow plugging other wallets later.
 
-This project in currently in development. Things may change without much notice, until it is put on a more stable ground. All progress is delivered with as much test as possible, but still, delivered "as is" for now. 
+A good part of this project is provided as open source, althoug for security reasons, the oAuth backend is kept private. All the open source components are either in this repo, or in additional npm repos (see below)
 
+# Open source components
 
-# Requirements
+ - Wallet connector JS library @incubiq/siww (https://www.npmjs.com/package/@incubiq/siww) which is delivered as a separate module, as part of this project.
 
- - Using the npm JS library @incubiq/siww which is delivered as a separate module, as part of this project.
- - Using the Passport extension passport-wallet (to be uploaded publicly later) which is also delivered as a separate module, as part of this project.
- - NodeJS backend + React app
+ - Passport extension @incubiq/passport-wallet (https://www.npmjs.com/package/@incubiq/passport-wallet) which is also delivered as a separate module, as part of this project.
 
-## Installation
+ - React app. the entire client UI of the SIWW project. This react App uses the wallet connector JS Lib to authenticate user in wallet, and then connects to the oAuth backend for final oAuth2 processing
 
- ... todo...
+ - Sample app: a simple NodeJS app with a full integration of the Sign With Wallet feature is provided in this repo. 
 
-## Usage
-To start the react app:
+## Installating the sample app 
+
+To sample app:
  - download the source
- - place yourself in the react dir
+ - place yourself in the directory
  - run: "npm start" (or yarn start)
- - the app will run by default on "http://localhost:3000"
+ - the app will run by default on "http://localhost:3003"
+ - IMPORTANT: to connect with the signwithwallet.com production oAuth2 backend, this sample app must run on a domain accessible from outside your localhost machine. To setup the sample once it runs on localhost, please follow the install tutorial here : https://youtu.be/PYerg9GjCfM 
 
-To start the backend app:
-- place yourself in the backend_siww dir 
-- run npm start server.js
-- the app will run by default on "http://localhost:3010"
+## Prod environment
 
-To start the sample test app:
-- place yourself in the backend_sample dir 
-- run npm start server.js
-- the app will run by default on "http://localhost:3003"
-
-# Tests
-
- ...todo / postman tests will be shared here...
+The prod app is running on: https://SignWithWallet.com
 
 ## Support
 
