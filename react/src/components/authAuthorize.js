@@ -4,6 +4,7 @@ import ViewDataShare from "./viewDataShare";
 import ViewIdentities from "./viewIdentities";
 import FormAuthorize from "./formAuthorize";
 
+import {srv_verify} from "../services/authenticate";
 import {getMyIdentities, grantAccessToWebApp, revokeAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
 import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 
@@ -69,10 +70,17 @@ class AuthAuthorize extends AuthAuthenticate {
         let cose=await this.async_signMessage(this.state.aIdentity[this.state.iSelectedIdentity].wallet_id, this.props.webAppDomain);
         if(cose) {
             // todo verify cose signature with backend
-
-            // now grant access
-            grantAccessToWebApp(_username, this.props.webAppId);
-            this.authorizeDataShare(_username);
+            cose.connector=this.state.aIdentity[this.state.iSelectedIdentity].connector;
+            let dataVerified=await srv_verify(cose);
+            if(dataVerified && dataVerified.data && dataVerified.data.isVerified) {
+                // now grant access
+                grantAccessToWebApp(_username, this.props.webAppId);
+                this.authorizeDataShare(_username);
+            }
+            else {
+                this.setState({hover:"Authentication refused by server"});
+                this.setState({criticality:CRITICALITY_SEVERE});    
+            }
         }
         else {
             // 

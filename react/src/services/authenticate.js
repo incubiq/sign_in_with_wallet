@@ -40,7 +40,17 @@ const srv_authenticate = async(obj) => {
   }
 }
 
+// call this to request an Authentication cookie to SIWW
+const srv_verify = async(obj) => {
+  return await srv_postRoute(API_HOST+API_WEB3ROUTE+'verify', {
+    connector: obj.connector,
+    key: obj.key,
+    signature: obj.signature
+  });
+}
+
 export { 
   srv_prepare,
-  srv_authenticate
+  srv_authenticate,
+  srv_verify
 }
