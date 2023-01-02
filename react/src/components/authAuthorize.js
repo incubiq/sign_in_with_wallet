@@ -5,6 +5,7 @@ import ViewIdentities from "./viewIdentities";
 import FormAuthorize from "./formAuthorize";
 
 import {getMyIdentities, grantAccessToWebApp, revokeAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
+import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 
 const VIEWMODE_IDENTITY="identity";
 const VIEWMODE_DATASHARE="datashare";
@@ -62,11 +63,28 @@ class AuthAuthorize extends AuthAuthenticate {
  *          Authorization
  */
 
+    async async_requestAuthorization(_username) {
+
+        // this is where we ask for a message signature
+        let cose=await this.async_signMessage(this.state.aIdentity[this.state.iSelectedIdentity].wallet_id, this.props.webAppDomain);
+        if(cose) {
+            // todo verify cose signature with backend
+
+            // now grant access
+            grantAccessToWebApp(_username, this.props.webAppId);
+            this.authorizeDataShare(_username);
+        }
+        else {
+            // 
+            this.setState({hover:"Authentication refused by wallet"});
+            this.setState({criticality:CRITICALITY_SEVERE});
+        }
+    }
+
     // calling this will move the UI to the redirection section (final step)
     authorizeDataShare(_username) {
         
         // set granting to local storage and refresh what we know about user
-        grantAccessToWebApp(_username, this.props.webAppId);
         this.setState({aIdentity: getMyIdentities()});
 
         this.setState({isAuthorized: true});
@@ -177,7 +195,7 @@ class AuthAuthorize extends AuthAuthenticate {
                             <button 
                                 className="btn btn-quiet"
                                 onClick={evt => {
-                                    this.authorizeDataShare(this.state.aIdentity[this.state.iSelectedIdentity].username);
+                                    this.async_requestAuthorization(this.state.aIdentity[this.state.iSelectedIdentity].username);
                                 }}
                             >
                                 Grant Access!

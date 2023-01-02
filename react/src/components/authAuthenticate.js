@@ -122,7 +122,7 @@ class AuthAuthenticate extends AuthConnect {
                     // this identity myust be here in cache, or we will create...
                     if(getIdentityFromUsername(decoded.username)===null) {
                         createPartialIdentity({
-                            provider: decoded.connector,
+                            connector: decoded.connector,
                             blockchain: decoded.blockchain,
                             wallet_address: decoded.wallet_address,
                             wallet_id: decoded.wallet_id

@@ -117,12 +117,6 @@ constructor(props) {
     // a message was signed by user
     onSIWCNotify_SignedMessage(objParam) {
         // todo...
-        if(objParam.wasSigned) {
-            alert("User accepted authentication via "+objParam.id+" wallet");
-        }
-        else {
-            alert("User refused authentication!");
-        }
         return;
     }
 
@@ -157,9 +151,7 @@ constructor(props) {
     }
 
     // user wants to sign transaction with a connected wallet (better be a connected wallet or it will not like it)
-    async async_signMessage(event, appDomain) {
-        let idElt=event.target;
-        let _id=idElt.getAttribute("attr-id");
+    async async_signMessage(_id, appDomain) {
         if(!appDomain) {appDomain="localhost";}
         try {
 
@@ -221,7 +213,10 @@ constructor(props) {
                             <button
                                 className="btn"
                                 attr-id={item.id}
-                                onClick={this.async_signMessage.bind(this)}
+                                onClick={evt => {
+                                    let idElt=evt.target;
+                                    let _id=idElt.getAttribute("attr-id");
+                                    this.async_signMessage(_id, "localhost").bind(this)}}
                             >Sign-in Message...</button>
                         </li>
                     </ul>
