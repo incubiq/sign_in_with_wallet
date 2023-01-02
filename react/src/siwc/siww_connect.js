@@ -271,7 +271,8 @@ export class siww_connect {
                     address: _objWallet.address,
                     chain: _objWallet.chain,
                     name: _objWallet.name,
-                    version: "1.0",
+                    api: _objWallet.api,
+                    version: objParam.version? objParam.version: "1.0",
                     nonce: generateNonce()
                 }
                 
@@ -294,43 +295,8 @@ export class siww_connect {
     //  "authentication" : for authenticating user
     //  "revocation" : for revocating consent of data shared by user with domain
     //
-    async async_signMessage(_idWallet, objSiwcMsg, type){
-        let _obj=this.getWalletFromList(_idWallet);
-        try{
-            if (_obj && _obj.wallet) {                
-                // need to ask the wallet to sign  this msg 
-
-                // TODO : missing this part right now (CIP008), so we will fake it via a dialog
-                function getConfirmation() {
-                    var retVal = window.confirm(_str);
-                    if( retVal === true ) {
-                       return true;
-                    } else {
-                       return false;
-                    }
-                }
-
-                let _str=this._formatMessage(objSiwcMsg);
-                let isSigned=getConfirmation(_str);
-
-                // let's assume the wallet signed the message
-                let objRet={
-                    wasSigned: isSigned,
-                    type: type,
-                    id:_idWallet,
-                    msg: objSiwcMsg
-                }
-                if(this.fnOnNotifySignedMessage) {
-                    this.fnOnNotifySignedMessage(objRet);
-                }
-                return objRet;
-            }
-            else {
-                    throw new Error("expected a wallet id, got null");
-            }
-        } catch (err) {
-            throw err;
-        }    
+    async async_signMessage(_idWallet, objMsg, type){
+        // implement at higher level
     }
     
     // format a message for showing in wallet

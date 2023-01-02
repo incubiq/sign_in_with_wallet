@@ -199,6 +199,21 @@ class AppRoutes extends Component {
                 </Suspense> 
                 } exact />
 
+            <Route  path="/sign/cardano" element={
+                <Suspense 
+                    fallback={<div>Sign message Cardano...</div>}>
+                    <AuthConnect
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
+                        host={this.props.host}
+                        chain="cardano"
+
+                        // default themes
+                        theme={getTheme()}
+                        styles={getStyles()}
+                    />
+                </Suspense> 
+                } exact />
         </Routes>
 
   </>

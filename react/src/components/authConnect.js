@@ -157,22 +157,26 @@ constructor(props) {
     }
 
     // user wants to sign transaction with a connected wallet (better be a connected wallet or it will not like it)
-    async async_signMessage(event) {
+    async async_signMessage(event, appDomain) {
         let idElt=event.target;
         let _id=idElt.getAttribute("attr-id");
+        if(!appDomain) {appDomain="localhost";}
         try {
 
             const objSiwcMsg = await this.siww.async_createMessage(_id, {
-                message: "something i d like to say",
+                message: "Sign this message to authorize authentication into "+appDomain,
+                version: this.props.version,
                 valid_for: 300,                 // 5min validity from when it is sent
             });
     
-            // not waiting for this to finish, it could wait too long
-            this.siww.async_signMessage(_id, objSiwcMsg, "authentication");
+            // get the Cose to validate server side
+            let res=await this.siww.async_signMessage(_id, objSiwcMsg, "authentication");
+            return res;
         }
         catch(err) {
             alert("Error when signning message ("+err.message+")");
         }
+        return null;
     }
 
     getShortenAnonAddress(_address) {

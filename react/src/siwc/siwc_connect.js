@@ -52,8 +52,6 @@ import {
   */
 } from "@emurgo/cardano-serialization-lib-asmjs";
 
-//import {signData} from "@emurgo/cardano-message-signing-asmjs";
-
 const CONNECTOR_NAME = "SIWC"
 
 const CARDANO_NETWORK = "cardano"
@@ -91,7 +89,7 @@ export class siwc_connect  extends siww_connect {
     }
 
     getAcceptedChains() {
-        return [CARDANO_MAINNET, CARDANO_TESTNET];
+        return [CARDANO_MAINNET, CARDANO_TESTNET, CARDANO_NETWORK];
     }
 
 //
@@ -254,20 +252,31 @@ export class siwc_connect  extends siww_connect {
         return null;        
     }
 
-    // unfinished tests...
+    // Sign a message
     async async_signMessage(_idWallet, objSiwcMsg, type){
-        let aMsg=[];
-        aMsg.push( "Version:"+ objSiwcMsg.version);
-        aMsg.push( "Version:"+ objSiwcMsg.version);
-        aMsg.push( "Message:"+ objSiwcMsg.message);
-        let msg=aMsg.join("/n");
         let COSESign1Message=null;
-        
+        const usedAddresses = await objSiwcMsg.api.getUsedAddresses();
+        const usedAddress = usedAddresses[0];
+
+        let aMsg=[];
+        aMsg.push( objSiwcMsg.message);
+        aMsg.push( " -- Secure message by Sign With Wallet --");
+        aMsg.push( "Purpose: "+ type);
+        aMsg.push( "Issued At: "+ objSiwcMsg.issued_at);
+        aMsg.push( "Valid for: "+ objSiwcMsg.valid_for/60 + " minutes");
+        aMsg.push( "SIWW Version: "+ objSiwcMsg.version);
+        let msg=aMsg.join("\r\n");
+        let _hex= Buffer.from(msg).toString('hex');
         try {
-            COSESign1Message=await window.cardano.signData(objSiwcMsg.address, msg);
+            COSESign1Message = await objSiwcMsg.api.signData(usedAddress, _hex);
         }
         catch(err) {
             return null;
+        }
+
+        // notify?
+        if(this.fnOnNotifySignedMessage) {
+            this.fnOnNotifySignedMessage(COSESign1Message);
         }
         return COSESign1Message;
     }

@@ -6,7 +6,7 @@ A web2 <-> web3 integration for authenticating end-users into web2 apps via thei
 
 A good part of this project is provided as open source, althoug for security reasons, the oAuth backend is kept private. All the open source components are either in this repo, or in additional npm repos (see below)
 
-# Open source components
+## Open source components
 
  - Wallet connector JS library @incubiq/siww (https://www.npmjs.com/package/@incubiq/siww) which is delivered as a separate module, as part of this project.
 
