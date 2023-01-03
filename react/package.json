@@ -6,7 +6,7 @@
   "dependencies": {
     "@emurgo/cardano-message-signing-asmjs": "^1.0.1",
     "@emurgo/cardano-serialization-lib-asmjs": "^10.0.4-beta.4",
-    "@incubiq/siww": "^0.1.7",
+    "@incubiq/siww": "^1.0.1",
     "@stablelib/random": "^1.0.1",
     "cbor": "^8.1.0",
     "crypto-js": "^4.1.1",

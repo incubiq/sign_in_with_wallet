@@ -278,6 +278,13 @@ export class siwc_connect  extends siww_connect {
         if(this.fnOnNotifySignedMessage) {
             this.fnOnNotifySignedMessage(COSESign1Message);
         }
+
+        // add info for server side validation
+        COSESign1Message.valid_for=objSiwcMsg.valid_for;
+        COSESign1Message.issued_at=objSiwcMsg.issued_at;
+        COSESign1Message.address=usedAddress;
+        COSESign1Message.connector=CONNECTOR_NAME;
+        COSESign1Message.type=type;
         return COSESign1Message;
     }
 }

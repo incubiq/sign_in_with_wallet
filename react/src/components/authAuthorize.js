@@ -70,7 +70,6 @@ class AuthAuthorize extends AuthAuthenticate {
         let cose=await this.async_signMessage(this.state.aIdentity[this.state.iSelectedIdentity].wallet_id, this.props.webAppDomain);
         if(cose) {
             // todo verify cose signature with backend
-            cose.connector=this.state.aIdentity[this.state.iSelectedIdentity].connector;
             let dataVerified=await srv_verify(cose);
             if(dataVerified && dataVerified.data && dataVerified.data.isVerified) {
                 // now grant access
