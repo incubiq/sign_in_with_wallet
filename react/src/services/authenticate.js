@@ -46,6 +46,7 @@ const srv_verify = async(obj) => {
     connector: obj.connector,
     key: obj.key,
     signature: obj.signature,
+    type: obj.type,
     address: obj.address,
     issued_at: obj.issued_at,
     valid_for: obj.valid_for,

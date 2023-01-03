@@ -69,9 +69,11 @@ class AuthAuthorize extends AuthAuthenticate {
         // this is where we ask for a message signature
         let cose=await this.async_signMessage(this.state.aIdentity[this.state.iSelectedIdentity].wallet_id, this.props.webAppDomain);
         if(cose) {
-            // todo verify cose signature with backend
+            
+            // verify cose signature with backend
             let dataVerified=await srv_verify(cose);
             if(dataVerified && dataVerified.data && dataVerified.data.isVerified) {
+                
                 // now grant access
                 grantAccessToWebApp(_username, this.props.webAppId);
                 this.authorizeDataShare(_username);
