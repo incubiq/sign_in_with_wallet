@@ -6,21 +6,23 @@ The **async\_createMessage** function prepares a message ready for signing. If i
 // Basic message required input params 
 let objParam= {
     message: "A message for authenticating the user",
+    version: "1.0",
     valid_for: 300, 
 }
 
 // Request the full message object ready to be signed by user
-let objMsg = await async_createMessage(_idWallet, objParam);
+let objMsg = await this.siww.async_createMessage(_idWallet, objParam);
 ```
 
 Note that a fully formed message object contains property/values as follows:
 
-* **domain**: string ; dns authority that is requesting the signing&#x20;
-* **address**: string ; address performing the signing&#x20;
-* **message**: string ; message statement that the user will sign&#x20;
-* **version**: string ; version of the message&#x20;
-* **chain**: string ; chain that is being queried&#x20;
-* **name**: string ; name of wallet being queried&#x20;
-* **issued\_at**: date ; when this message was created&#x20;
-* **valid\_for**: number ; how many seconds the message is valid (after issued\_at)&#x20;
+* **domain**: string ; dns authority that is requesting the signing
+* **address**: string ; address performing the signing
+* **message**: string ; message statement that the user will sign
+* **version**: string ; version of the message
+* **chain**: string ; chain that is being queried
+* **name**: string ; name of wallet being queried
+* **api**: object ; specific wallet api for calling signMessage, or null if generic
+* **issued\_at**: date ; when this message was created
+* **valid\_for**: number ; how many seconds the message is valid (after issued\_at)
 * **nonce**: number ; randomized number used to prevent replay attacks
