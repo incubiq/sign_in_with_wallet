@@ -1,14 +1,16 @@
 # 1. Initialize SIWW client lib
 
-A JS library for connecting to wallets is provided as open source. To install it, runt he following command:
+A JS library for connecting to wallets is provided as open source. To install it, run the following command:
 
 ```
 npm install @incubiq/siww
 ```
 
-This client library allows the connection to any Cardano wallet, installed as a browser plugin. You will need to get the blockchain connector first, and then initialize it with any required parameter.
+This client library allows the connection to any Cardano wallet, installed as a browser plugin.&#x20;
 
-Note as per the code below, that we have preferred to use callback functions rather than be constrained to wait for async calls to succeed (or fail). This is not usual, but since the user may take a very long time before accepting requests from the wallet, we have favored this option.
+You will need to get the blockchain connector first (see the code below), and then initialize it with any required parameter.
+
+Note that we have preferred to use callback functions rather than be constrained to wait for async calls to succeed (or fail). This is not usual, but since the user may take a very long time before accepting requests from the wallet, we have favored this option.
 
 ```
 const SIWW = require('@incubiq/siww');
