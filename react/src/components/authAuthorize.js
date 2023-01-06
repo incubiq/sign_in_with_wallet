@@ -231,11 +231,9 @@ class AuthAuthorize extends AuthAuthenticate {
             : 
             <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
                 <div className="siww-oauth-login">
-                    This application has not defined any data autorization.
+                    This application is not properly configured for authentication.
                     < br/>
                     Their fault, not yours! 
-                    < br/>
-                    Cannot grant access with no minimum ID to share...
                 </div>
             </div>
             }

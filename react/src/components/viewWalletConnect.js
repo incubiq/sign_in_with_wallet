@@ -98,7 +98,7 @@ class ViewWalletConnect extends Component {
                         <div className="connectWalletLogo connecting">⌛</div>  
                     :
                     <>
-                        <img className="connectWalletLogo" src={this.props.logo ? this.props.logo : ""} alt="logo" />  
+                        <img className="connectWalletLogo" src={this.props.logo ? this.props.logo : ""} alt="this.props.wallet_id" title="this.props.wallet_id" />  
                         <div className="connectWalletTitle" >{this.props.wallet_id}</div>
                     </>
                     }
