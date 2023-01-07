@@ -46,6 +46,12 @@ class AppBase extends Component {
         return _address.substr(0,4)+"..."+_address.substr(_address.length-6,6)
     }
 
+    getmyuri(n,s) {
+        n = n.replace(/[[]/,"\\[").replace(/[\]]/,"\\]");
+        var p = (new RegExp("[\\?&]"+n+"=([^&#]*)")).exec(s);
+        return (p===null) ? "" : p[1];
+    }
+    
     callbackEffect( ){
 
     }

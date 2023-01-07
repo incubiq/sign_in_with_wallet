@@ -8,7 +8,8 @@ import {WidgetLoading} from "./utils/widgetLoading";
 // authentication apps
 const AuthConnect  = React.lazy(() => import ("./components/authConnect"));              // to connect with wallet 
 const AuthAuthorize  = React.lazy(() => import ("./components/authAuthorize"));          // to authorise session via oAuth
-const AuthLogin  = React.lazy(() => import ("./components/authLogin"));                   // this one gives a login into SIWW (used by admin user)
+const AuthLogin  = React.lazy(() => import ("./components/authLogin"));                  // this one gives a login into SIWW (used by admin user)
+const AuthError  = React.lazy(() => import ("./components/authError"));                  // just to display backend fwded errors in a nice UI
 
 // /app route require user login into SIWW
 const AppLogged  = React.lazy(() => import ("./components/appLogged"));
@@ -128,6 +129,25 @@ class AppRoutes extends Component {
                         AuthenticationCookieToken={this.props.AuthenticationCookieToken}
                         AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
                         onUpdateCookie = {this.props.onUpdateCookie}
+
+                        // webapp    
+                        theme={getTheme()}
+                        styles={getStyles()}
+                    />
+                </Suspense> 
+                } exact />
+
+            <Route  path="/auth/error" element={
+                // route for displaying error from backend failure (during the call from /dialog/authorize)
+                <Suspense 
+                    fallback={this.renderBackground()}>
+                    <AuthError
+
+                        // utils
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
+                        host={this.props.host}
+                        onRedirect={this.props.onSoftRedirect}
 
                         // webapp    
                         theme={getTheme()}
