@@ -4,6 +4,8 @@ import ViewDataShare from "./viewDataShare";
 import ViewIdentities from "./viewIdentities";
 import FormAuthorize from "./formAuthorize";
 
+import {WidgetMessage} from "../utils/widgetMessage";
+
 import {srv_verify} from "../services/authenticate";
 import {getMyIdentities, grantAccessToWebApp, revokeAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
 import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
@@ -213,9 +215,10 @@ class AuthAuthorize extends AuthAuthenticate {
                     </div>                
                 : 
                 <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
-                    <div className="siww-oauth-login">
-                        Who are you? Cannot find your identity...
-                    </div>
+                    <WidgetMessage 
+                        headline = "Who are you?"
+                        text = "Cannot find your identity..."
+                    />
                     <br />
                     <button 
                         className="btn btn-quiet"
@@ -230,11 +233,11 @@ class AuthAuthorize extends AuthAuthenticate {
             </>                    
             : 
             <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
-                <div className="siww-oauth-login">
-                    This application is not properly configured for authentication.
-                    < br/>
-                    Their fault, not yours! 
-                </div>
+                <WidgetMessage 
+                    error = {true}
+                    headline = "Invalid configuration!"
+                    text = "This application is not properly configured for authentication. The calling App's fault, not yours! "
+                />
             </div>
             }
             </>  
@@ -268,14 +271,10 @@ class AuthAuthorize extends AuthAuthenticate {
         return (
             <>
                 <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
-                    <div className="siww_message">
-                        <div id="idRedirectMessage" className="transitoryMessage">
-                            On your way to {this.props.webAppName}...
-                        </div>
-
-                        <span>Stay safe online with {this.state.theme.name}</span>
-                        <div className="separator"></div>                        
-                    </div>
+                    <WidgetMessage 
+                        headline = {"On your way to "+this.props.webAppName+"...!"}
+                        text = {"Stay safe online with " +this.state.theme.name}
+                    />
 
                     <div className="separator"></div>         
 

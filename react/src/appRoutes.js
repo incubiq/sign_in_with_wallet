@@ -53,6 +53,7 @@ class AppRoutes extends Component {
                         version={this.props.version}
                         isDebug={this.props.isDebug}
                         host={this.props.host}
+                        onRedirect={this.props.onSoftRedirect}
                     />
                 </Suspense> 
                 } exact />

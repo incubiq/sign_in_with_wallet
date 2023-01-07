@@ -523,9 +523,7 @@ class FormConfigure extends FormReserve {
             <div className="modalContainer blur"></div>
             <div className={"modal center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
                 <div className="siww-header">
-                    <div className="siww-panel">
-                        <span>Add an Authorization level</span>
-                    </div>
+                    <span>Add an Authorization level</span>
                 </div>
 
                 <div className="">

@@ -65,7 +65,9 @@ export default function AppRouter(props) {
           
             // do we have a requesting webapp? if yes, we prepare all for it
             let _client_id=decodeURIComponent(decodeURIComponent(getmyuri("app_id", window.location.search)));
-            async_initializeDomain(_client_id);
+            if(_client_id!=="") {
+              async_initializeDomain(_client_id);
+            }
           }
         })
     }

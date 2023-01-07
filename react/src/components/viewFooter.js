@@ -17,7 +17,7 @@ class ViewFooter extends Component {
         return (            
             <div className="siww-footer">
                 <div className="credits">©&nbsp;
-                    <a className="footer-link" style={style} href="/" target="_blank">Sign-in with {this.props.theme.name}</a>                                        
+                    <a className="footer-link" style={style} href="/" target="_blank">Sign with Wallet</a>                                        
                 </div>
                 <div 
                     className={this.props.criticality === CRITICALITY_SEVERE? "message bold red" : (this.props.criticality === CRITICALITY_SEVERE)? "message bold" : "message"}

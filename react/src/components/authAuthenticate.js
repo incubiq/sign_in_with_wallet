@@ -2,6 +2,8 @@ import AuthConnect from "./authConnect";
 import ViewHeader from "./viewHeader";
 import ViewWallets from "./viewWallets";
 
+import {WidgetMessage} from "../utils/widgetMessage";
+
 import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 import {srv_prepare} from "../services/authenticate";
 import {createPartialIdentity, updatePartialIdentity, getMyIdentities, getIdentityFromUsername, getIdentityFromWallet} from "../services/me";
@@ -287,9 +289,10 @@ class AuthAuthenticate extends AuthConnect {
 
                     {this.state.didAccessWallets===false? 
                         <div>
-                            <div id="idTransitoryMessage" className="transitoryMessage">
-                                Please wait<br /> searching for {this.state.theme.name} wallets...
-                            </div>
+                            <WidgetMessage 
+                                headline = "One moment..."
+                                text = "searching for wallets..."
+                            />     
                         </div>
                     :
                         <div className="siww-oauth-datashare">
@@ -309,19 +312,18 @@ class AuthAuthenticate extends AuthConnect {
                                         />
                                     </>
                                 :
-                                    <div className="transitoryMessage">
-                                        Could not detect a single wallet from this browser
-                                        <br />
-                                        <br />
-                                        You must use at least one {this.state.theme.name} wallet extension
-                                    </div>
+                                    <WidgetMessage 
+                                        error = {true}
+                                        headline = "Could not detect a single wallet from this browser"
+                                        text = {"You must use at least one "+this.state.theme.name+" wallet extension"}
+                                    />        
                             :
                                 <>
-                                    <div className="transitoryMessage">
-                                        Could not identify caller!
-                                        <br />
-                                        Please try <b>Login</b> again from the application.
-                                    </div>
+                                    <WidgetMessage 
+                                        error = {true}
+                                        headline = "Could not identify caller!"
+                                        text = "Please refresh or try Login again from the application."
+                                    />        
                                 </>
                             }
                         </div>

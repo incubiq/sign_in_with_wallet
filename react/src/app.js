@@ -11,7 +11,15 @@ class App extends Component {
             <NavLink 
                 to="/connect/cardano"  
             >
-                <button id='btnConnectWallet'>Connect Wallet...</button>
+                <button 
+                    id='btnConnectWallet'
+                    onClick={() => {
+                            this.props.onRedirect("/connect/cardano")
+                        }
+                    }
+                >
+                    Connect Wallet...
+                </button>
             </NavLink>
 
             <br />
@@ -20,7 +28,15 @@ class App extends Component {
             <NavLink 
                 to="/auth/cardano?app_id=7TdKmdPQ1663168239000"  
             >
-                <button id='btnAuthWallet'>Authenticate with Wallet...</button>
+                <button 
+                    id='btnAuthWallet'
+                    onClick={() => {
+                        this.props.onRedirect("/auth/cardano?app_id=7TdKmdPQ1663168239000")
+                    }
+                }
+                >
+                    Authenticate with Wallet...
+                </button>
             </NavLink>
 
             <br />
@@ -29,7 +45,11 @@ class App extends Component {
             <NavLink 
                 to="/auth/login"  
             >
-                <button id='btnApi'>Sign-in to SIWW...</button>
+                <button 
+                    id='btnApi'
+                >
+                    Sign-in to SIWW...
+                </button>
             </NavLink>
 
         <h2>[/app routes] - Requires Login into SIWW</h2>

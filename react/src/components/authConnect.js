@@ -1,4 +1,5 @@
 import AppBase from "./appBase";
+import {WidgetMessage} from "../utils/widgetMessage";
 
 // for test only
 //import siww from "../siwc/siww";        
@@ -229,7 +230,10 @@ constructor(props) {
         return( 
             <div>
                 {this.state.didAccessWallets===false ? 
-                    <span>Please wait... Looking for Cardano Wallets...</span>  
+                    <WidgetMessage 
+                        headline = "Please wait..."
+                        text = "Looking for Wallets..."
+                    />
                 :   
                     this.state.aWallet.length>0 ? 
                     <>
@@ -240,7 +244,11 @@ constructor(props) {
                         {this.renderWalletConnect()}
                     </>
                     : 
-                    <span>Huhhh! No cardano wallet found!!!</span>
+                    <WidgetMessage 
+                        error = {true}
+                        headline = "Oh my! "
+                        text = "No wallet found!"
+                    />
                 }
             </div>                               
         )
