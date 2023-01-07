@@ -18,6 +18,7 @@
   * [4. Add authentication routes](use-cases/nodejs-backend-implementation/4.-add-authentication-routes.md)
   * [5. Code the views](use-cases/nodejs-backend-implementation/5.-code-the-views.md)
   * [6. Full sample app](use-cases/nodejs-backend-implementation/5.-full-sample-app.md)
+  * [7. Debugging and Q\&A](use-cases/nodejs-backend-implementation/7.-debugging-and-q-and-a.md)
 * [ReactJS - connect to backend](use-cases/reactjs-connect-to-backend/README.md)
   * [1. Add a login route](use-cases/reactjs-connect-to-backend/1.-add-a-login-route.md)
   * [2. Redirect the route to your backend](use-cases/reactjs-connect-to-backend/2.-redirect-the-route-to-your-backend.md)
