@@ -155,8 +155,8 @@ class AuthAuthorize extends AuthAuthenticate {
     }
 
     onReAuthenticate ( ){
-        // todo
-        this.props.onRedirect("/auth/"+this.props.chain+"?app_id=" + this.props.webAppId);
+        // todo ; currently redirecting to generic siww... see later if we keep or change to a specific connector
+        this.props.onRedirect("/auth/siww?app_id=" + this.props.webAppId);
     }
     
     renderAuthorization() {

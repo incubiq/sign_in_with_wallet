@@ -1,5 +1,6 @@
 import AppBase from "./appBase";
 import {WidgetMessage} from "../utils/widgetMessage";
+import {getConnectors, CONNECTOR_SIWC} from "../const/connectors"; 
 
 // for test only
 //import siww from "../siwc/siww";        
@@ -17,19 +18,23 @@ class AuthConnect extends AppBase {
 constructor(props) {
         super(props);    
         this.state= Object.assign({}, this.state, {
+
+            // connectors
+            aActiveConnector: [],        // all those connectors which have detected at least a window.<connector> to work with 
+
             // connected wallets
             aWallet: [],                 // all available wallets to connect to  (gathered from connect engine)
 
             // init vars
             didInitSIWW: false,
-            didAccessWallets: false,
+            didAccessWallets: false,            
         });
     }
 
     componentDidMount() {
         super.componentDidMount();
         if(!this.state.didInitSIWW) {
-            this.initChain(this.props.chain);
+            this.initChain();
         }        
     }
     
@@ -38,22 +43,32 @@ constructor(props) {
         
         //  ready? let's use SIWC
         if(!this.state.didInitSIWW) {
-            this.initChain(this.props.chain);
+            this.initChain();
         }        
     }
 
-    initChain(_chain) {
+    initChain() {
+        let _aActive=[];
         this.setState({didInitSIWW: true});
-        switch(_chain) {
-            case "cardano":
-                this.connectCardano();
-                break;
+        let _objConnector=getConnectors();
+        this.props.aConnector.forEach(item => {
+            switch(item) {
+                case CONNECTOR_SIWC:
+                    this.connectCardano();
+                    break;
+    
+                default:
+                    console.log("Error - Unknown chain to connect to!");
+                    break;
+            }
 
-            default:
-                console.log("Unknown chain to connect to!");
-                break;
-        }
+            // add to active bloackchain to explore, if can see it
+            if(window[_objConnector[item].window]) {
+                _aActive.push(_objConnector[item].target);
+            }
+        });
 
+        this.setState({aActiveConnector: _aActive});
     }
 
 /*

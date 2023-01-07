@@ -4,6 +4,7 @@ import {Route, Routes, Navigate  } from 'react-router-dom';
 // default theming
 import {getTheme, getStyles} from "./assets/themes/cardano"; 
 import {WidgetLoading} from "./utils/widgetLoading"; 
+import {getConnectors, CONNECTOR_SIWC} from "./const/connectors"; 
 
 // authentication apps
 const AuthConnect  = React.lazy(() => import ("./components/authConnect"));              // to connect with wallet 
@@ -18,6 +19,8 @@ const AppConfigure  = React.lazy(() => import ("./components/appConfigure"));
 
 const AppAuthApi  = React.lazy(() => import ("./api/appAuthApi"));
 const App  = React.lazy(() => import ("./app"));
+
+const _connectors=getConnectors().aConnector;
 
 /* 
  *      Routing class
@@ -67,7 +70,7 @@ class AppRoutes extends Component {
                         version={this.props.version}
                         isDebug={this.props.isDebug}
                         host={this.props.host}
-                        chain="cardano"
+                        aConnector={_connectors}
 
                         // default themes
                         theme={getTheme()}
@@ -89,7 +92,7 @@ class AppRoutes extends Component {
                         isDebug={this.props.isDebug}
                         host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
-                        chain="cardano"
+                        aConnector={_connectors}
 
                         // cookie
                         AuthenticationCookieName={this.props.AuthenticationCookieName}
@@ -122,7 +125,7 @@ class AppRoutes extends Component {
                         isDebug={this.props.isDebug}
                         host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
-                        chain="cardano"             // keep this for now, as it is how we will log user into SIWW (todo: later we will need to connect via all possible chains)
+                        aConnector={_connectors}
 
                         // cookie
                         AuthenticationCookieName={this.props.AuthenticationCookieName}
@@ -192,7 +195,7 @@ class AppRoutes extends Component {
                         isDebug={this.props.isDebug}
                         host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
-                        chain="cardano"
+                        aConnector={_connectors}
 
                         // cookie
                         AuthenticationCookieName={this.props.AuthenticationCookieName}
@@ -227,7 +230,7 @@ class AppRoutes extends Component {
                         version={this.props.version}
                         isDebug={this.props.isDebug}
                         host={this.props.host}
-                        chain="cardano"
+                        aConnector={_connectors}
 
                         // default themes
                         theme={getTheme()}

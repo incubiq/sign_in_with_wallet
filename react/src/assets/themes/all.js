@@ -1,9 +1,10 @@
+import {getConnectors, CONNECTOR_SIWC} from "../../const/connectors"; 
 
 const getConnectorDisplayName = (_connector) => {
   switch(_connector) {
-    case "siwc": 
-    case "SIWC": 
-      return "Sign-in with Cardano";
+    case CONNECTOR_SIWC.toLowerCase():
+    case CONNECTOR_SIWC: 
+      return getConnectors()[CONNECTOR_SIWC].display;
 
     default:
       return null;
@@ -11,9 +12,7 @@ const getConnectorDisplayName = (_connector) => {
 }
 
 const getSupportedConnectors = () => {
-  let a=[];
-  a.push("SIWC");
-  return a;
+  return getConnectors();
 }
 
 export {

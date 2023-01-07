@@ -281,6 +281,20 @@ class AuthAuthenticate extends AuthConnect {
  *          UI (authentication)
  */
     
+    _getActiveConnectorsAsString() {
+        let ret="Active connectors detected: "
+        let _str="none";
+        for (var i=0; i<this.state.aActiveConnector.length; i++) {
+            if(i===0) {
+                _str = "<b>"+this.state.aActiveConnector[0]+"</b>"
+            }
+            else {
+                _str= _str + ", <b>"+ this.state.aActiveConnector[i]+"</b>"
+            }
+        }
+
+        return (ret+_str);
+    }
 
     renderAuthentication( ){
         return(
@@ -290,8 +304,8 @@ class AuthAuthenticate extends AuthConnect {
                     {this.state.didAccessWallets===false? 
                         <div>
                             <WidgetMessage 
-                                headline = "One moment..."
-                                text = "searching for wallets..."
+                                headline = "One moment, initializing..."
+                                text = {this._getActiveConnectorsAsString() + " <br /><br />Now searching for wallets..."}
                             />     
                         </div>
                     :

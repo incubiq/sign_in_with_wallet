@@ -66,7 +66,7 @@ class FormConfigure extends FormReserve {
             }],
 
             // authorization levels
-            aConnectors: getSupportedConnectors(),
+            aConnectors: getSupportedConnectors().aConnector,
             curConditionName: "",
             curConditionConnector: "SIWC",
             curConditionProperty: "",

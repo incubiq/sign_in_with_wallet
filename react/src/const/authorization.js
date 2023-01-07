@@ -1,3 +1,4 @@
+import {CONNECTOR_SIWC} from "./connectors"; 
 
 const AUTHORIZATION_CONDITION_PROPERTY_COIN = "coin"
 const AUTHORIZATION_CONDITION_PROPERTY_ADA = "ADA"
@@ -46,7 +47,7 @@ const getAuthorizationCondition = (_prop) => {
         property: AUTHORIZATION_CONDITION_PROPERTY_ADA,
         display : "ADA Balance",
         default: AUTHORIZATION_CONDITION_OPERATOR_MORETHAN,
-        connector : "SIWC"
+        connector : CONNECTOR_SIWC
       };
 
     case AUTHORIZATION_CONDITION_PROPERTY_POLICY: 
@@ -54,7 +55,7 @@ const getAuthorizationCondition = (_prop) => {
         property: AUTHORIZATION_CONDITION_PROPERTY_POLICY,
         display: "Policy ID",
         default: AUTHORIZATION_CONDITION_OPERATOR_EXACT,
-        connector : "SIWC"
+        connector : CONNECTOR_SIWC
       };
 
     default: 
