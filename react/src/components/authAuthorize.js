@@ -6,7 +6,7 @@ import FormAuthorize from "./formAuthorize";
 
 import {WidgetMessage} from "../utils/widgetMessage";
 
-import {srv_verify} from "../services/authenticate";
+import {srv_verify, srv_getAuthorizedLevels} from "../services/authenticate";
 import {getMyIdentities, grantAccessToWebApp, revokeAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
 import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 
@@ -101,6 +101,26 @@ class AuthAuthorize extends AuthAuthenticate {
         this.setState({isAuthorized: true});
         this.setState({hover:"Redirecting..."});
         this.setState({inTimerEffect: true});
+
+        // get this user's details to make the authorization call
+        let _connector=null;
+        let _address=null;
+        for (var i=0; i<this.state.aIdentity.length ; i++) {
+            if(this.state.aIdentity[i].username===_username) {
+                _connector=this.state.aIdentity[i].connector;
+                _address=this.state.aIdentity[i].wallet_address;
+                break;
+            }
+        }
+
+        // we make the authorization call in advance to speed up while we are waiting (backend will then keep in cache ; do not bother about result)
+        if(_connector && _address) {
+            srv_getAuthorizedLevels({
+                address: _address,
+                connector: _connector,
+                app_id: this.props.webAppId
+            });    
+        }
     }
 
     // update the data shared based on known scope and selected identity

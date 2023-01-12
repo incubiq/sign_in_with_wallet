@@ -1,5 +1,5 @@
 
-import {API_HOST, API_WEB3ROUTE, API_OAUTHROUTE, srv_postRoute} from "./base";
+import {API_HOST, API_WEB3ROUTE, API_OAUTHROUTE, API_PUBLICROUTE, srv_postRoute, srv_getRoute} from "./base";
 
 // call this to request an Authentication cookie to SIWW
 const srv_prepare = async(obj) => {
@@ -53,8 +53,14 @@ const srv_verify = async(obj) => {
   });
 }
 
+// call this to check user authorizations in the background
+const srv_getAuthorizedLevels = async(obj) => {
+  return await srv_getRoute(API_HOST+API_PUBLICROUTE+'authorization?app_id='+obj.app_id+"&connector="+obj.connector+"&address="+obj.address);
+}
+
 export { 
   srv_prepare,
   srv_authenticate,
-  srv_verify
+  srv_verify,
+  srv_getAuthorizedLevels
 }

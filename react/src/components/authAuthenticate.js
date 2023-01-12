@@ -29,7 +29,7 @@ class AuthAuthenticate extends AuthConnect {
             username: null,
             wallet_id: null,
             wallet_address: null,
-
+            connector: null,            
         });                
     }
 
@@ -141,6 +141,7 @@ class AuthAuthenticate extends AuthConnect {
                     that.setState({username: decoded.username});
                     that.setState({wallet_address: decoded.wallet_address});
                     that.setState({wallet_id: decoded.wallet_id});
+                    that.setState({connector: decoded.connector});
     
                     // any new identity?
                     let aId=getMyIdentities();
