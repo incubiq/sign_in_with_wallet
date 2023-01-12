@@ -171,8 +171,8 @@ class AuthAuthenticate extends AuthConnect {
  *          Wallet interaction
  */
 
-    _prepareSIWC(objIdentityForAuth){
-        // can we authenticate with SIWC??
+    _prepareSIWW(objIdentityForAuth){
+        // can we authenticate with SIWW backend??
         if(objIdentityForAuth) {
             this.setState({hover:"Using "+objIdentityForAuth.wallet_id+" wallet as the signing identity..."});
 
@@ -255,7 +255,7 @@ class AuthAuthenticate extends AuthConnect {
             // did user just click to accept? we use this as Identity
             if(objParam.didUserClick) {
                 if(objParam.didUserAccept) {
-                    this._prepareSIWC({
+                    this._prepareSIWW({
                         wallet_address: _wallet.address,
                         wallet_id: _wallet.id,
                         blockchain: _wallet.chain,
@@ -264,10 +264,10 @@ class AuthAuthenticate extends AuthConnect {
                 }
             }
             else {
-                // use the first wallet to authenticate user with SIWC (only in case we do not have to confirm by user click)
+                // use the first wallet to authenticate user with SIWW (only in case we do not have to confirm by user click)
                 if(!mustConfirm) {
                     this.setConfirmLogin();     // do not come back with another one after 1st wallet call
-                    this._prepareSIWC({
+                    this._prepareSIWW({
                         wallet_address: _wallet.address,
                         wallet_id: _wallet.id,
                         blockchain: _wallet.chain,
