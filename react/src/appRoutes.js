@@ -58,6 +58,7 @@ class AppRoutes extends Component {
                         isDebug={this.props.isDebug}
                         host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
+                        aConnector={_connectors}
                     />
                 </Suspense> 
                 } exact />
@@ -151,6 +152,7 @@ class AppRoutes extends Component {
                         isDebug={this.props.isDebug}
                         host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
+                        aConnector={_connectors}
 
                         // webapp    
                         theme={getTheme()}
@@ -170,6 +172,7 @@ class AppRoutes extends Component {
                         isDebug={this.props.isDebug}
                         host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
+                        aConnector={_connectors}
 
                         // cookie
                         AuthenticationCookieName={this.props.AuthenticationCookieName}
