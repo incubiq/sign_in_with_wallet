@@ -14,49 +14,49 @@ class FormAuthorize extends Component {
         }
 
         return( 
-            <form  id="form-login" action="/oauth/login" method="POST">
+                <form  id="form-login" action="/oauth/login" method="POST">
 
-                {this.props.aScope.map((item, index) => (  
-                    <input key={index}
+                    {this.props.aScope.map((item, index) => (  
+                        <input key={index}
+                            type="text" 
+                            className="hidden"
+                            id={item.property} 
+                            value={item.value}
+                            onChange={(e) => {
+                                // no change
+                            }}
+                        />
+                    ))}
+
+                    <input 
                         type="text" 
                         className="hidden"
-                        id={item.property} 
-                        value={item.value}
+                        id="app_id" 
+                        value={this.props.app_id}
                         onChange={(e) => {
                             // no change
                         }}
                     />
-                ))}
 
-                <input 
-                    type="text" 
-                    className="hidden"
-                    id="app_id" 
-                    value={this.props.app_id}
-                    onChange={(e) => {
-                        // no change
-                    }}
-                />
+                    {this.props.onRevokeAccess? 
+                        <button 
+                            className="btn btn-transparent" 
+                            style= {style}
+                            onClick = {this.props.onRevokeAccess}
+                        >
+                            Revoke access
+                        </button>
+                    :""}
 
-                {this.props.onRevokeAccess? 
                     <button 
-                        className="btn btn-transparent" 
+                        className="btn btn-quiet" 
                         style= {style}
-                        onClick = {this.props.onRevokeAccess}
+                        onClick = {this.props.onContinue}
                     >
-                        Revoke access
+                        Continue
                     </button>
-                :""}
-
-                <button 
-                    className="btn btn-quiet" 
-                    style= {style}
-                    onClick = {this.props.onContinue}
-                >
-                    Continue
-                </button>
-
-            </form>
+                    
+                </form>
         )
     }
 }

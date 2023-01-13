@@ -232,7 +232,7 @@ class AuthAuthorize extends AuthAuthenticate {
                                 Grant Access!
                             </button>
                         </div>
-                    </div>                
+                    </div>   
                 : 
                 <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
                     <WidgetMessage 
@@ -249,7 +249,7 @@ class AuthAuthorize extends AuthAuthenticate {
                         Re-Authenticate!
                     </button>
                 </div>
-                }
+            }
             </>                    
             : 
             <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
@@ -260,7 +260,7 @@ class AuthAuthorize extends AuthAuthenticate {
                 />
             </div>
             }
-            </>  
+            </>             
         )
     }
 
@@ -269,11 +269,38 @@ class AuthAuthorize extends AuthAuthenticate {
  */
 
     doLogin ( ){
-        let eltForm=document.getElementById('form-login');
-        if(eltForm) {
+//        let eltForm=document.getElementById('form-login');
+//        if(eltForm) {
             document.cookie = this.props.AuthenticationCookieName + "=" + this.state.token + ";path=/";
-            document.getElementById('form-login').submit();
-        }
+            const form = document.createElement('form');
+            form.method = "POST";
+            form.action = "/oauth/login";
+
+            let params={
+                app_id: this.props.webAppId,                
+                connector: this.state.connector,
+                blockchain: this.state.blockchain,
+                wallet_id: this.state.wallet_id
+            }
+            for (var i=0; i<this.state.aScope.length; i++) {
+                params[this.state.aScope[i].property]=this.state.aScope[i].value;
+            }
+
+            for (const key in params) {
+                if (params.hasOwnProperty(key)) {
+                    const hiddenField = document.createElement('input');
+                    hiddenField.type = 'hidden';
+                    hiddenField.name = key;
+                    hiddenField.value = params[key];
+                    form.appendChild(hiddenField);
+                }
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+
+//            document.getElementById('form-login').submit();
+//        }
     }
 
     doRevokeAccess ( ){
@@ -298,13 +325,15 @@ class AuthAuthorize extends AuthAuthenticate {
 
                     <div className="separator"></div>         
 
-                    <FormAuthorize 
-                        theme = {this.state.theme}
-                        app_id = {this.props.webAppId}
-                        aScope = {this.state.aScope}
-                        onContinue = {this.doLogin.bind(this)}
-                        onRevokeAccess = {this.doRevokeAccess.bind(this)}
-                    />
+            <FormAuthorize 
+                isVisible = {this.state.isAuthorized}
+                theme = {this.state.theme}
+                app_name = {this.props.webAppName}
+                app_id = {this.props.webAppId}
+                aScope = {this.state.aScope}
+                onContinue = {this.doLogin.bind(this)}
+                onRevokeAccess = {this.doRevokeAccess.bind(this)}
+            />
                 </div>
 
             </>
@@ -341,9 +370,9 @@ class AuthAuthorize extends AuthAuthenticate {
                         this.state.isAuthorized? 
                             this.renderRedirect() 
                         :
-                            this.renderAuthorization() 
-                        : 
-                            this.renderAuthentication()
+                        this.renderAuthorization()
+                    : 
+                        this.renderAuthentication()
                     }
 
                     {this.renderFooter()}

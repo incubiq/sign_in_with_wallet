@@ -30,6 +30,7 @@ class AuthAuthenticate extends AuthConnect {
             wallet_id: null,
             wallet_address: null,
             connector: null,            
+            blockchain: null,
         });                
     }
 
@@ -94,6 +95,10 @@ class AuthAuthenticate extends AuthConnect {
             if(_iSel!==this.state.iSelectedIdentity) {
                 this.setState({iSelectedIdentity: _iSel});
                 this.setState({username: _aIdentity[_iSel].username});
+                this.setState({connector: _aIdentity[_iSel].connector});
+                this.setState({blockchain: _aIdentity[_iSel].blockchain});
+                this.setState({wallet_id: _aIdentity[_iSel].wallet_id});
+                this.setState({wallet_address: _aIdentity[_iSel].wallet_address});
             }
 
             // UI notofication update
