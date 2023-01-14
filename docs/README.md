@@ -6,6 +6,10 @@
 The Official Sign With Wallet website is accessible here
 {% endembed %}
 
+### How to get in touch
+
+We are on twitter **@SignWithWallet** ([https://twitter.com/signwithwallet](https://twitter.com/signwithwallet)); alternatively, leave a comment on the GitHub repo [https://github.com/incubiq/sign\_in\_with\_wallet](https://github.com/incubiq/sign\_in\_with\_wallet)&#x20;
+
 ### What this is about
 
 Sign-In with Wallet(SIWW) is a form of authentication that enables users to authenticate into applications via their wallet credentials instead of relying on a traditional intermediary such as Facebook, LinkedIn, Twitter or other web 2 social apps. SIWW effort standardizes the authentication method with best practices by implementing the oAuth 2.0 protocol and making use of web3 resources, in our case wallets, granting access, and message signature.
