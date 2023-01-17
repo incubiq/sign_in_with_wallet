@@ -1,6 +1,7 @@
 import AppBase from "./appBase";
 import {WidgetMessage} from "../utils/widgetMessage";
 import {getConnectors, CONNECTOR_SIWC} from "../const/connectors"; 
+import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 
 // for test only
 //import siww from "../siwc/siww";        
@@ -182,7 +183,8 @@ constructor(props) {
             return res;
         }
         catch(err) {
-            alert("Error when signning message ("+err.message+")");
+            this.setState({hover: err.message});
+            this.setState({criticality:CRITICALITY_SEVERE});    
         }
         return null;
     }

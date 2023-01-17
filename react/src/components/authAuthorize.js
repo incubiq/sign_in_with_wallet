@@ -85,11 +85,6 @@ class AuthAuthorize extends AuthAuthenticate {
                 this.setState({criticality:CRITICALITY_SEVERE});    
             }
         }
-        else {
-            // 
-            this.setState({hover:"Authentication refused by wallet"});
-            this.setState({criticality:CRITICALITY_SEVERE});
-        }
     }
 
     // calling this will move the UI to the redirection section (final step)

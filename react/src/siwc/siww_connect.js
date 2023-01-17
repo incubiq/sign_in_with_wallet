@@ -275,6 +275,15 @@ export class siww_connect {
                     version: objParam.version? objParam.version: "1.0",
                     nonce: generateNonce()
                 }
+
+                // disconnected wallet?
+                if(!objMsg.api) {
+                    throw new Error("Wallet connection not found - have you removed it?");
+                }
+
+                if(!objMsg.address) {
+                    throw new Error("Wallet address not found - have you disconnected wallet?");
+                }
                 
                 if(!this.isMessageInputValid(objMsg)) {
                     throw new Error("missing or incorrect params");
