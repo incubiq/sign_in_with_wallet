@@ -19,7 +19,18 @@ const CACHE_ME="me"
 
 const getMyIdentities = () => {
     let objMe=getCache(CACHE_ME);
-    return objMe? objMe.identities : [];
+
+    // do not keep shit...
+    let _aRet=[];
+    if(objMe && objMe.identities) {
+      objMe.identities.forEach(item => {
+        if(item.connector && item.wallet_id) {
+          _aRet.push(item);
+        }
+      })
+    }
+
+    return _aRet;
 }
 
 const _findIdentityFromWallet = (_wallet_id, _connector) => {

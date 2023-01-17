@@ -334,9 +334,9 @@ h1 a {
     height: auto;
 }
 .connectWalletLogo{
-    max-height:32px;
-    max-width:32px;
-    padding: 6px 12px;
+    max-height:40px;
+    max-width:40px;
+    padding: 6px 8px;
 }
 
 .connectWalletLogo.connecting {
@@ -350,7 +350,7 @@ h1 a {
     bottom: 0;
     left: 0;
     width:100%;
-    font-size: 14px;
+    font-size: 12px;
     text-align: center;
 }
 

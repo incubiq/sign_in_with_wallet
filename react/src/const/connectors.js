@@ -1,9 +1,10 @@
 
   const CONNECTOR_SIWC = "SIWC"
+  const CONNECTOR_SIWM = "SIWM"
   
   const getConnectors = () => {
     let objRet = {
-      aConnector:  [CONNECTOR_SIWC],
+      aConnector:  [CONNECTOR_SIWC, CONNECTOR_SIWM],
     }
 
     objRet[CONNECTOR_SIWC] = {
@@ -13,10 +14,18 @@
       window: "cardano"               // the window element to explore
     }
 
+    objRet[CONNECTOR_SIWM] = {
+      mnemonic: CONNECTOR_SIWM,       // for internal use
+      display: "Sign-in with Metamask",  // Sign-in with ... display name
+      target: "Metamask",              // target display name
+      window: "ethereum"               // the window element to explore
+    }
+
     return objRet;
   }
 
 export {
   CONNECTOR_SIWC,
+  CONNECTOR_SIWM,
   getConnectors,
 };

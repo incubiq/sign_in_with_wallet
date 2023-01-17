@@ -84,7 +84,7 @@ export class siww_connect {
             that.aWallet.forEach(async function(item) {
                 if(item.isEnabled) {
                     try {
-                        let objRetConnected=await replyFast(that.msKillSlow, that.async_getConnectedWalletExtendedInfo.bind(that), item);
+                        let objRetConnected=await replyFast(that.msKillSlow, that.async_getConnectedWalletExtendedInfo.bind(that), item.id);
                         if(objRetConnected.isEnabled && objRetConnected.address && that.fnOnNotifyConnectedWallet) {
                             that.fnOnNotifyConnectedWallet({
                                 didUserAccept: true,
@@ -152,7 +152,7 @@ export class siww_connect {
                 if (_objWallet.api) {
 
                     // get connection details
-                    let _obj=await this.async_getConnectedWalletExtendedInfo(_objWallet);
+                    let _obj=await this.async_getConnectedWalletExtendedInfo(_idWallet);
                     let objRet={
                         didUserAccept: true,
                         didUserClick: true,
@@ -215,7 +215,8 @@ export class siww_connect {
         return false;
     }
 
-    async async_getConnectedWalletExtendedInfo(_objWallet){
+    async async_getConnectedWalletExtendedInfo(_id){
+        // should never get called here...
         return this._createDefaultWallet();
     }
 

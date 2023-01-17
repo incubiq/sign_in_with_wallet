@@ -1,14 +1,14 @@
 import AppBase from "./appBase";
 import {WidgetMessage} from "../utils/widgetMessage";
-import {getConnectors, CONNECTOR_SIWC} from "../const/connectors"; 
+import {getConnectors, CONNECTOR_SIWC, CONNECTOR_SIWM} from "../const/connectors"; 
 import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 
 // for test only
-//import siww from "../siwc/siww";        
-//const SIWW=new siww();
+import siww from "../siww/siww";        
+const SIWW=new siww();
 
 // real prod
-const SIWW = require('@incubiq/siww');
+//const SIWW = require('@incubiq/siww');
 
 class AuthConnect extends AppBase {
 
@@ -21,7 +21,7 @@ constructor(props) {
         this.state= Object.assign({}, this.state, {
 
             // connectors
-            aActiveConnector: [],        // all those connectors which have detected at least a window.<connector> to work with 
+            aActiveConnector: [],        // all those connectors which have detected at least a window.<connector> to work with             
 
             // connected wallets
             aWallet: [],                 // all available wallets to connect to  (gathered from connect engine)
@@ -48,7 +48,14 @@ constructor(props) {
         }        
     }
 
+/*
+ *          inits Wallet Connectors
+ */
+
     initChain() {
+        // UI effect
+        this.setState({inTimerEffect: true});
+
         let _aActive=[];
         this.setState({didInitSIWW: true});
         let _objConnector=getConnectors();
@@ -57,7 +64,11 @@ constructor(props) {
                 case CONNECTOR_SIWC:
                     this.connectCardano();
                     break;
-    
+
+                case CONNECTOR_SIWM:
+                    this.connectMetamask();
+                    break;
+                    
                 default:
                     console.log("Error - Unknown chain to connect to!");
                     break;
@@ -65,25 +76,30 @@ constructor(props) {
 
             // add to active bloackchain to explore, if can see it
             if(window[_objConnector[item].window]) {
-                _aActive.push(_objConnector[item].target);
+                _aActive.push({
+                    connector: item,
+                    target: _objConnector[item].target,
+                    hasNotified: false
+                });
             }
         });
 
         this.setState({aActiveConnector: _aActive});
     }
 
-/*
- *          SIWC inits + callbacks
- */
-
-    connectCardano() {
-        this.siww=SIWW.getConnector("cardano");
-        this.registerSIWCCallbacks();
+    connectMetamask() {
+        this.siwm=SIWW.getConnector("metamask");
+        this.registerSIWCCallbacks(this.siwm);
     }
 
-    registerSIWCCallbacks( ){
+    connectCardano() {
+        this.siwc=SIWW.getConnector("cardano");
+        this.registerSIWCCallbacks(this.siwc);
+    }
+
+    registerSIWCCallbacks(_connector){
         // register all callbacks with SIWC
-        this.siww.async_initialize({
+        _connector.async_initialize({
             onNotifyAccessibleWallets: function(_aWallet){
                 this.onSIWCNotify_WalletsAccessible(_aWallet);
             }.bind(this),
@@ -96,10 +112,47 @@ constructor(props) {
         });        
     }
 
+/*
+ *          calls & callbacks to Wallet Connectors
+ */
+
     // called at init (what are those wallets?)
     onSIWCNotify_WalletsAccessible(_aWallet) {
+        
+        // update the current list of wallets (do not duplicate)
+        let _aCurrent=this.state.aWallet;
+        let _aActive=this.state.aActiveConnector;
+        let _hasReceivedAllNotifications=false;
+        _aWallet.forEach(item => {
+            let bFound = false;
+            for (var i=0; i< _aCurrent.length; i++) {
+                let i=_aCurrent.findIndex(function (x) {return x.id===item.id});
+                if(i!==-1) {bFound=true;}
+            }
+
+            if(!bFound) {
+                _aCurrent.push(item);
+
+                // update active connectors 
+                let _cC=0;
+                for (var i=0; i<_aActive.length; i++) {
+                    if(_aActive[i].connector === item.connector) {
+                        _aActive[i].hasNotified=true;
+                    }
+                    if(_aActive[i].hasNotified) {_cC++}
+                }
+                this.setState({aActiveConnector: _aActive});
+                _hasReceivedAllNotifications=_cC===_aActive.length;
+            }
+        });
+
+        // update UI (remove loading effect when we got all our replies)
+        if(_hasReceivedAllNotifications) {
+            this.setState({inTimerEffect: false});
+        }
+
         this.setState({
-            aWallet:_aWallet,
+            aWallet:_aCurrent,
             didAccessWallets: true
         });        
     }
@@ -115,16 +168,16 @@ constructor(props) {
             _aWallet[i].hasConnected=true;
             this.setState({aWallet:_aWallet});
 
-            this.siww.async_getConnectedWalletExtendedInfo(_aWallet[i])
+            SIWW.async_getConnectedWalletExtendedInfo(_aWallet[i].id)
             .then(objWallet => {
                 let j=this.state.aWallet.findIndex(function (x) {return x.id===objWallet.id});
                 _aWallet[j]=objWallet;
             })
-        }
 
-        // bubble up to listening page
-        if(this.props.onConnect) {
-            this.props.onConnect(objParam.wallet)
+            // bubble up to listening page
+            if(this.props.onConnect) {
+                this.props.onConnect(objParam.wallet)
+            }
         }
 
         // make sure dialog gets closed and ready to go for another round
@@ -159,7 +212,7 @@ constructor(props) {
 
         try {
             // not waiting for this to finish, it could wait too long
-            await this.siww.async_connectWallet(_id);
+            await SIWW.async_connectWallet(_id);
             return;
         }
         catch(err) {
@@ -172,14 +225,14 @@ constructor(props) {
         if(!appDomain) {appDomain="localhost";}
         try {
 
-            const objSiwcMsg = await this.siww.async_createMessage(_id, {
+            const objSiwcMsg = await SIWW.async_createMessage(_id, {
                 message: "Sign this message to authorize authentication into "+appDomain,
                 version: this.props.version,
                 valid_for: 300,                 // 5min validity from when it is sent
             });
     
             // get the Cose to validate server side
-            let res=await this.siww.async_signMessage(_id, objSiwcMsg, "authentication");
+            let res=await SIWW.async_signMessage(_id, objSiwcMsg, "authentication");
             return res;
         }
         catch(err) {

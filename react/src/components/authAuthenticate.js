@@ -220,7 +220,6 @@ class AuthAuthenticate extends AuthConnect {
             if(_aWallet.length>1) {
                 msg= _aWallet.length+" wallets detected, please choose at least one to connect to."
             }
-            this.setState({inTimerEffect: false})
             this.setState({hover:msg});    
         }
     }
@@ -236,6 +235,15 @@ class AuthAuthenticate extends AuthConnect {
             if(!_wallet.isOnProd && this.props.isDebug!==true) {
                 this.showMessage({
                     message: "Authentication failure - Make sure your wallet points to a PROD network!", 
+                    criticality: CRITICALITY_SEVERE
+                });   
+                return;
+            }
+
+            // has the user accepted?
+            if(!objParam.didUserAccept || _wallet.address===null) {
+                this.showMessage({
+                    message: "Wallet connection refused by user", 
                     criticality: CRITICALITY_SEVERE
                 });   
                 return;
@@ -292,10 +300,10 @@ class AuthAuthenticate extends AuthConnect {
         let _str="none";
         for (var i=0; i<this.state.aActiveConnector.length; i++) {
             if(i===0) {
-                _str = "<b>"+this.state.aActiveConnector[0]+"</b>"
+                _str = "<b>"+this.state.aActiveConnector[0].target+"</b>"
             }
             else {
-                _str= _str + ", <b>"+ this.state.aActiveConnector[i]+"</b>"
+                _str= _str + ", <b>"+ this.state.aActiveConnector[i].target+"</b>"
             }
         }
 
@@ -321,7 +329,7 @@ class AuthAuthenticate extends AuthConnect {
                                 this.state.aWallet && this.state.aWallet.length>0? 
                                     <>
                                         <div className="siww-section">
-                                            <strong>Sign-in with {this.state.theme.name}</strong> has detected {this.state.aWallet.length===1? "one wallet:" : "those wallets:"} 
+                                            <strong>Sign With Wallet</strong> has detected {this.state.aWallet.length===1? "one wallet:" : "those wallets:"} 
                                         </div>
 
                                         <ViewWallets 
