@@ -5,6 +5,7 @@ import ViewWallets from "./viewWallets";
 import {WidgetMessage} from "../utils/widgetMessage";
 
 import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
+import {getDefault} from "../const/connectors"; 
 import {srv_prepare} from "../services/authenticate";
 import {createPartialIdentity, updatePartialIdentity, getMyIdentities, getIdentityFromUsername, getIdentityFromWallet} from "../services/me";
 
@@ -151,7 +152,7 @@ class AuthAuthenticate extends AuthConnect {
                     // any new identity?
                     let aId=getMyIdentities();
                     that.setState({aIdentity: aId});
-    
+
                     // check if our selected identity agreed to grant data
                     let i=aId.findIndex(function (x) {return x.username===decoded.username});
     
@@ -300,10 +301,10 @@ class AuthAuthenticate extends AuthConnect {
         let _str="none";
         for (var i=0; i<this.state.aActiveConnector.length; i++) {
             if(i===0) {
-                _str = "<b>"+this.state.aActiveConnector[0].target+"</b>"
+                _str = "<b>"+this.state.aActiveConnector[0].blockchain+"</b>"
             }
             else {
-                _str= _str + ", <b>"+ this.state.aActiveConnector[i].target+"</b>"
+                _str= _str + ", <b>"+ this.state.aActiveConnector[i].blockchain+"</b>"
             }
         }
 
@@ -422,8 +423,9 @@ class AuthAuthenticate extends AuthConnect {
                         oauthDomain = {this.props.webAppDomain}
                         is_verified = {this.props.webApp.is_verified===true}
                         isOauth = {true}
-                        SIWWLogo = {this.state.theme.logo}
                         theme = {this.state.theme}
+                        aConnector = {this.state.aActiveConnector}
+                        connector = {this.state.iActiveConnector!==null ? this.state.aActiveConnector[this.state.iActiveConnector] : {assets: getDefault()}}
                     />
 
                     {this.state.iSelectedIdentity===null ? 

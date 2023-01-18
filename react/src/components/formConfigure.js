@@ -6,6 +6,7 @@ import DialogOwnership from "./dialogOwnership"
 import {getSupportedConnectors, getConnectorDisplayName} from "../assets/themes/all"; 
 import {getAuthorizationCondition, getAuthorizationConditions, getAuthorizationOperator, getAuthorizationOperators} from "../const/authorization"; 
 import {srv_claimDomain, srv_updateDomain, srv_getDomainPrivateInfo, srv_renewDNS, srv_verifyDNS} from "../services/configure";
+import {getDefault} from "../const/connectors"; 
 
 const fakeIdentity = {
     username: "<user_1234567890>",
@@ -412,8 +413,9 @@ class FormConfigure extends FormReserve {
                     oauthClientName = {this.state.display_name}
                     oauthDomain = {this.state.domain_name}
                     isOauth = {true}
-                    SIWWLogo = {this.state.theme.logo}
                     theme = {this.state.theme}
+                    aConnector = {null}
+                    connector = {{assets: getDefault()}}
                 />
 
                 <div className="siww-panel">

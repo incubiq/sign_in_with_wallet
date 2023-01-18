@@ -22,6 +22,7 @@ constructor(props) {
 
             // connectors
             aActiveConnector: [],        // all those connectors which have detected at least a window.<connector> to work with             
+            iActiveConnector: null,      // the active connector
 
             // connected wallets
             aWallet: [],                 // all available wallets to connect to  (gathered from connect engine)
@@ -59,14 +60,15 @@ constructor(props) {
         let _aActive=[];
         this.setState({didInitSIWW: true});
         let _objConnector=getConnectors();
+        let _ct=null;
         this.props.aConnector.forEach(item => {
             switch(item) {
                 case CONNECTOR_SIWC:
-                    this.connectCardano();
+                    _ct=this.createConnector("cardano");
                     break;
 
                 case CONNECTOR_SIWM:
-                    this.connectMetamask();
+                    _ct=this.createConnector("metamask");
                     break;
                     
                 default:
@@ -77,8 +79,9 @@ constructor(props) {
             // add to active bloackchain to explore, if can see it
             if(window[_objConnector[item].window]) {
                 _aActive.push({
-                    connector: item,
-                    target: _objConnector[item].target,
+                    symbol: item,                    
+                    connector: _ct,
+                    assets: _objConnector[item],
                     hasNotified: false
                 });
             }
@@ -87,18 +90,35 @@ constructor(props) {
         this.setState({aActiveConnector: _aActive});
     }
 
-    connectMetamask() {
-        this.siwm=SIWW.getConnector("metamask");
-        this.registerSIWCCallbacks(this.siwm);
+    createConnector(_name) {
+        let _connector=SIWW.getConnector(_name);
+        this.registerSIWCCallbacks(_connector);
+        return _connector;
     }
 
-    connectCardano() {
-        this.siwc=SIWW.getConnector("cardano");
-        this.registerSIWCCallbacks(this.siwc);
+    updateActiveConnector(objConnector) {
+        if(!objConnector) {
+            this.setState({iActiveConnector: null});
+        }
+        else {
+            let _aC=this.state.aActiveConnector;
+            for (var i=0; i<this.state.aActiveConnector.length; i++) {
+                if(this.state.aActiveConnector[i].symbol===objConnector.connector) {
+
+                    // Metamask can work on multi chain, we want to display the active chain only
+                    if(_aC[i].assets.blockchain !== objConnector.blockchain) {
+                        _aC[i].assets.blockchain = objConnector.blockchain;
+                        this.setState({aActiveConnector: _aC});    
+                    }
+                    this.setState({iActiveConnector: i});
+                    return;
+                }
+            }    
+        }
     }
 
     registerSIWCCallbacks(_connector){
-        // register all callbacks with SIWC
+        // register all callbacks with SIWW
         _connector.async_initialize({
             onNotifyAccessibleWallets: function(_aWallet){
                 this.onSIWCNotify_WalletsAccessible(_aWallet);

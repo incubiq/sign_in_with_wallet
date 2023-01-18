@@ -5,6 +5,34 @@ class ViewHeader extends Component {
 /*
  *      UI 
  */
+    constructor(props) {
+        super(props);    
+        this.state={
+            key: 0
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        // trick to get the image show up and update...
+        if(this.props.connector.assets.logo !== prevProps.connector.assets.logo) {
+            let _key = this.state.key+1;
+            this.setState({key: _key})    
+        }
+    }
+
+    renderBlockchainImages() {
+        return (
+            <>
+            {this.props.aConnector? 
+                this.props.aConnector.map((item, index) => (   
+                    <img className={item.symbol===this.props.connector.assets.symbol? "client-login-logo siww": "hidden"} src={item.assets.logo} alt={"logo "+this.props.connector.assets.blockchain}></img>
+                ))
+            :""}
+                <img className={this.props.connector.assets.symbol==="SIWW"? "client-login-logo siww": "hidden"} src="/assets/images/logo_siww.png" alt="logo SIWW"></img>
+            </>
+
+        )
+    }
 
     render() {
         return (
@@ -32,8 +60,13 @@ class ViewHeader extends Component {
                 :""}
 
                 <div className="display-app-logo">
-                    <img className="client-login-logo" src={this.props.SIWWLogo} alt="logo"/>
-                    <div className="login-subtitle">Sign-in with<br />{this.props.theme.name}</div>
+                    <div className="client-login-logo_container">
+                        <img className="client-login-logo siww" src="/assets/images/logo_siww_contour.png" alt="siww background"/>
+
+                        {/* pre-loading all images here.. and on;lyshowing the OK one  (avoid a noshow on image update) */}
+                        {this.renderBlockchainImages()}
+                    </div>
+                    <div className="login-subtitle">Sign with Wallet<br />{this.props.connector.assets.blockchain}</div>
                 </div>
             </div>
         )

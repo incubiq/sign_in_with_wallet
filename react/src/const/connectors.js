@@ -1,24 +1,35 @@
 
+  const CONNECTOR_SIWW = "SIWW"
+
   const CONNECTOR_SIWC = "SIWC"
   const CONNECTOR_SIWM = "SIWM"
   
+  const getDefault = () => {
+    return {
+      symbol: CONNECTOR_SIWW,           // for internal use
+      blockchain: "SignWithWallet.com",     // target display name
+      window: null,                     // the window element to explore
+      logo: "/assets/images/symbol_siww.png"
+    }
+  }
+
   const getConnectors = () => {
     let objRet = {
       aConnector:  [CONNECTOR_SIWC, CONNECTOR_SIWM],
     }
 
     objRet[CONNECTOR_SIWC] = {
-      mnemonic: CONNECTOR_SIWC,       // for internal use
-      display: "Sign-in with Cardano",  // Sign-in with ... display name
-      target: "Cardano",              // target display name
-      window: "cardano"               // the window element to explore
+      symbol: CONNECTOR_SIWC,           // for internal use
+      blockchain: "Cardano",            // target display name
+      window: "cardano",                // the window element to explore
+      logo: "/assets/images/symbol_cardano.png"
     }
 
     objRet[CONNECTOR_SIWM] = {
-      mnemonic: CONNECTOR_SIWM,       // for internal use
-      display: "Sign-in with Metamask",  // Sign-in with ... display name
-      target: "Metamask",              // target display name
-      window: "ethereum"               // the window element to explore
+      symbol: CONNECTOR_SIWM,            // for internal use
+      blockchain: "Metamask",            // target display name
+      window: "ethereum",                // the window element to explore
+      logo: "/assets/images/symbol_ethereum.png"
     }
 
     return objRet;
@@ -28,4 +39,5 @@ export {
   CONNECTOR_SIWC,
   CONNECTOR_SIWM,
   getConnectors,
+  getDefault
 };

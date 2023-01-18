@@ -2,6 +2,7 @@ import AuthConnect from "./authConnect";
 import ViewHeader from "./viewHeader";
 
 import {WidgetMessage} from "../utils/widgetMessage";
+import {getDefault} from "../const/connectors"; 
 
 class AuthError extends AuthConnect {
 
@@ -42,8 +43,9 @@ class AuthError extends AuthConnect {
                         oauthDomain = {this.props.webAppDomain ? this.props.webAppDomain : "<unconfigured>"}
                         is_verified = {this.props.webApp && this.props.webApp.is_verified===true ? true : false}
                         isOauth = {true}
-                        SIWWLogo = {this.state.theme.logo}
                         theme = {this.state.theme}
+                        aConnector = {this.state.aActiveConnector}
+                        connector = {this.state.iActiveConnector!==null ? this.state.aActiveConnector[this.state.iActiveConnector] : {assets: getDefault()}}
                     />
 
                     <WidgetMessage 

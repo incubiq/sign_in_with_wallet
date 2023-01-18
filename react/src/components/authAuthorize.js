@@ -7,6 +7,7 @@ import FormAuthorize from "./formAuthorize";
 import {WidgetMessage} from "../utils/widgetMessage";
 
 import {srv_verify, srv_getAuthorizedLevels} from "../services/authenticate";
+import {getDefault} from "../const/connectors"; 
 import {getMyIdentities, grantAccessToWebApp, revokeAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
 import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 
@@ -55,6 +56,9 @@ class AuthAuthorize extends AuthAuthenticate {
         // update authorization data
         this.updateDatashare(aIdentity, iUser);
         this.setState({viewMode: VIEWMODE_DATASHARE});
+
+        // update which connector we will use
+        this.updateActiveConnector(aIdentity[iUser]);
 
         // did we grant authorization before?
         if(isGrantedAccessToWebApp(aIdentity[iUser].username, this.props.webAppId)) {
@@ -151,11 +155,16 @@ class AuthAuthorize extends AuthAuthenticate {
 
         this.setSharedIdentity(this.state.aIdentity, _iSel);
         this.updateDatashare(this.state.aIdentity, _iSel);
+
+        // update which connector we will use
+        this.updateActiveConnector(this.state.aIdentity[_iSel]);
+
         this.onToggleAuthorizationView();
     }
 
     onBackToAddIdentity() {
         this.setState({iSelectedIdentity: null});
+        this.updateActiveConnector(null);
         this.setState({inTimerEffect: false})
         this.setState({hover: "&nbsp;"})
     }
@@ -357,8 +366,9 @@ class AuthAuthorize extends AuthAuthenticate {
                         oauthDomain = {this.props.webAppDomain}
                         is_verified = {this.props.webApp!=null && this.props.webApp.isVerified===true}
                         isOauth = {true}
-                        SIWWLogo = {this.state.theme.logo}
                         theme = {this.state.theme}
+                        aConnector = {this.state.aActiveConnector}
+                        connector = {this.state.iActiveConnector!==null ? this.state.aActiveConnector[this.state.iActiveConnector] : {assets: getDefault()}}
                     />
 
                     {this.state.iSelectedIdentity!==null ? 

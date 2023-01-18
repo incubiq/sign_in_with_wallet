@@ -443,6 +443,17 @@ h1 a {
     margin: 6px;
     height: 80px;
 }
+.client-login-logo.siww {
+    position: absolute;
+    top:0;
+    left:0;
+} 
+.client-login-logo_container {
+    height: 92px;
+    width: 92px;
+    margin-left: 16px;
+    position: relative;
+}
 .display-app-logo {
     position: relative;
     margin: auto;
