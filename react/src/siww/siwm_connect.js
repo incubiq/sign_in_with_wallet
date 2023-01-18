@@ -12,7 +12,7 @@ const CONNECTOR_NAME = "SIWM"
 
 const METAMASK_ETH_NETWORK = "ethereum"
 const METAMASK_ETH_MAINNET = "Ethereum mainnet"
-const METAMASK_ETH_TESTNET = "Ethereum testnet"
+// const METAMASK_ETH_TESTNET = "Ethereum testnet"
 
 // we ONLY list PROD chains here
 const chainIDs =  {
@@ -59,7 +59,7 @@ export class siwm_connect  extends siww_connect {
     }
 
     getAcceptedChains() {
-        return [METAMASK_ETH_MAINNET, METAMASK_ETH_TESTNET, METAMASK_ETH_NETWORK];
+        return [METAMASK_ETH_MAINNET, METAMASK_ETH_NETWORK];
     }
 
 //
@@ -220,9 +220,12 @@ export class siwm_connect  extends siww_connect {
     // Sign a message
     async async_signMessage(_idWallet, objSiwcMsg, type){
         try {
-            let COSESign1Message=null;
-            const usedAddresses = await web3.eth.getAccounts;
+            const usedAddresses = await web3.eth.getAccounts();
             const usedAddress = usedAddresses[0];
+
+            if(usedAddress!==objSiwcMsg.address) {
+                throw new Error("Public address does not match");
+            }
 
             let aMsg=[];
             aMsg.push( objSiwcMsg.message);
@@ -233,8 +236,11 @@ export class siwm_connect  extends siww_connect {
             aMsg.push( "SIWW Version: "+ objSiwcMsg.version);
             let msg=aMsg.join("\r\n");
 //            let _hex= Buffer.from(msg).toString('hex');
-            COSESign1Message = await web3.eth.personal.sign(msg, objSiwcMsg.address);
-
+            let _signed = await web3.eth.personal.sign(msg, objSiwcMsg.address);
+            let COSESign1Message={
+                key: null,
+                signature: _signed
+            }
             // notify?
             if(this.fnOnNotifySignedMessage) {
                 this.fnOnNotifySignedMessage(COSESign1Message);

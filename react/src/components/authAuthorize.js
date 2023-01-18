@@ -57,8 +57,11 @@ class AuthAuthorize extends AuthAuthenticate {
         this.updateDatashare(aIdentity, iUser);
         this.setState({viewMode: VIEWMODE_DATASHARE});
 
-        // update which connector we will use
-        this.updateActiveConnector(aIdentity[iUser]);
+        // update which connector we will use // receives if accepted or not
+        if(!this.updateActiveConnector(aIdentity[iUser])) {
+            this.setState({hover:"This network is not yet supported..."});
+            this.setState({criticality: CRITICALITY_SEVERE});    
+        }
 
         // did we grant authorization before?
         if(isGrantedAccessToWebApp(aIdentity[iUser].username, this.props.webAppId)) {
@@ -157,7 +160,10 @@ class AuthAuthorize extends AuthAuthenticate {
         this.updateDatashare(this.state.aIdentity, _iSel);
 
         // update which connector we will use
-        this.updateActiveConnector(this.state.aIdentity[_iSel]);
+        if(!this.updateActiveConnector(this.state.aIdentity[_iSel])) {
+            this.setState({hover:"This network is not yet supported..."});
+            this.setState({criticality: CRITICALITY_SEVERE});    
+        }
 
         this.onToggleAuthorizationView();
     }
@@ -228,7 +234,7 @@ class AuthAuthorize extends AuthAuthenticate {
                             }   
 
                             <button 
-                                className="btn btn-quiet"
+                                className={this.state.iActiveConnector!==null && this.state.aActiveConnector[this.state.iActiveConnector].isAccepted ? "btn btn-quiet" : "btn btn-quiet disabled"}
                                 onClick={evt => {
                                     this.async_requestAuthorization(this.state.aIdentity[this.state.iSelectedIdentity].username);
                                 }}

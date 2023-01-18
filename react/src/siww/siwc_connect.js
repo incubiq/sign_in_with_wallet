@@ -55,8 +55,8 @@ import {
 const CONNECTOR_NAME = "SIWC"
 
 const CARDANO_NETWORK = "cardano"
-const CARDANO_MAINNET = "Cardano mainnet"
-const CARDANO_TESTNET = "Cardano testnet"
+const CARDANO_MAINNET = "Cardano Mainnet"
+// const CARDANO_TESTNET = "Cardano testnet"
 
 export class siwc_connect  extends siww_connect {
 
@@ -89,7 +89,7 @@ export class siwc_connect  extends siww_connect {
     }
 
     getAcceptedChains() {
-        return [CARDANO_MAINNET, CARDANO_TESTNET, CARDANO_NETWORK];
+        return [CARDANO_MAINNET, CARDANO_NETWORK];
     }
 
 //
@@ -166,7 +166,7 @@ export class siwc_connect  extends siww_connect {
             _objWallet.networkId = await _objWallet.api.getNetworkId();
             _objWallet.isOnProd=_objWallet.networkId===1;
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
-            _objWallet.chain= CARDANO_NETWORK;
+            _objWallet.chain=(_objWallet.networkId===1? CARDANO_MAINNET : CARDANO_NETWORK);
             _objWallet.balance = await this._async_getBalance(_objWallet.api);
             _objWallet.utxos=await this._async_getUtxo(_objWallet.api)
             _objWallet.isEnabled=true;

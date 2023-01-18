@@ -33,12 +33,16 @@ const getMyIdentities = () => {
     return _aRet;
 }
 
-const _findIdentityFromWallet = (_wallet_id, _connector) => {
+const _findIdentityFromWallet = (_wallet_id, _connector, _blockchain) => {
   let aId=getMyIdentities();
   if(_wallet_id && _connector && aId && aId.length>0) {
     for (var i=0; i<aId.length; i++) {
       if (aId[i].wallet_id===_wallet_id && aId[i].connector === _connector) {
-        return aId[i];
+
+        // only return is specified blockchain is same
+        if(!_blockchain || aId[i].blockchain === _blockchain) {
+          return aId[i];
+        }
       }
     }
   }
@@ -61,8 +65,8 @@ const getIdentityFromUsername = (_username) => {
   return _findIdentityFromUsername(_username);
 }
 
-const getIdentityFromWallet = (_walletId, _connector) => {
-  return _findIdentityFromWallet(_walletId, _connector);
+const getIdentityFromWallet = (_walletId, _connector, blockchain) => {
+  return _findIdentityFromWallet(_walletId, _connector, blockchain);
 }
 
 const createPartialIdentity = (_objIdentity) => {
@@ -72,9 +76,20 @@ const createPartialIdentity = (_objIdentity) => {
       identities: []
     };
   }
+
+  // if wallet and connector not found, we create
   if(_findIdentityFromWallet(_objIdentity.wallet_id, _objIdentity.connector)===null) {
     objMe.identities.push(_objIdentity);
     setCache(CACHE_ME, objMe);
+  }
+  else {
+    // it exists... we update the blockchain 
+    updatePartialIdentity(_objIdentity.wallet_id, _objIdentity.connector, {
+      blockchain: _objIdentity.blockchain
+    });
+
+    // reload
+    objMe=getCache(CACHE_ME);     
   }
   return objMe;
 }

@@ -20,6 +20,7 @@
 
     objRet[CONNECTOR_SIWC] = {
       symbol: CONNECTOR_SIWC,           // for internal use
+      aAcceptedBlockchain: [],          // will be filled from Connector itself
       blockchain: "Cardano",            // target display name
       window: "cardano",                // the window element to explore
       logo: "/assets/images/symbol_cardano.png"
@@ -27,6 +28,7 @@
 
     objRet[CONNECTOR_SIWM] = {
       symbol: CONNECTOR_SIWM,            // for internal use
+      aAcceptedBlockchain: [],           // will be filled from Connector itself
       blockchain: "Metamask",            // target display name
       window: "ethereum",                // the window element to explore
       logo: "/assets/images/symbol_ethereum.png"

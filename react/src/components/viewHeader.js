@@ -5,30 +5,22 @@ class ViewHeader extends Component {
 /*
  *      UI 
  */
-    constructor(props) {
-        super(props);    
-        this.state={
-            key: 0
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        // trick to get the image show up and update...
-        if(this.props.connector.assets.logo !== prevProps.connector.assets.logo) {
-            let _key = this.state.key+1;
-            this.setState({key: _key})    
-        }
-    }
-
+   
     renderBlockchainImages() {
         return (
             <>
             {this.props.aConnector? 
                 this.props.aConnector.map((item, index) => (   
-                    <img className={item.symbol===this.props.connector.assets.symbol? "client-login-logo siww": "hidden"} src={item.assets.logo} alt={"logo "+this.props.connector.assets.blockchain}></img>
+                    <img 
+                        className={item.symbol===this.props.connector.assets.symbol && this.props.connector.isAccepted? "client-login-logo siww": "hidden"} 
+                        src={item.assets.logo} 
+                        alt={"logo "+this.props.connector.assets.blockchain}
+                        key={index}
+                    ></img>
                 ))
             :""}
-                <img className={this.props.connector.assets.symbol==="SIWW"? "client-login-logo siww": "hidden"} src="/assets/images/logo_siww.png" alt="logo SIWW"></img>
+                <img className={this.props.connector.assets.symbol==="SIWW" ? "client-login-logo siww": "hidden"} src="/assets/images/logo_siww.png" alt="logo SIWW"></img>
+                <img className={!this.props.connector.isAccepted? "client-login-logo siww": "hidden"} src="/assets/images/symbol_danger.png" alt="logo Danger"></img>
             </>
 
         )
@@ -66,7 +58,10 @@ class ViewHeader extends Component {
                         {/* pre-loading all images here.. and on;lyshowing the OK one  (avoid a noshow on image update) */}
                         {this.renderBlockchainImages()}
                     </div>
-                    <div className="login-subtitle">Sign with Wallet<br />{this.props.connector.assets.blockchain}</div>
+                    <div className="login-subtitle">
+                        <div className={this.props.connector.isAccepted ?"" : "red"}>{this.props.connector.isAccepted ? "Sign with Wallet" : "Unsupported!"}</div>
+                        <div>{this.props.connector.assets.blockchain}</div>
+                    </div>
                 </div>
             </div>
         )

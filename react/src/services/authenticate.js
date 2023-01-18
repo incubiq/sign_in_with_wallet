@@ -1,5 +1,10 @@
 
-import {API_HOST, API_WEB3ROUTE, API_OAUTHROUTE, API_PUBLICROUTE, srv_postRoute, srv_getRoute} from "./base";
+import {API_HOST, API_WEB3ROUTE, API_OAUTHROUTE, API_PUBLICROUTE, srv_postRoute, srv_getRoute, API_PRIVATEROUTE} from "./base";
+
+// call this to request an Authentication cookie to SIWW
+const srv_getMe = async(obj, _token) => {
+  return await srv_getRoute(API_HOST+API_PRIVATEROUTE+'me?connector='+obj.connector+"&wallet_id="+obj.wallet_id+"&wallet_address="+obj.wallet_address, _token);
+}
 
 // call this to request an Authentication cookie to SIWW
 const srv_prepare = async(obj) => {
@@ -59,6 +64,7 @@ const srv_getAuthorizedLevels = async(obj) => {
 }
 
 export { 
+  srv_getMe,
   srv_prepare,
   srv_authenticate,
   srv_verify,

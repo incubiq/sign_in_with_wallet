@@ -77,12 +77,14 @@ constructor(props) {
             }
 
             // add to active bloackchain to explore, if can see it
+            _objConnector[item].aAcceptedBlockchain=_ct.getAcceptedChains();
             if(window[_objConnector[item].window]) {
                 _aActive.push({
                     symbol: item,                    
                     connector: _ct,
                     assets: _objConnector[item],
-                    hasNotified: false
+                    hasNotified: false,         // have we been notified by the connector that it is active?
+                    isAccepted: true            // is the blockchain from the connector an accepted one?
                 });
             }
         });
@@ -105,16 +107,20 @@ constructor(props) {
             for (var i=0; i<this.state.aActiveConnector.length; i++) {
                 if(this.state.aActiveConnector[i].symbol===objConnector.connector) {
 
+                    // is this this an accepted blockchain?
+                    _aC[i].isAccepted=_aC[i].assets.aAcceptedBlockchain.some(item => item.toLowerCase() == objConnector.blockchain.toLowerCase());
+
                     // Metamask can work on multi chain, we want to display the active chain only
                     if(_aC[i].assets.blockchain !== objConnector.blockchain) {
                         _aC[i].assets.blockchain = objConnector.blockchain;
                         this.setState({aActiveConnector: _aC});    
                     }
                     this.setState({iActiveConnector: i});
-                    return;
+                    return _aC[i].isAccepted;
                 }
             }    
         }
+        return true;
     }
 
     registerSIWCCallbacks(_connector){

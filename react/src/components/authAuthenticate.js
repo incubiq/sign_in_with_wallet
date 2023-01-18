@@ -6,7 +6,7 @@ import {WidgetMessage} from "../utils/widgetMessage";
 
 import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 import {getDefault} from "../const/connectors"; 
-import {srv_prepare} from "../services/authenticate";
+import {srv_prepare, srv_getMe} from "../services/authenticate";
 import {createPartialIdentity, updatePartialIdentity, getMyIdentities, getIdentityFromUsername, getIdentityFromWallet} from "../services/me";
 
 import jsonwebtoken from "jsonwebtoken";
@@ -91,20 +91,48 @@ class AuthAuthenticate extends AuthConnect {
 
     // we pass aIdentity to this fct coz setState is async and never wakes up in time...
     setSharedIdentity(_aIdentity, _iSel) {
+        
+        let setUser=function(_i){
+            this.setState({iSelectedIdentity: _i});
+            this.setState({username: _aIdentity[_i].username});
+            this.setState({connector: _aIdentity[_i].connector});
+            this.setState({blockchain: _aIdentity[_i].blockchain});
+            this.setState({wallet_id: _aIdentity[_i].wallet_id});
+            this.setState({wallet_address: _aIdentity[_i].wallet_address});
+        }.bind(this);
+
         // update data with this selection
         if(_iSel!==-1 && _aIdentity.length>0) {
             if(_iSel!==this.state.iSelectedIdentity) {
-                this.setState({iSelectedIdentity: _iSel});
-                this.setState({username: _aIdentity[_iSel].username});
-                this.setState({connector: _aIdentity[_iSel].connector});
-                this.setState({blockchain: _aIdentity[_iSel].blockchain});
-                this.setState({wallet_id: _aIdentity[_iSel].wallet_id});
-                this.setState({wallet_address: _aIdentity[_iSel].wallet_address});
+
+
+                // do we have a username?? 
+                if(!_aIdentity[_iSel].username) {
+                    srv_getMe({
+                        connector: _aIdentity[_iSel].connector,
+                        wallet_id: _aIdentity[_iSel].wallet_id,
+                        wallet_address: _aIdentity[_iSel].wallet_address
+                    },  this.props.AuthenticationCookieToken)
+                    .then(dataUser => {
+                        // update user data
+                        updatePartialIdentity(_aIdentity[_iSel].wallet_id, _aIdentity[_iSel].connector, {
+                            username: dataUser.data.username,
+                        });
+
+                        _aIdentity[_iSel].username=dataUser.data.username;
+                        setUser(_iSel);
+                    })
+                }
+                else {
+                    setUser(_iSel);
+                }
+
             }
 
-            // UI notofication update
+            // UI notification update
             this.setState({inTimerEffect: false})
             this.setState({hover:"You will share data taken from your <strong>"+_aIdentity[_iSel].wallet_id+"</strong> identity"});
+            this.setState({criticality: CRITICALITY_NORMAL});
         }
     }
 
@@ -251,7 +279,7 @@ class AuthAuthenticate extends AuthConnect {
             }
 
             // make sure we have this user's identity in storage + update logo in case it changed
-            if(getIdentityFromWallet(_wallet.id, _wallet.connector)===null) {
+            if(getIdentityFromWallet(_wallet.id, _wallet.connector, _wallet.chain)===null) {
                 createPartialIdentity({
                     connector: _wallet.connector,
                     blockchain: _wallet.chain,
