@@ -330,7 +330,7 @@ class AuthAuthorize extends AuthAuthenticate {
                 <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
                     <WidgetMessage 
                         headline = {"On your way to "+this.props.webAppName+"...!"}
-                        text = {"Stay safe online with " +this.state.theme.name}
+                        text = {"Stay safe online with SignWithWallet"}
                     />
 
                     <div className="separator"></div>         

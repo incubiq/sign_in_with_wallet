@@ -26,12 +26,12 @@ class App extends Component {
             <br />
             
             <NavLink 
-                to="/auth/cardano?app_id=7TdKmdPQ1663168239000"  
+                to="/auth/siww?app_id=7TdKmdPQ1663168239000"  
             >
                 <button 
                     id='btnAuthWallet'
                     onClick={() => {
-                        this.props.onRedirect("/auth/cardano?app_id=7TdKmdPQ1663168239000")
+                        this.props.onRedirect("/auth/siww?app_id=7TdKmdPQ1663168239000")
                     }
                 }
                 >

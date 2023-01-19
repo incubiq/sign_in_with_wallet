@@ -63,28 +63,9 @@ class AppRoutes extends Component {
                 </Suspense> 
                 } exact />
 
-            <Route  path="connect/cardano" element={
-                <Suspense 
-                    fallback={this.renderBackground()}>
-                    <AuthConnect
-                        // utils
-                        version={this.props.version}
-                        isDebug={this.props.isDebug}
-                        host={this.props.host}
-                        aConnector={_connectors}
 
-                        // default themes
-                        theme={getTheme()}
-                        styles={getStyles()}
-                    />
-                </Suspense> 
-                } exact />
-
-
-            {/* For now, we Redirect all authentication calls to /SIWW to /Cardano */}
-            <Route  path="/auth/siww" element={ <Navigate to={"/auth/cardano"+window.location.search} /> } />
-
-            <Route  path="/auth/cardano" element={
+            {/*  /auth/SIWW is our end-user authentication route in React app */}
+            <Route  path="/auth/siww" element={
                 <Suspense 
                     fallback={this.renderBackground()}>
                     <AuthAuthorize
@@ -226,6 +207,24 @@ class AppRoutes extends Component {
                 </Suspense> 
                 } exact />
 
+{/* TEST ROUTES */}
+            <Route  path="connect/cardano" element={
+                <Suspense 
+                    fallback={this.renderBackground()}>
+                    <AuthConnect
+                        // utils
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
+                        host={this.props.host}
+                        aConnector={_connectors}
+
+                        // default themes
+                        theme={getTheme()}
+                        styles={getStyles()}
+                    />
+                </Suspense> 
+                } exact />
+
             <Route  path="/sign/cardano" element={
                 <Suspense 
                     fallback={<div>Sign message Cardano...</div>}>
@@ -241,7 +240,8 @@ class AppRoutes extends Component {
                     />
                 </Suspense> 
                 } exact />
-        </Routes>
+        </Routes>        
+{/* END OF TEST ROUTES */}
 
   </>
   );
