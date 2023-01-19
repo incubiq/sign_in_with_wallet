@@ -235,10 +235,10 @@ export class siwm_connect  extends siww_connect {
             aMsg.push( "Valid for: "+ objSiwcMsg.valid_for/60 + " minutes");
             aMsg.push( "SIWW Version: "+ objSiwcMsg.version);
             let msg=aMsg.join("\r\n");
-//            let _hex= Buffer.from(msg).toString('hex');
+            let _hex= Buffer.from(msg).toString('hex');
             let _signed = await web3.eth.personal.sign(msg, objSiwcMsg.address);
             let COSESign1Message={
-                key: null,
+                key: _hex,
                 signature: _signed
             }
             // notify?
