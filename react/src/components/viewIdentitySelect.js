@@ -1,27 +1,8 @@
-import {Component} from "react";
 import {CRITICALITY_SEVERE} from "../const/message";
+import ViewWalletConnect from "./viewWalletConnect";
 
 let isMounted=false;
-class ViewWalletConnect extends Component {
-
-/*
- *      Inits
- */
-    
-    constructor(props) {
-        super(props);    
-        this.state={            
-            isConnecting: false
-        }
-    }
-
-    componentDidMount() {
-        isMounted=true;
-    }
-
-    componentWillUnmount() {
-        isMounted=false;
-    }
+class ViewIdentitySelect extends ViewWalletConnect {
 
 /*
  *      UI
@@ -105,19 +86,14 @@ class ViewWalletConnect extends Component {
                 onMouseOver={evt => {this.onHover(evt, true) }}
                 onMouseLeave={evt => {this.onHover(evt, false) }}
             >
-                <div className={"connectWalletLogoContainer" + (this.state.isConnecting? " connecting": "")}> 
-                    {this.state.isConnecting? 
-                        <div className="connectWalletLogo connecting">⌛</div>  
-                    :
-                    <>
-                        <img className="connectWalletLogo" src={this.props.logo ? this.props.logo : ""} alt={this.props.wallet_name} title={this.props.wallet_name} />  
-                        <div className="connectWalletTitle" >{this.props.wallet_name}</div>
-                    </>
-                    }
+                <div className="identitySelectContainer"> 
+                    <img className="IdentitySelectChainLogo" src={this.props.blockchain_image ? "/assets/images/"+this.props.blockchain_image : ""} alt={this.props.blockchain_name} title={this.props.blockchain_name} />  
+                    <img className="IdentitySelectWalletLogo" src={this.props.wallet_logo ? this.props.wallet_logo : ""} alt={this.props.wallet_name} title={this.props.wallet_name} />  
+                    <div className="IdentitySelectWalletName" >{this.props.wallet_name}</div>
                 </div>
             </li>
         )
     }
 }
 
-export default ViewWalletConnect;
+export default ViewIdentitySelect;

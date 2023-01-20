@@ -7,9 +7,10 @@
   const getDefault = () => {
     return {
       symbol: CONNECTOR_SIWW,           // for internal use
-      blockchain: "SignWithWallet.com",     // target display name
+      wallet_name: "Wallet",         // target display name
+      wallet_logo: "/assets/images/symbol_siww_full.png",
+      blockchain_name: "SignWithWallet.com",
       window: null,                     // the window element to explore
-      logo: "/assets/images/symbol_siww.png"
     }
   }
 
@@ -21,17 +22,17 @@
     objRet[CONNECTOR_SIWC] = {
       symbol: CONNECTOR_SIWC,           // for internal use
       aAcceptedBlockchain: [],          // will be filled from Connector itself
-      blockchain: "Cardano",            // target display name
+      wallet_name: "Cardano wallets",   // target display name
+      blockchain_name: "Cardano",       // blockchain name  (can be changed by connector)
       window: "cardano",                // the window element to explore
-      logo: "/assets/images/symbol_cardano.png"
     }
 
     objRet[CONNECTOR_SIWM] = {
       symbol: CONNECTOR_SIWM,            // for internal use
       aAcceptedBlockchain: [],           // will be filled from Connector itself
-      blockchain: "Metamask",            // target display name
+      wallet_name: "Metamask",           // target display name
+      blockchain_name: "Metamask",       // blockchain name  (can be changed by connector)
       window: "ethereum",                // the window element to explore
-      logo: "/assets/images/symbol_ethereum.png"
     }
 
     return objRet;

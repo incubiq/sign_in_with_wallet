@@ -3,7 +3,6 @@
  */
 
 import {siww_connect} from "./siww_connect"
-import detectEthereumProvider from '@metamask/detect-provider'
 import Web3 from 'web3';
 
 const web3 = new Web3(Web3.givenProvider || window.location.origin);
@@ -11,13 +10,13 @@ const web3 = new Web3(Web3.givenProvider || window.location.origin);
 const CONNECTOR_NAME = "SIWM"
 
 const METAMASK_ETH_NETWORK = "ethereum"
-const METAMASK_ETH_MAINNET = "Ethereum mainnet"
-// const METAMASK_ETH_TESTNET = "Ethereum testnet"
+const METAMASK_ETH_MAINNET = "Ethereum Mainnet"
+const METAMASK_BSC_MAINNET = "BSC Mainnet"
 
 // we ONLY list PROD chains here
 const chainIDs =  {
-    "1": {chain: "Ethereum Mainnet", symbol:"ETH"},
-    "56": {chain: "Binance Smart Chain Mainnet", symbol:"BNB"},
+    "1": {chain: METAMASK_ETH_MAINNET, symbol:"ETH"},
+    "56": {chain: METAMASK_BSC_MAINNET, symbol:"BNB"},
     "137": {chain: "Polygon Mainnet", symbol: "MATIC"},
     "42161": {chain: "Arbitrum One", symbol: "ETH"},
     "43114": {chain: "Avalanche C-Chain", symbol: "AVAX"},
@@ -37,7 +36,7 @@ export class siwm_connect  extends siww_connect {
 
     createDefaultWallet(_idWallet) {
         let objDefault={
-            chain: METAMASK_ETH_NETWORK,
+            chain: null,
             connector: CONNECTOR_NAME,
             id: _idWallet,                                            // id of wallet
             api: null,
@@ -55,11 +54,23 @@ export class siwm_connect  extends siww_connect {
             objDefault.logo="/assets/images/metamask.png";                 // get get wallet logo ; sorry it s hardcoded
         }
 
-        return objDefault
+        return this.getSanitizedWallet(objDefault);
     }
 
     getAcceptedChains() {
-        return [METAMASK_ETH_MAINNET, METAMASK_ETH_NETWORK];
+        return [{
+            connector: CONNECTOR_NAME,
+            name: METAMASK_ETH_MAINNET,
+            symbol: "ETH",
+            id: 1,
+            image : "symbol_ethereum.png"        // sorry, hardcoded
+        }, {
+            connector: CONNECTOR_NAME,
+            name: METAMASK_BSC_MAINNET,
+            symbol: "BNB",
+            id: 56,
+            image : "symbol_binance.png"         // sorry, hardcoded
+        }];
     }
 
 //
@@ -93,11 +104,8 @@ export class siwm_connect  extends siww_connect {
     async async_enableWallet(idWallet) {
         let _api=null;
         try {
-            let aAccounts=await web3.eth.requestAccounts();
-
+            await web3.eth.requestAccounts();
             _api=function(){};  // no api here... but compatibility...
-
-            //            _api = await detectEthereumProvider();
         }
         catch(err) {
             console.log ("Wallet connection refused ")
@@ -137,10 +145,13 @@ export class siwm_connect  extends siww_connect {
                 throw new Error("Bad params");
             }
 
-            _objWallet.networkId = parseInt(window.ethereum.networkVersion);
+            let _networkId = parseInt(window.ethereum.networkVersion);
+            let _aChain=this.getAcceptedChains();
+            let iChain=_aChain.findIndex(function (x) {return x.id===_networkId});
+            _objWallet.networkId = _networkId;
             _objWallet.isOnProd=chainIDs[window.ethereum.networkVersion]!==null;
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
-            _objWallet.chain= chainIDs[window.ethereum.networkVersion].chain;
+            _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo() ;
             _objWallet.isEnabled=true;
             return _objWallet;
         }
@@ -227,14 +238,7 @@ export class siwm_connect  extends siww_connect {
                 throw new Error("Public address does not match");
             }
 
-            let aMsg=[];
-            aMsg.push( objSiwcMsg.message);
-            aMsg.push( " -- Secure message by Sign With Wallet --");
-            aMsg.push( "Purpose: "+ type);
-            aMsg.push( "Issued At: "+ objSiwcMsg.issued_at);
-            aMsg.push( "Valid for: "+ objSiwcMsg.valid_for/60 + " minutes");
-            aMsg.push( "SIWW Version: "+ objSiwcMsg.version);
-            let msg=aMsg.join("\r\n");
+            let msg=this.getMessageAsText(objSiwcMsg, type);
             let _hex= Buffer.from(msg).toString('hex');
             let _signed = await web3.eth.personal.sign(msg, objSiwcMsg.address);
             let COSESign1Message={

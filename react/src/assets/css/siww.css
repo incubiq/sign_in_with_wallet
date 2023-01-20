@@ -19,7 +19,7 @@
 
     --shadow: rgba(63,39, 47, 0.5);
     
-    --selected:  #c0c0f0;;
+    --selected:  #eaeaff;;
     --selected-dark: #ccc;
     --connected:  #c0f0c0;;
     --connected-dark: #ccc;
@@ -178,7 +178,8 @@ h1 a {
     background: var(--light);
     background-position: center;
     background-size: cover;
-    overflow: scroll;
+    overflow-y: hidden;
+    overflow-x: scroll;
     color: var(--dark-text);
     font-size: 20px;
 }
@@ -352,6 +353,44 @@ h1 a {
     width:100%;
     font-size: 12px;
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.identitySelectContainer {
+    height: 80px;
+    width: 96px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.IdentitySelectChainLogo {
+    max-height:64px;
+    max-width:64px;
+    padding: 0;
+}
+
+.IdentitySelectWalletLogo {
+    position: absolute;
+    bottom: 6px;
+    left: 3px;
+    max-height:16px;
+    max-width:16px;
+    padding: 0;
+}
+
+.IdentitySelectWalletName {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: calc(100% - 16px);
+    font-size: 12px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .wallet-sign.connected .connectWalletTitle {
@@ -448,6 +487,12 @@ h1 a {
     top:0;
     left:0;
 } 
+.client-login-logo.siww.wallet {
+    max-width: 32px;
+    max-height: 32px;
+    left: 24px;
+    top: 20px;
+}
 .client-login-logo_container {
     height: 92px;
     width: 92px;
@@ -463,6 +508,9 @@ h1 a {
 .display-app-logo .login-subtitle{
     font-size: 70%;
     line-height: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .actionLink {
@@ -476,7 +524,7 @@ h1 a {
 .actionLink.back {
     position: absolute;
     left: 2px;
-    bottom:-4px;
+    bottom:0;
 }
 
 .actionLink.preview {
@@ -490,7 +538,7 @@ h1 a {
 .row-list {
     font-size: 0.8em;
     margin: auto;
-    margin-top: 10px;
+    margin-top: 2px;
     width: 90%;
     text-align: left;
     list-style: none;
@@ -830,7 +878,7 @@ h1 a {
 
   .siww_configure .preview .btn-close {
     position: absolute;
-    padding: 4px 16px;
+    padding: 8px 16px;
     font-size: 14px;
   }
 
@@ -867,10 +915,17 @@ h1 a {
     .modal-login {
         width: 90%;
     }
+
 }
 
 /* on mobile devices */
 @media screen and (max-width: 414px) {
+
+    .btn {
+        padding: 16px;
+        font-size: 14px;
+    }
+
     .center-vh {
         width:100%;
         top: 25%;

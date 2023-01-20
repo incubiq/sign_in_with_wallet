@@ -1,8 +1,9 @@
 import AppBase from "./appBase";
 import ViewDomain from "./viewDomain";
-import ViewWalletConnect from "./viewWalletConnect";
+import ViewIdentitySelect from "./viewIdentitySelect";
 import AuthBanner from "./authBanner";
 import {srv_getDomains} from "../services/configure";
+import {getIdentityFromUsername} from "../services/me";
 
 import jsonwebtoken from "jsonwebtoken";
 
@@ -17,8 +18,7 @@ class AppLogged extends AppBase {
         this.state= Object.assign({}, this.state, {
 
             // authenticated user
-            authenticated_wallet_address: null,
-            authenticated_wallet_id: null,
+            user: null,
 
             // all identities
 
@@ -37,19 +37,26 @@ class AppLogged extends AppBase {
                     that.props.onRedirect("auth/login");
                 }
                 else {
-                    that.setState({authenticated_wallet_address: _obj.wallet_address});
-                    that.setState({authenticated_wallet_id: _obj.wallet_id});
-                    that.setState({hover: "You are logged as Admin of our domains"});
+
+                    // get user details
+                    let _user = getIdentityFromUsername(_obj.username);
+                    that.setState({user: _user});
+
+                    // select this user
+                    that.onSelectIdentity(_user.wallet_id);
+                    that.setState({hover: "You are logged as Admin of your domains"});
 
                     srv_getDomains(null, that.props.AuthenticationCookieToken)
                     .then(_data => {
                         that.setState({aClaimedDomain: _data.data.aClaimed})
                         that.setState({aReservedDomain: _data.data.aPending})                    
                     })
+                    .catch(err => {})
                 }
             });
 
     }
+
 
     // init who the user is...
     componentDidMount() {
@@ -100,7 +107,12 @@ class AppLogged extends AppBase {
  *        UI
  */
     
-    onSelectIdentity() {
+    onSelectIdentity(_wallet_id) {
+        let i=this.state.aIdentity.findIndex(function (x) {return x.wallet_id===_wallet_id});
+        if(i!==-1) {
+            this.setState({iSelectedIdentity: i});
+        }
+        return {data: null}
         
     }
 
@@ -117,13 +129,16 @@ class AppLogged extends AppBase {
                 <div className="connectCont align-left">
                     <ul className="connectWallets"> 
                         {this.state.aIdentity.map((item, index) => (
-                            <ViewWalletConnect 
+                            <ViewIdentitySelect 
                                 theme = {this.state.theme}
                                 wallet_id = {item.wallet_id}
+                                wallet_name = {item.wallet_name}
+                                wallet_logo = {item.wallet_logo}
+                                blockchain_image = {item.blockchain_image}
+                                blockchain_name = {item.blockchain_name}
                                 isSelected = {index===this.state.iSelectedIdentity}
                                 address = {item.wallet_address}
-                                logo = {item.wallet_logo}
-                                onConnect={this.onSelectIdentity}
+                                onConnect={this.onSelectIdentity.bind(this)}
                                 onHover={() => {}}
                                 index = {index}
                                 key={index}
@@ -195,8 +210,8 @@ class AppLogged extends AppBase {
     renderHeader () {
         return (
             <AuthBanner 
-                authenticated_wallet_address = {this.state.authenticated_wallet_address}
-                authenticated_wallet_id = {this.state.authenticated_wallet_id}
+                authenticated_wallet_address = {this.state.user? this.state.user.wallet_address: ""}
+                authenticated_wallet_id = {this.state.user? this.state.user.wallet_id: ""}
                 AuthenticationCookieName = {this.props.AuthenticationCookieName}
             />            
         );
@@ -208,7 +223,7 @@ class AppLogged extends AppBase {
                 {this.renderHeader()}
                 
                 <div className="siww-panel">
-                    {this.state.authenticated_wallet_address? 
+                    {this.state.user && this.state.user.wallet_address? 
                         <>
                             {this.renderDomains()}                        
                             {this.renderIdentities()}

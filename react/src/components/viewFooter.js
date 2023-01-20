@@ -1,6 +1,6 @@
 import {Component} from "react";
 import ViewProgressBar from "./viewProgressBar";
-import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
+import {CRITICALITY_SEVERE} from "../const/message";
 
 class ViewFooter extends Component {
 

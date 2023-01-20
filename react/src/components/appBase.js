@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import ViewFooter from "./viewFooter";
-import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
+import {CRITICALITY_LOW} from "../const/message";
 
 import {getMyIdentities} from "../services/me";
 
@@ -20,7 +20,7 @@ class AppBase extends Component {
 
             // User identities
             aIdentity: aId,                           // all user's known identities (from cache)
-            iSelectedIdentity: null,                  // if not null, user is authenticated 
+            iSelectedIdentity: null,                  // if not null, user's wallet identity is selected
             
             // theme
             theme: this.props.theme,                  // todo : likely remove from here (set the theme before calling in here)

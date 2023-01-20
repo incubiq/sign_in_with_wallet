@@ -5,9 +5,13 @@
 import {siwc_connect} from "./siwc_connect"
 import {siwm_connect} from "./siwm_connect"
 
-let aConnector=[];
+
+const siwc=new siwc_connect();
+const siwm=new siwm_connect();
+let aConnector=[siwc, siwm];
 
 export class siww {
+    
     
     // instantiate the proper connector
     getConnector(_chain) {
@@ -17,14 +21,10 @@ export class siww {
         // get the chain or wallet connector
         switch(_chain) {
             case "cardano":
-                this.siwc=new siwc_connect();
-                aConnector.push(this.siwc);
-                return this.siwc;
+                return siwc;
 
             case "metamask":
-                this.siwm=new siwm_connect();
-                aConnector.push(this.siwm);
-                return this.siwm;
+                return siwm;
     
             default: 
                 return null;
@@ -47,37 +47,78 @@ export class siww {
 //
 
     async_connectWallet(_id) {
-        let _connector=this._getConnectorFromWalletId(_id);
-        if(_connector) {
-            return _connector.async_connectWallet(_id);
-        }        
-        throw new Error("Could not find wallet connector for async_connectWallet");
+        try {
+            let _connector=this._getConnectorFromWalletId(_id);
+            if(_connector) {
+                return _connector.async_connectWallet(_id);
+            }
+            throw new Error()           
+        }
+        catch (err) {
+            throw new Error("Could not find wallet connector for async_connectWallet");
+        }
+        
     }
 
     async_getConnectedWalletExtendedInfo(_id) {
-        let _connector=this._getConnectorFromWalletId(_id);
-        if(_connector) {
-            return _connector.async_getConnectedWalletExtendedInfo(_id);
-        }        
-        throw new Error("Could not find wallet connector for async_getConnectedWalletExtendedInfo");
+        try {
+            let _connector=this._getConnectorFromWalletId(_id);
+            if(_connector) {
+                return _connector.async_getConnectedWalletExtendedInfo(_id);
+            }        
+            throw new Error()           
+        }
+        catch (err) {
+            throw new Error("Could not find wallet connector for async_getConnectedWalletExtendedInfo");
+        }
     }
 
     async_createMessage(_id, objParam) {
-        let _connector=this._getConnectorFromWalletId(_id);
-        if(_connector) {
-            return _connector.async_createMessage(_id, objParam);
-        }        
-        throw new Error("Could not find wallet connector for async_createMessage");
+        try {
+            let _connector=this._getConnectorFromWalletId(_id);
+            if(_connector) {
+                return _connector.async_createMessage(_id, objParam);
+            }        
+            throw new Error()           
+        }
+        catch (err) {
+            throw new Error("Could not find wallet connector for async_createMessage");
+        }
     }
 
     async_signMessage(_id, objParam, strType) {
-        let _connector=this._getConnectorFromWalletId(_id);
-        if(_connector) {
-            return _connector.async_signMessage(_id, objParam, strType);
+        try {
+            let _connector=this._getConnectorFromWalletId(_id);
+            if(_connector) {
+                return _connector.async_signMessage(_id, objParam, strType);
+            }
+            throw new Error()           
+        }
+        catch (err) {
+            throw new Error("Could not find wallet connector for async_signMessage");
         }        
-        throw new Error("Could not find wallet connector for async_signMessage");
     }
 
+    getChainInfoFromSymbol(_id, _chain) {
+        try {
+            let _connector=this._getConnectorFromWalletId(_id);
+            if(_connector) {
+                return _connector.getChainInfoFromSymbol(_chain);
+            }
+            else {
+                // bad luck, the connector has not listed all wallets yet... we take the first one that has this chain
+                let objRet=null;
+                aConnector.forEach(connector => {
+                    let _objRet = connector.getChainInfoFromSymbol(_chain);
+                    if(!objRet && _objRet) {objRet=_objRet}
+                });
+                return objRet
+            }
+        }
+        catch (err) {
+            throw new Error("Could not find wallet connector for getChainInfoFromSymbol");
+        }        
+    }
 }
 
 export default siww;

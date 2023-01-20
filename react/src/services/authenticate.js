@@ -10,9 +10,9 @@ const srv_getMe = async(obj, _token) => {
 const srv_prepare = async(obj) => {
   return await srv_postRoute(API_HOST+API_WEB3ROUTE+'prepare', {
     connector: obj.connector,
-    blockchain: obj.blockchain,
+    blockchain_symbol: obj.blockchain_symbol,
     wallet_id: obj.wallet_id,
-    wallet_addr: obj.wallet_addr,
+    wallet_address: obj.wallet_address,
     app_id: obj.app_id
   });
 }

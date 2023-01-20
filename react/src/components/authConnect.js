@@ -1,7 +1,7 @@
 import AppBase from "./appBase";
 import {WidgetMessage} from "../utils/widgetMessage";
-import {getConnectors, CONNECTOR_SIWC, CONNECTOR_SIWM} from "../const/connectors"; 
-import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
+import {getConnectors, getDefault, CONNECTOR_SIWC, CONNECTOR_SIWM} from "../const/connectors"; 
+import {CRITICALITY_SEVERE} from "../const/message";
 
 // for test only
 import siww from "../siww/siww";        
@@ -92,29 +92,41 @@ constructor(props) {
         this.setState({aActiveConnector: _aActive});
     }
 
+    getSIWW() {
+        return SIWW;
+    }
+
     createConnector(_name) {
         let _connector=SIWW.getConnector(_name);
         this.registerSIWCCallbacks(_connector);
         return _connector;
     }
 
-    updateActiveConnector(objConnector) {
-        if(!objConnector) {
+    updateActiveConnector(objIdentity) {
+        if(!objIdentity) {
             this.setState({iActiveConnector: null});
+            this.setState({wallet_name: "Wallet"});
         }
         else {
             let _aC=this.state.aActiveConnector;
             for (var i=0; i<this.state.aActiveConnector.length; i++) {
-                if(this.state.aActiveConnector[i].symbol===objConnector.connector) {
+                if(this.state.aActiveConnector[i].symbol===objIdentity.connector) {
 
                     // is this this an accepted blockchain?
-                    _aC[i].isAccepted=_aC[i].assets.aAcceptedBlockchain.some(item => item.toLowerCase() == objConnector.blockchain.toLowerCase());
+                    _aC[i].isAccepted=_aC[i].assets.aAcceptedBlockchain.some(item => item.symbol.toLowerCase() === objIdentity.blockchain_symbol.toLowerCase());
 
-                    // Metamask can work on multi chain, we want to display the active chain only
-                    if(_aC[i].assets.blockchain !== objConnector.blockchain) {
-                        _aC[i].assets.blockchain = objConnector.blockchain;
-                        this.setState({aActiveConnector: _aC});    
-                    }
+                    // add blockchain info and update name (Metamask can work on multi chain, we want to display the active chain only)
+                    _aC[i].assets.blockchain_image = objIdentity.blockchain_image;
+                    _aC[i].assets.blockchain_name = objIdentity.blockchain_name;
+                    _aC[i].assets.blockchain_symbol = objIdentity.blockchain_symbol;
+
+                    // add wallet info too 
+                    _aC[i].assets.wallet_id = objIdentity.wallet_id;
+                    _aC[i].assets.wallet_name = objIdentity.wallet_name;
+                    _aC[i].assets.wallet_logo = objIdentity.wallet_logo;
+
+                    // set it
+                    this.setState({aActiveConnector: _aC});    
                     this.setState({iActiveConnector: i});
                     return _aC[i].isAccepted;
                 }
@@ -161,11 +173,11 @@ constructor(props) {
 
                 // update active connectors 
                 let _cC=0;
-                for (var i=0; i<_aActive.length; i++) {
-                    if(_aActive[i].connector === item.connector) {
-                        _aActive[i].hasNotified=true;
+                for (var j=0; j<_aActive.length; j++) {
+                    if(_aActive[j].connector === item.connector) {
+                        _aActive[j].hasNotified=true;
                     }
-                    if(_aActive[i].hasNotified) {_cC++}
+                    if(_aActive[j].hasNotified) {_cC++}
                 }
                 this.setState({aActiveConnector: _aActive});
                 _hasReceivedAllNotifications=_cC===_aActive.length;
@@ -181,6 +193,8 @@ constructor(props) {
             aWallet:_aCurrent,
             didAccessWallets: true
         });        
+
+        return _aCurrent;
     }
 
     // processing the wallet connection request (did we really connect?)
@@ -238,8 +252,7 @@ constructor(props) {
 
         try {
             // not waiting for this to finish, it could wait too long
-            await SIWW.async_connectWallet(_id);
-            return;
+            return await SIWW.async_connectWallet(_id);
         }
         catch(err) {
             throw err;
@@ -252,7 +265,7 @@ constructor(props) {
         try {
 
             const objSiwcMsg = await SIWW.async_createMessage(_id, {
-                message: "Sign this message to authorize authentication into "+appDomain,
+                message: "Sign to authorize authentication into "+appDomain,
                 version: this.props.version,
                 valid_for: 300,                 // 5min validity from when it is sent
             });
@@ -266,6 +279,20 @@ constructor(props) {
             this.setState({criticality:CRITICALITY_SEVERE});    
         }
         return null;
+    }
+
+    getActiveConnector() {
+        if(this.state.iActiveConnector!==null) {
+            return this.state.aActiveConnector[this.state.iActiveConnector];
+        }
+
+        let _assets=getDefault();
+        return {
+            isAccepted: true,
+            symbol: _assets.symbol,                    
+            connector: null,
+            assets: _assets
+        }
     }
 
     getShortenAnonAddress(_address) {
@@ -300,7 +327,7 @@ constructor(props) {
                         <ul>
                         {item.utxos? item.utxos.map((utxo, idx)  => (
                             <li key={idx} className={item.isEnabled?"" : "noshow"}>
-                                <a target="_blank" href={"https://testnet.cexplorer.io/"+utxo}> {"UTXO: "+this.getShortenAnonAddress(utxo) }</a>
+                                <a target="_blank" href={"https://testnet.cexplorer.io/"+utxo} rel="noreferrer" > {"UTXO: "+this.getShortenAnonAddress(utxo) }</a>
                             </li>
                         )) 
                         :""}

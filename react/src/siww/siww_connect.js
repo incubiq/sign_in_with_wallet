@@ -4,6 +4,8 @@
 
 import {replyFast, checkIsValidDomain, checkIsValidStatement, checkIsValidChain, checkIsValidDate, generateNonce}  from './siww_utils'
 
+const CONNECTOR_NAME = "SIWW"       // must override by class
+
 export class siww_connect {
 
 //
@@ -25,13 +27,29 @@ export class siww_connect {
         }
     }
 
+    getUnknownChainInfo() {
+        return {
+            connector: CONNECTOR_NAME,
+            name: null,
+            symbol: null,
+            id: 0,
+            image : "symbol_unknown.png"        // sorry, hardcoded
+        }
+    }
+
+    getChainInfoFromSymbol(_symbol) {
+        let _aChain=this.getAcceptedChains();
+        let _iChain=_aChain.findIndex(function (x) {return x.symbol===_symbol});
+        return (_iChain>=0? _aChain[_iChain] : this.getUnknownChainInfo())
+    }
+
     getSanitizedWallet(_objWallet) {
         return {
             connector: _objWallet.connector,
             chain: _objWallet.chain,
             networkId: _objWallet.networkId,
             id: _objWallet.id,
-            name: _objWallet.name,
+            name: (_objWallet.name? _objWallet.name.charAt(0).toUpperCase() + _objWallet.name.slice(1): null),     // capitalise wallet id
             isEnabled: _objWallet.isEnabled,
             isOnProd: _objWallet.isOnProd,
             hasReplied: _objWallet.hasReplied,
@@ -270,7 +288,7 @@ export class siww_connect {
                     issued_at: nowUtc,
                     valid_for: objParam.valid_for? objParam.valid_for : null,
                     address: _objWallet.address,
-                    chain: _objWallet.chain,
+                    chain: _objWallet.chain.name,
                     name: _objWallet.name,
                     api: _objWallet.api,
                     version: objParam.version? objParam.version: "1.0",
@@ -299,6 +317,20 @@ export class siww_connect {
         } catch (err) {
             throw err;
         }
+    }
+
+    getMessageAsText(objSiwcMsg, type) {
+        let aMsg=[];
+        aMsg.push( objSiwcMsg.message);
+        aMsg.push( "");
+        aMsg.push( "-- Secure message by Sign With Wallet --");
+        aMsg.push( "Purpose: "+ type);
+//        aMsg.push( "Issued At: "+ objSiwcMsg.issued_at);
+        aMsg.push( "Valid for: "+ objSiwcMsg.valid_for/60 + " minutes");
+        aMsg.push( "Cost: 0.00");
+//        aMsg.push( "Version: "+ objSiwcMsg.version);
+        let msg=aMsg.join("\r\n");
+        return msg;
     }
 
     // type of signing:

@@ -7,7 +7,9 @@ import {getCache, setCache, removeCache} from './cache'
 //  - wallet_id: ...
 //  - wallet_logo: ...
 //  - connector
-//  - blockchain
+//  - blockchain_name
+//  - blockchain_symbol
+//  - blockchain_image
 //  - webapp: [{ 
 //    app_id: ...
 //    aScope: [{label: ... , property: ...}]
@@ -40,7 +42,7 @@ const _findIdentityFromWallet = (_wallet_id, _connector, _blockchain) => {
       if (aId[i].wallet_id===_wallet_id && aId[i].connector === _connector) {
 
         // only return is specified blockchain is same
-        if(!_blockchain || aId[i].blockchain === _blockchain) {
+        if(!_blockchain || aId[i].blockchain_symbol === _blockchain) {
           return aId[i];
         }
       }
@@ -85,7 +87,9 @@ const createPartialIdentity = (_objIdentity) => {
   else {
     // it exists... we update the blockchain 
     updatePartialIdentity(_objIdentity.wallet_id, _objIdentity.connector, {
-      blockchain: _objIdentity.blockchain
+      blockchain_image: _objIdentity.blockchain_image,
+      blockchain_name: _objIdentity.blockchain_name,
+      blockchain_symbol: _objIdentity.blockchain_symbol
     });
 
     // reload

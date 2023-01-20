@@ -414,8 +414,12 @@ class FormConfigure extends FormReserve {
                     oauthDomain = {this.state.domain_name}
                     isOauth = {true}
                     theme = {this.state.theme}
+                    wallet = "Wallet"
                     aConnector = {null}
-                    connector = {{assets: getDefault()}}
+                    connector = {{
+                        assets: getDefault(),
+                        isAccepted: true,
+                    }}
                 />
 
                 <div className="siww-panel">
@@ -428,13 +432,13 @@ class FormConfigure extends FormReserve {
                     />                            
 
                     <div className="identity_action">
-                        <div className="btn btn-transparent actionLink back">
+                        <button className="btn btn-transparent actionLink back">
                             Switch Identity!
-                        </div>                            
+                        </button>                            
 
-                        <div className="btn btn-quiet">
+                        <button className="btn btn-quiet">
                             Grant Access!
-                        </div>
+                        </button>
                     </div>
                 </div>
 
@@ -446,18 +450,18 @@ class FormConfigure extends FormReserve {
 
                 </div>
 
-                <div 
+                <button 
                     className="btn btn-close btn-primary top left"
                     onClick = {this.togglePreview.bind(this)}
                 >
                     Quit Preview
-                </div>
-                <div 
+                </button>
+                <button 
                     className="btn btn-close btn-primary bottom right"
                     onClick = {this.togglePreview.bind(this)}
                 >
                     Quit Preview
-                </div>
+                </button>
             </div>
         </div>
     )}
@@ -680,7 +684,7 @@ class FormConfigure extends FormReserve {
                                     data-name={item.name}
                                     onClick = {this.removeAuthorization.bind(this)}
                                 >
-                                    <img className="icon" src="/assets/images/icon_delete.png" />
+                                    <img className="icon" src="/assets/images/icon_delete.png" alt="Delete"/>
                                     <span>Remove this authorization level!</span>
                                 </div>
                                 </div>
@@ -695,12 +699,12 @@ class FormConfigure extends FormReserve {
                     <div className={this.state.is_verified===true? "btn btn-tiny" : "btn btn-tiny disabled"}
                         onClick = {this.toggleAddAuthorization.bind(this)}
                     >
-                        <img className="icon" src="/assets/images/icon_plus.png" />
+                        <img className="icon" src="/assets/images/icon_plus.png" alt="Add" />
                         <span>Add an authorization level...</span>
                     </div>
                     {this.state.is_verified===false ?
-                        <div class="hint align-left">
-                            <img class="icon" src="/assets/images/icon_warning.png" />
+                        <div className="hint align-left">
+                            <img class="icon" src="/assets/images/icon_warning.png" alt="Warning" />
                             <span>Verify your domain to enable authorization levels</span>
                         </div>
                     :""}

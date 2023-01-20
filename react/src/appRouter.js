@@ -71,7 +71,7 @@ export default function AppRouter(props) {
           }
         })
     }
-  }, []);
+  });
 
   const getmyuri = (n,s) => {
     n = n.replace(/[[]/,"\\[").replace(/[\]]/,"\\]");

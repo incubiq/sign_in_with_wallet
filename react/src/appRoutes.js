@@ -1,10 +1,10 @@
 import React, { Component, Suspense } from "react";
-import {Route, Routes, Navigate  } from 'react-router-dom';
+import {Route, Routes  } from 'react-router-dom';
 
 // default theming
 import {getTheme, getStyles} from "./assets/themes/cardano"; 
 import {WidgetLoading} from "./utils/widgetLoading"; 
-import {getConnectors, CONNECTOR_SIWC} from "./const/connectors"; 
+import {getConnectors} from "./const/connectors"; 
 
 // authentication apps
 const AuthConnect  = React.lazy(() => import ("./components/authConnect"));              // to connect with wallet 

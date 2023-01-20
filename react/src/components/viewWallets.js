@@ -24,6 +24,7 @@ class ViewWallets extends Component {
                             <ViewWalletConnect 
                                 theme = {this.props.theme}
                                 wallet_id = {item.id}
+                                wallet_name = {item.name}
                                 isConnected = {item.hasConnected}
                                 address = {item.address}
                                 logo = {item.logo}

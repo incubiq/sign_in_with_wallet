@@ -51,7 +51,7 @@ class AppConfigure extends AppLogged {
             <>
                 {this.renderHeader()}
 
-                {!this.state.authenticated_wallet_address? 
+                {!this.state.user || !this.state.user.wallet_address? 
                     <>
                         {this.renderToolbar()}                        
                     </>

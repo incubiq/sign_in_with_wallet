@@ -56,7 +56,13 @@ const CONNECTOR_NAME = "SIWC"
 
 const CARDANO_NETWORK = "cardano"
 const CARDANO_MAINNET = "Cardano Mainnet"
-// const CARDANO_TESTNET = "Cardano testnet"
+
+const DEPRECATED_WALLETS = ["ccvault"]          // ID of all wallets we are not going to accept
+
+// we ONLY list PROD chains here
+const chainIDs =  {
+    "1": {chain: CARDANO_MAINNET, symbol:"ADA"},
+}
 
 export class siwc_connect  extends siww_connect {
 
@@ -85,11 +91,17 @@ export class siwc_connect  extends siww_connect {
             objDefault.logo=window.cardano[_idWallet].icon;                 // get get wallet logo
         }
 
-        return objDefault
+        return this.getSanitizedWallet(objDefault);
     }
 
     getAcceptedChains() {
-        return [CARDANO_MAINNET, CARDANO_NETWORK];
+        return [{
+            connector: CONNECTOR_NAME,
+            name: CARDANO_MAINNET,
+            symbol: "ADA",
+            id: 1,
+            image : "symbol_cardano.png"        // sorry, hardcoded
+        }];
     }
 
 //
@@ -105,11 +117,16 @@ export class siwc_connect  extends siww_connect {
             let _aWallet=[];
             if(window && window.cardano) {
                 for (const key in window.cardano) {
-                    if(window.cardano[key].hasOwnProperty("apiVersion")) {
-                        let objWallet = await this.async_getDefaultWalletInfo(key);
 
-                        // push info for connection
-                        _aWallet.push(this.getSanitizedWallet(objWallet));
+                    // process if not deprecated
+                    if(!DEPRECATED_WALLETS.includes(key)) {
+                        if(window.cardano[key].hasOwnProperty("apiVersion")) {
+                            let objWallet = await this.async_getDefaultWalletInfo(key);
+                            
+                            // push info for connection
+                            _aWallet.push(this.getSanitizedWallet(objWallet));
+                        }
+    
                     }
                 }
             }
@@ -163,10 +180,13 @@ export class siwc_connect  extends siww_connect {
                 throw new Error("Bad params");
             }
 
-            _objWallet.networkId = await _objWallet.api.getNetworkId();
-            _objWallet.isOnProd=_objWallet.networkId===1;
+            let _networkId = await _objWallet.api.getNetworkId();
+            let _aChain=this.getAcceptedChains();
+            let iChain=_aChain.findIndex(function (x) {return x.id===_networkId});
+            _objWallet.networkId = _networkId;
+            _objWallet.isOnProd=chainIDs[_networkId]!==null;
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
-            _objWallet.chain=(_objWallet.networkId===1? CARDANO_MAINNET : CARDANO_NETWORK);
+            _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo() ;
             _objWallet.balance = await this._async_getBalance(_objWallet.api);
             _objWallet.utxos=await this._async_getUtxo(_objWallet.api)
             _objWallet.isEnabled=true;
@@ -261,14 +281,7 @@ export class siwc_connect  extends siww_connect {
             const usedAddresses = await objSiwcMsg.api.getUsedAddresses();
             const usedAddress = usedAddresses[0];
 
-            let aMsg=[];
-            aMsg.push( objSiwcMsg.message);
-            aMsg.push( " -- Secure message by Sign With Wallet --");
-            aMsg.push( "Purpose: "+ type);
-            aMsg.push( "Issued At: "+ objSiwcMsg.issued_at);
-            aMsg.push( "Valid for: "+ objSiwcMsg.valid_for/60 + " minutes");
-            aMsg.push( "SIWW Version: "+ objSiwcMsg.version);
-            let msg=aMsg.join("\r\n");
+            let msg=this.getMessageAsText(objSiwcMsg, type);
             let _hex= Buffer.from(msg).toString('hex');
             COSESign1Message = await objSiwcMsg.api.signData(usedAddress, _hex);
 

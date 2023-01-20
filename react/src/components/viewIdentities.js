@@ -1,5 +1,5 @@
 import {Component} from "react";
-import ViewWalletConnect from "./viewWalletConnect";
+import ViewIdentitySelect from "./viewIdentitySelect";
 
 class ViewIdentities extends Component {
 
@@ -21,12 +21,15 @@ class ViewIdentities extends Component {
                 <div className = "connectCont">
                     <ul className = "connectWallets">
                         {objParam.aIdentity.map((item, index) => (
-                            <ViewWalletConnect 
+                            <ViewIdentitySelect 
                                 theme = {this.props.theme}
                                 wallet_id = {item.wallet_id}
+                                wallet_name = {item.wallet_name}
+                                wallet_logo = {item.wallet_logo}
                                 isSelected = {index===this.props.iSelectedIdentity}
                                 address = {item.wallet_address}
-                                logo = {item.wallet_logo}
+                                blockchain_image = {item.blockchain_image}
+                                blockchain_name = {item.blockchain_name}
                                 onConnect={objParam.onSelect}
                                 onHover={objParam.onHover}
                                 index = {index}

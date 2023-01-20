@@ -59,7 +59,7 @@ import { randomStringForEntropy } from '@stablelib/random';
     // chain must be accepted
     export const checkIsValidChain = (_chain, aAcceptedChains) => { 
         if(!aAcceptedChains || !_chain) {return false}
-        let _isValid=aAcceptedChains.some(item => item.toLowerCase() === _chain.toLowerCase());;        
+        let _isValid=aAcceptedChains.some(item => item.name.toLowerCase() === _chain.toLowerCase());;        
         if(!_isValid) {console.log("invalid chain: "+_chain)}
         return _isValid;
     } 

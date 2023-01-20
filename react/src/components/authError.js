@@ -2,7 +2,6 @@ import AuthConnect from "./authConnect";
 import ViewHeader from "./viewHeader";
 
 import {WidgetMessage} from "../utils/widgetMessage";
-import {getDefault} from "../const/connectors"; 
 
 class AuthError extends AuthConnect {
 
@@ -44,8 +43,9 @@ class AuthError extends AuthConnect {
                         is_verified = {this.props.webApp && this.props.webApp.is_verified===true ? true : false}
                         isOauth = {true}
                         theme = {this.state.theme}
+                        wallet = "Wallet"
                         aConnector = {this.state.aActiveConnector}
-                        connector = {this.state.iActiveConnector!==null ? this.state.aActiveConnector[this.state.iActiveConnector] : {assets: getDefault()}}
+                        connector = {this.getActiveConnector()}
                     />
 
                     <WidgetMessage 

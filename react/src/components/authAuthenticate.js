@@ -5,7 +5,6 @@ import ViewWallets from "./viewWallets";
 import {WidgetMessage} from "../utils/widgetMessage";
 
 import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
-import {getDefault} from "../const/connectors"; 
 import {srv_prepare, srv_getMe} from "../services/authenticate";
 import {createPartialIdentity, updatePartialIdentity, getMyIdentities, getIdentityFromUsername, getIdentityFromWallet} from "../services/me";
 
@@ -29,6 +28,7 @@ class AuthAuthenticate extends AuthConnect {
             token: null,
             username: null,
             wallet_id: null,
+            wallet_name: null,
             wallet_address: null,
             connector: null,            
             blockchain: null,
@@ -96,8 +96,11 @@ class AuthAuthenticate extends AuthConnect {
             this.setState({iSelectedIdentity: _i});
             this.setState({username: _aIdentity[_i].username});
             this.setState({connector: _aIdentity[_i].connector});
-            this.setState({blockchain: _aIdentity[_i].blockchain});
+            this.setState({blockchain_symbol: _aIdentity[_i].blockchain_symbol});
+            this.setState({blockchain_name: _aIdentity[_i].blockchain_name});
+            this.setState({blockchain_image: _aIdentity[_i].blockchain_image});
             this.setState({wallet_id: _aIdentity[_i].wallet_id});
+            this.setState({wallet_name: _aIdentity[_i].wallet_name});
             this.setState({wallet_address: _aIdentity[_i].wallet_address});
         }.bind(this);
 
@@ -154,12 +157,17 @@ class AuthAuthenticate extends AuthConnect {
                 else {
                     // keep this token
                     that.setState({token: _token});
-    
+
+                    // get full blockchain info
+                    let objChainInfo=that.getSIWW().getChainInfoFromSymbol(decoded.wallet_id, decoded.blockchain_symbol);
+
                     // this identity myust be here in cache, or we will create...
                     if(getIdentityFromUsername(decoded.username)===null) {
                         createPartialIdentity({
                             connector: decoded.connector,
-                            blockchain: decoded.blockchain,
+                            blockchain_symbol: decoded.blockchain_symbol,
+                            blockchain_name: objChainInfo.name,
+                            blockchain_image: objChainInfo.image,
                             wallet_address: decoded.wallet_address,
                             wallet_id: decoded.wallet_id
                         });    
@@ -168,13 +176,16 @@ class AuthAuthenticate extends AuthConnect {
                     // cookie contains new username (created by backend) => store it
                     updatePartialIdentity(decoded.wallet_id, decoded.connector, {
                         username: decoded.username,
-                        wallet_address: decoded.wallet_address
+                        wallet_address: decoded.wallet_address,
                     });
     
                     // now we know who you are
                     that.setState({username: decoded.username});
                     that.setState({wallet_address: decoded.wallet_address});
                     that.setState({wallet_id: decoded.wallet_id});
+                    that.setState({blockchain_symbol: decoded.blockchain_symbol});
+                    that.setState({blockchain_name: objChainInfo.name});
+                    that.setState({blockchain_image: objChainInfo.image});
                     that.setState({connector: decoded.connector});
     
                     // any new identity?
@@ -213,9 +224,9 @@ class AuthAuthenticate extends AuthConnect {
             // now pass details to server, so we get a cookie
             srv_prepare({
                 connector: objIdentityForAuth.connector,
-                blockchain: objIdentityForAuth.blockchain,
+                blockchain_symbol: objIdentityForAuth.blockchain_symbol,
                 wallet_id: objIdentityForAuth.wallet_id,
-                wallet_addr: objIdentityForAuth.wallet_address,    
+                wallet_address: objIdentityForAuth.wallet_address,    
                 app_id: this.props.webAppId
             })
                 .then(dataObj => {
@@ -240,14 +251,14 @@ class AuthAuthenticate extends AuthConnect {
 
     // called at init (what are those wallets?)
     onSIWCNotify_WalletsAccessible(_aWallet) {
-        super.onSIWCNotify_WalletsAccessible(_aWallet);
+        let _aCurrent=super.onSIWCNotify_WalletsAccessible(_aWallet);
         if(this.state.iSelectedIdentity===null) {
             let msg="Zero wallet detected!"
-            if(_aWallet.length===1) {
+            if(_aCurrent.length===1) {
                 msg="One wallet detected, checking connection..."
             }
-            if(_aWallet.length>1) {
-                msg= _aWallet.length+" wallets detected, please choose at least one to connect to."
+            if(_aCurrent.length>1) {
+                msg= _aCurrent.length+" wallets detected, please choose at least one to connect to."
             }
             this.setState({hover:msg});    
         }
@@ -279,18 +290,22 @@ class AuthAuthenticate extends AuthConnect {
             }
 
             // make sure we have this user's identity in storage + update logo in case it changed
-            if(getIdentityFromWallet(_wallet.id, _wallet.connector, _wallet.chain)===null) {
+            if(getIdentityFromWallet(_wallet.id, _wallet.connector, _wallet.chain.symbol)===null) {
                 createPartialIdentity({
                     connector: _wallet.connector,
-                    blockchain: _wallet.chain,
+                    blockchain_name: _wallet.chain.name,
+                    blockchain_symbol: _wallet.chain.symbol,
+                    blockchain_image: _wallet.chain.image,
                     wallet_address: _wallet.address,
                     wallet_id: _wallet.id,
+                    wallet_name: _wallet.name,
                     wallet_logo: _wallet.logo
                 });    
             }
             else {
                 updatePartialIdentity(_wallet.id, _wallet.connector, {
-                    wallet_logo: _wallet.logo
+                    wallet_logo: _wallet.logo,
+                    wallet_name: _wallet.name,
                 });    
             }
     
@@ -300,7 +315,7 @@ class AuthAuthenticate extends AuthConnect {
                     this._prepareSIWW({
                         wallet_address: _wallet.address,
                         wallet_id: _wallet.id,
-                        blockchain: _wallet.chain,
+                        blockchain_symbol: _wallet.chain.symbol,
                         connector: _wallet.connector
                     });        
                 }
@@ -312,7 +327,7 @@ class AuthAuthenticate extends AuthConnect {
                     this._prepareSIWW({
                         wallet_address: _wallet.address,
                         wallet_id: _wallet.id,
-                        blockchain: _wallet.chain,
+                        blockchain_symbol: _wallet.chain.symbol,
                         connector: _wallet.connector
                     });        
                 }
@@ -329,10 +344,10 @@ class AuthAuthenticate extends AuthConnect {
         let _str="none";
         for (var i=0; i<this.state.aActiveConnector.length; i++) {
             if(i===0) {
-                _str = "<b>"+this.state.aActiveConnector[0].blockchain+"</b>"
+                _str = "<b>"+this.state.aActiveConnector[0].assets.name+"</b>"
             }
             else {
-                _str= _str + ", <b>"+ this.state.aActiveConnector[i].blockchain+"</b>"
+                _str= _str + ", <b>"+ this.state.aActiveConnector[i].assets.name+"</b>"
             }
         }
 
@@ -358,7 +373,7 @@ class AuthAuthenticate extends AuthConnect {
                                 this.state.aWallet && this.state.aWallet.length>0? 
                                     <>
                                         <div className="siww-section">
-                                            <strong>Sign With Wallet</strong> has detected {this.state.aWallet.length===1? "one wallet:" : "those wallets:"} 
+                                            Wallets detected from your browser:
                                         </div>
 
                                         <ViewWallets 
@@ -367,12 +382,17 @@ class AuthAuthenticate extends AuthConnect {
                                             onSelect= {this.async_connectWallet.bind(this)}
                                             fnShowMessage={this.showMessage.bind(this)}                            
                                         />
+
+                                        <div className="hint">
+                                            <br />
+                                            Select wallet and allow connection to use identity
+                                        </div>  
                                     </>
                                 :
                                     <WidgetMessage 
                                         error = {true}
                                         headline = "Could not detect a single wallet from this browser"
-                                        text = {"You must use at least one "+this.state.theme.name+" wallet extension"}
+                                        text = {this._getActiveConnectorsAsString()+". Check you browser's wallet extensions..."}
                                     />        
                             :
                                 <>
@@ -452,8 +472,9 @@ class AuthAuthenticate extends AuthConnect {
                         is_verified = {this.props.webApp.is_verified===true}
                         isOauth = {true}
                         theme = {this.state.theme}
+                        wallet = {this.state.wallet_name}
                         aConnector = {this.state.aActiveConnector}
-                        connector = {this.state.iActiveConnector!==null ? this.state.aActiveConnector[this.state.iActiveConnector] : {assets: getDefault()}}
+                        connector = {this.getActiveConnector()}
                     />
 
                     {this.state.iSelectedIdentity===null ? 

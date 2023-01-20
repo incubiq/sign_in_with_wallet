@@ -7,9 +7,8 @@ import FormAuthorize from "./formAuthorize";
 import {WidgetMessage} from "../utils/widgetMessage";
 
 import {srv_verify, srv_getAuthorizedLevels} from "../services/authenticate";
-import {getDefault} from "../const/connectors"; 
 import {getMyIdentities, grantAccessToWebApp, revokeAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
-import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
+import {CRITICALITY_SEVERE} from "../const/message";
 
 const VIEWMODE_IDENTITY="identity";
 const VIEWMODE_DATASHARE="datashare";
@@ -58,13 +57,14 @@ class AuthAuthorize extends AuthAuthenticate {
         this.setState({viewMode: VIEWMODE_DATASHARE});
 
         // update which connector we will use // receives if accepted or not
-        if(!this.updateActiveConnector(aIdentity[iUser])) {
+        let _isAccepted=this.updateActiveConnector(aIdentity[iUser]);
+        if(!_isAccepted) {
             this.setState({hover:"This network is not yet supported..."});
             this.setState({criticality: CRITICALITY_SEVERE});    
         }
 
         // did we grant authorization before?
-        if(isGrantedAccessToWebApp(aIdentity[iUser].username, this.props.webAppId)) {
+        if(_isAccepted && isGrantedAccessToWebApp(aIdentity[iUser].username, this.props.webAppId)) {
             this.authorizeDataShare(aIdentity[iUser].username);
         }
     }
@@ -166,6 +166,10 @@ class AuthAuthorize extends AuthAuthenticate {
         }
 
         this.onToggleAuthorizationView();
+
+        return {
+            didUserAccept: true
+        }
     }
 
     onBackToAddIdentity() {
@@ -218,19 +222,19 @@ class AuthAuthorize extends AuthAuthenticate {
                         <div className="identity_action">
 
                             {this.state.viewMode===VIEWMODE_DATASHARE && this.state.aIdentity.length>1 ? 
-                                <div 
+                                <button 
                                     className="btn btn-transparent actionLink back"
                                     onClick={evt => {this.onToggleAuthorizationView();}}
                                 >
                                     Switch Identity!
-                                </div>                            
+                                </button>                            
                             : 
-                                <div 
+                                <button 
                                     className="btn btn-transparent actionLink back"
                                     onClick={evt => {this.onBackToAddIdentity(evt);}}
                                 >
                                     Back to wallets!
-                                </div>
+                                </button>
                             }   
 
                             <button 
@@ -289,7 +293,7 @@ class AuthAuthorize extends AuthAuthenticate {
             let params={
                 app_id: this.props.webAppId,                
                 connector: this.state.connector,
-                blockchain: this.state.blockchain,
+                blockchain_symbol: this.state.blockchain_symbol,
                 wallet_id: this.state.wallet_id
             }
             for (var i=0; i<this.state.aScope.length; i++) {
@@ -373,8 +377,9 @@ class AuthAuthorize extends AuthAuthenticate {
                         is_verified = {this.props.webApp!=null && this.props.webApp.isVerified===true}
                         isOauth = {true}
                         theme = {this.state.theme}
+                        wallet = {this.state.wallet_name}
                         aConnector = {this.state.aActiveConnector}
-                        connector = {this.state.iActiveConnector!==null ? this.state.aActiveConnector[this.state.iActiveConnector] : {assets: getDefault()}}
+                        connector = {this.getActiveConnector()}
                     />
 
                     {this.state.iSelectedIdentity!==null ? 

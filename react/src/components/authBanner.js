@@ -4,11 +4,6 @@ import {deleteMe} from "../services/me";
 
 // class for displaying top banner in admin mode
 class AuthBanner extends AppBase {
-
-    constructor(props) {
-        super(props);    
-    }
-
     
     onDisconnect() {
         // 
