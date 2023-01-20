@@ -115,13 +115,13 @@ const express = require('express');
                         "img-src 'self' data: https: localhost:"+gConfig.port +" ; " +
                         "frame-src 'self' "
                         :
-                        "default-src tachiku: 'self' 'unsafe-eval' data: ; " +
+                        "default-src https://signwithwallet.com 'self' 'unsafe-eval' data: ; " +
                         "script-src 'self' 'unsafe-inline' 'unsafe-eval' ; " +
                         "style-src 'self' 'unsafe-eval' 'unsafe-inline' data: ; " +
                         "font-src ; " +
                         "connect-src  'self'; " +
                         "worker-src blob: ; " +
-                        "img-src 'self' data: ; " +
+                        "img-src 'self' data: https://signwithwallet.com ; " +
                         "frame-src 'self' ;"
             }
         }
