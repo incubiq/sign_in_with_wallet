@@ -48,7 +48,7 @@ module.exports = {
                         isExpired: false,
                         username: decoded.username,
                         connector: decoded.connector,
-                        blockchain: decoded.blockchain,
+                        blockchain_symbol: decoded.blockchain_symbol,
                         wallet_id: decoded.provider_wallet,
                         wallet_address:  decoded.wallet_address,
                         authorizations: decoded.authorizations

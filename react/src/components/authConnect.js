@@ -4,11 +4,11 @@ import {getConnectors, getDefault, CONNECTOR_SIWC, CONNECTOR_SIWM} from "../cons
 import {CRITICALITY_SEVERE} from "../const/message";
 
 // for test only
-import siww from "../siww/siww";        
-const SIWW=new siww();
+//import siww from "../siww/siww";        
+//const SIWW=new siww();
 
 // real prod
-//const SIWW = require('@incubiq/siww');
+const SIWW = require('@incubiq/siww');
 
 class AuthConnect extends AppBase {
 

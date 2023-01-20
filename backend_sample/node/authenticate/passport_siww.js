@@ -46,7 +46,7 @@ const SIWWStrategy = require("@incubiq/passport-wallet").Strategy;          // n
                 email: email,
                 picture: picture,
                 connector: profile.connector,
-                blockchain: profile.blockchain,
+                blockchain_symbol: profile.blockchain_symbol,
                 provider_wallet: profile.wallet,
                 wallet_address: wallet_address,
                 authorizations: authorizations,

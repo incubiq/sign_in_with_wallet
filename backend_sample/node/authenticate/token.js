@@ -35,7 +35,7 @@ module.exports = {
         let payload = {
             username: (req!=null && req.user!=null && req.user.username!=null) ? req.user.username.toString() : null,
             connector: (req!=null && req.user!=null && req.user.connector!=null) ? req.user.connector : null,
-            blockchain: (req!=null && req.user!=null && req.user.blockchain!=null) ? req.user.blockchain : null,
+            blockchain_symbol: (req!=null && req.user!=null && req.user.blockchain_symbol!=null) ? req.user.blockchain_symbol : null,
             authorizations: (req!=null && req.user!=null && req.user.authorizations!=null) ? req.user.authorizations : null,
             provider_wallet: (req!=null && req.user!=null && req.user.provider_wallet!=null) ? req.user.provider_wallet : null,
             wallet_address: (req!=null && req.user!=null && req.user.wallet_address!=null) ? req.user.wallet_address : null,
