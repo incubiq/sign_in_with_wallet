@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import ViewFooter from "./viewFooter";
 import {CRITICALITY_LOW} from "../const/message";
 
-import {getMyIdentities} from "../services/me";
+import {getMyIdentities, getHasAgreedWelcome} from "../services/me";
 
 
 
@@ -16,9 +16,11 @@ class AppBase extends Component {
         super(props);
 
         let aId=getMyIdentities();
+        let _hasAgreedWelcome=getHasAgreedWelcome();
         this.state={
 
             // User identities
+            hasAgreedWelcome: _hasAgreedWelcome,
             aIdentity: aId,                           // all user's known identities (from cache)
             iSelectedIdentity: null,                  // if not null, user's wallet identity is selected
             

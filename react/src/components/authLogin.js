@@ -72,10 +72,10 @@ class AuthLogin extends AuthAuthenticate {
                         </div>
                         : 
                         <div className="transitoryMessage">
+                            {this._getActiveConnectorsAsString()}
+                            <br />
+                            <br />
                             Could not detect a single wallet from this browser
-                            <br />
-                            <br />
-                            You must use at least one {this.state.theme.name} wallet extension
                         </div>
                     }
                 </div>               

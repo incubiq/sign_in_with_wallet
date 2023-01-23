@@ -545,6 +545,16 @@ h1 a {
     display: table;
     padding-inline-start: 20px;
 }
+
+.row-list.welcome {
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.row-list.welcome .emoji {
+    font-size: 32px;
+}
+
 .row-list li {
     margin-bottom: 0;
     display: table-row;

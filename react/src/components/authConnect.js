@@ -113,7 +113,7 @@ constructor(props) {
                 if(this.state.aActiveConnector[i].symbol===objIdentity.connector) {
 
                     // is this this an accepted blockchain?
-                    _aC[i].isAccepted=_aC[i].assets.aAcceptedBlockchain.some(item => item.symbol.toLowerCase() === objIdentity.blockchain_symbol.toLowerCase());
+                    _aC[i].isAccepted=_aC[i].assets.aAcceptedBlockchain.some(item => item.symbol === objIdentity.blockchain_symbol);
 
                     // add blockchain info and update name (Metamask can work on multi chain, we want to display the active chain only)
                     _aC[i].assets.blockchain_image = objIdentity.blockchain_image;

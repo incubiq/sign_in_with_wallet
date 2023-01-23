@@ -227,8 +227,23 @@ const deleteMe = () => {
   removeCache(CACHE_ME);
 }
 
+const getHasAgreedWelcome = () => {
+  let objMe=getCache(CACHE_ME);
+  return (objMe!==null && objMe.hasAgreedWelcome===true);
+}
+
+const setHasAgreedWelcome = () => {
+  let objMe=getCache(CACHE_ME);
+  setCache(CACHE_ME, {
+    identities: objMe? objMe.identities: [],
+    hasAgreedWelcome: true
+  });
+}
+
 export {
   CACHE_ME,
+  getHasAgreedWelcome,
+  setHasAgreedWelcome,
   getMyIdentities,
   getIdentityFromUsername,
   getIdentityFromWallet,

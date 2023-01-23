@@ -482,7 +482,6 @@ class AuthAuthenticate extends AuthConnect {
                     :""}
 
                     {this.renderFooter()}
-
                 </div>
         </div>
         )

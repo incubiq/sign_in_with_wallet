@@ -7,7 +7,7 @@ import FormAuthorize from "./formAuthorize";
 import {WidgetMessage} from "../utils/widgetMessage";
 
 import {srv_verify, srv_getAuthorizedLevels} from "../services/authenticate";
-import {getMyIdentities, grantAccessToWebApp, revokeAccessToWebApp, isGrantedAccessToWebApp} from "../services/me";
+import {getMyIdentities, grantAccessToWebApp, revokeAccessToWebApp, isGrantedAccessToWebApp, setHasAgreedWelcome} from "../services/me";
 import {CRITICALITY_SEVERE} from "../const/message";
 
 const VIEWMODE_IDENTITY="identity";
@@ -354,6 +354,66 @@ class AuthAuthorize extends AuthAuthenticate {
         )
     }
 
+    onAcceptWelcome() {
+        setHasAgreedWelcome();
+        this.setState({hasAgreedWelcome: true});
+    }
+
+    renderWelcome( ){
+        return (
+                <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+                    <div className="siww-header ">
+                        <span>Before you continue...</span>
+                    </div>
+
+                    <div className="siww-panel ">
+                        
+                        <div className="siww-section">
+                            <ul className="row-list welcome">
+                                <li>
+                                    <span className="emoji">👋</span>
+                                    <span> We request a <b>connection</b> to your crypto wallet <b>only</b> for <b>signing authentication messages</b></span>
+                                </li>
+                                <br />
+                                <li>
+                                    <span className="emoji">🆓</span>
+                                    <span> Signing a message is a <b>free operation</b>, you will never be charged for authentication</span>
+                                </li>                                
+                                <br />
+                                <li>
+                                    <span className="emoji">🔐</span>
+                                    <span> We keep your <b>user accounts secure</b>, without storing identifiable data about you</span>
+                                </li>
+                                <br />
+                                <li>
+                                    <span className="emoji">🥸</span>
+                                    <span> We keep you <b>authenticated</b> but <b>anonymous</b></span>
+                                </li>
+                                <br />
+                                
+                            </ul>
+                        </div>
+                        <div className="identity_action">
+                            <button 
+                                className="btn btn-quiet"
+                                onClick={this.onAcceptWelcome.bind(this)}
+                            >All good, let's go!
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="siww-footer">
+                        <div className="credits">©&nbsp;
+                            <a className="footer-link" href="/" target="_blank">Sign with Wallet</a>
+                        </div>
+                            <div className="message">This dialog will only appear once</div>
+                            <div className="footer-version">&nbsp;&nbsp;{this.props.version}
+                        </div>
+                    </div>
+                </div>
+        )
+    }
+
 /*
  *          UI generic
  */
@@ -368,6 +428,11 @@ class AuthAuthorize extends AuthAuthenticate {
     render() {
         return (
             <div id="siww-login-container" style={this.props.styles.container}>
+                {this.state.hasAgreedWelcome===false? 
+                    this.renderWelcome()
+                :
+
+
                 <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                     <ViewHeader 
@@ -392,8 +457,8 @@ class AuthAuthorize extends AuthAuthenticate {
                     }
 
                     {this.renderFooter()}
-
                 </div>
+                }   
         </div>
         )
     }
