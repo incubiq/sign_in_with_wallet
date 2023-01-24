@@ -27,12 +27,12 @@ export class siww_connect {
         }
     }
 
-    getUnknownChainInfo() {
+    getUnknownChainInfo(_networkId) {
         return {
             connector: CONNECTOR_NAME,
             name: null,
             symbol: null,
-            id: 0,
+            id: _networkId? _networkId: 0,
             image : "symbol_unknown.png"        // sorry, hardcoded
         }
     }

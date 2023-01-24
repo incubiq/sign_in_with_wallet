@@ -75,7 +75,8 @@ const createPartialIdentity = (_objIdentity) => {
   let objMe=getCache(CACHE_ME);
   if(!objMe) {
     objMe={
-      identities: []
+      identities: [],
+      hasAgreedWelcome: false
     };
   }
 
@@ -110,7 +111,10 @@ const updatePartialIdentity = (_wallet_id, _connector, _objUpdate) => {
         aId[i]=objIdentity;
       }
     }
-    setCache(CACHE_ME, {identities: aId});
+    setCache(CACHE_ME, {
+      identities: aId,
+      hasAgreedWelcome: true      // if we get there, we connected to a wallet, so we agreed...
+    });
     return true;
   }
   return false;
@@ -128,7 +132,10 @@ const updateIdentity = (_username, _objUpdate) => {
         aId[i]=objIdentity;
       }
     }
-    setCache(CACHE_ME, {identities: aId});
+    setCache(CACHE_ME, {
+      identities: aId,
+      hasAgreedWelcome: true      // if we get there, we connected to a wallet, so we agreed...
+    });
     return true;
   }
   return false;

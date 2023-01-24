@@ -151,7 +151,7 @@ export class siwm_connect  extends siww_connect {
             _objWallet.networkId = _networkId;
             _objWallet.isOnProd=chainIDs[window.ethereum.networkVersion]!==null;
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
-            _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo() ;
+            _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo(_networkId) ;
             _objWallet.isEnabled=true;
             return _objWallet;
         }

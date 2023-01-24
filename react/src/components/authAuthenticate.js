@@ -27,11 +27,20 @@ class AuthAuthenticate extends AuthConnect {
             // identity we will use for authentication
             token: null,
             username: null,
+
+            // wallet info
             wallet_id: null,
             wallet_name: null,
             wallet_address: null,
-            connector: null,            
-            blockchain: null,
+
+            // which blockchain?           
+            blockchain_symbol: null,
+            blockchain_name: null,
+            blockchain_image: null,
+            blockchain_networkId: null,
+
+            // connector used
+            connector: null
         });                
     }
 
@@ -99,6 +108,7 @@ class AuthAuthenticate extends AuthConnect {
             this.setState({blockchain_symbol: _aIdentity[_i].blockchain_symbol});
             this.setState({blockchain_name: _aIdentity[_i].blockchain_name});
             this.setState({blockchain_image: _aIdentity[_i].blockchain_image});
+            this.setState({blockchain_networkId: _aIdentity[_i].blockchain_networkId});
             this.setState({wallet_id: _aIdentity[_i].wallet_id});
             this.setState({wallet_name: _aIdentity[_i].wallet_name});
             this.setState({wallet_address: _aIdentity[_i].wallet_address});
@@ -168,6 +178,7 @@ class AuthAuthenticate extends AuthConnect {
                             blockchain_symbol: decoded.blockchain_symbol,
                             blockchain_name: objChainInfo.name,
                             blockchain_image: objChainInfo.image,
+                            blockchain_networkId: objChainInfo.networkId,
                             wallet_address: decoded.wallet_address,
                             wallet_id: decoded.wallet_id
                         });    
@@ -186,6 +197,7 @@ class AuthAuthenticate extends AuthConnect {
                     that.setState({blockchain_symbol: decoded.blockchain_symbol});
                     that.setState({blockchain_name: objChainInfo.name});
                     that.setState({blockchain_image: objChainInfo.image});
+                    that.setState({blockchain_networkId: objChainInfo.networkId});
                     that.setState({connector: decoded.connector});
     
                     // any new identity?
@@ -289,6 +301,12 @@ class AuthAuthenticate extends AuthConnect {
                 return;
             }
 
+            // make sure we have a blockchain name.. if none, we take the network ID
+            if(!_wallet.chain.name) {
+                _wallet.chain.name="<network "+_wallet.chain.id+">";
+                _wallet.chain.symbol="/assets/images/symbol_unknown.png";
+            }
+            
             // make sure we have this user's identity in storage + update logo in case it changed
             if(getIdentityFromWallet(_wallet.id, _wallet.connector, _wallet.chain.symbol)===null) {
                 createPartialIdentity({
@@ -296,6 +314,7 @@ class AuthAuthenticate extends AuthConnect {
                     blockchain_name: _wallet.chain.name,
                     blockchain_symbol: _wallet.chain.symbol,
                     blockchain_image: _wallet.chain.image,
+                    blockchain_networkId: _wallet.chain.id,
                     wallet_address: _wallet.address,
                     wallet_id: _wallet.id,
                     wallet_name: _wallet.name,
@@ -306,6 +325,10 @@ class AuthAuthenticate extends AuthConnect {
                 updatePartialIdentity(_wallet.id, _wallet.connector, {
                     wallet_logo: _wallet.logo,
                     wallet_name: _wallet.name,
+                    blockchain_name: _wallet.chain.name,
+                    blockchain_symbol: _wallet.chain.symbol,
+                    blockchain_image: _wallet.chain.image,
+                    blockchain_networkId: _wallet.chain.id,
                 });    
             }
     
