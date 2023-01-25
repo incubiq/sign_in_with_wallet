@@ -188,31 +188,12 @@ export class siwc_connect  extends siww_connect {
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
             _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo(_networkId) ;
             _objWallet.balance = await this._async_getBalance(_objWallet.api);
-            _objWallet.utxos=await this._async_getUtxo(_objWallet.api)
             _objWallet.isEnabled=true;
             return _objWallet;
         }
         catch(err) {
             if(_objWallet) {_objWallet.isEnabled=false;}
             return _objWallet;
-        }
-    }
-
-    async async_getConnectedWalletBalance(_objWallet){
-        try {
-            if(!_objWallet.api && _objWallet.id!==null) {
-                _objWallet.api = await this.async_enableWallet(_objWallet.id);
-            }
-
-            if(!_objWallet.api) {
-                throw new Error("Bad params");
-            }
-
-            let balance = await this._async_getBalance(_objWallet.api);
-            return balance;
-        }
-        catch(err) {
-            return null;
         }
     }
 
@@ -252,28 +233,6 @@ export class siwc_connect  extends siww_connect {
         return null;
     }
 
-    async _async_getUtxo(_api) {
-        try {
-            let aUnspent = await _api.getUtxos();
-            return aUnspent;
-        } catch (err) {
-            console.log ("Could not get UTxO");
-        }
-        return null;
-    }
-
-    async _async_getBalance(_api) {
-        try {
-            let cborBal = await _api.getBalance();
-//          let amount=cbor.decodeFirstSync(cborBal);  // other alternative to decode the cbor
-            let amount=Value.from_bytes(Buffer.from(cborBal, "hex")).coin();        
-            return amount;
-        } catch (err) {
-            console.log ("Could not get Balance");
-        }
-        return null;        
-    }
-
     // Sign a message
     async async_signMessage(_idWallet, objSiwcMsg, type){
         try {
@@ -283,7 +242,10 @@ export class siwc_connect  extends siww_connect {
 
             let msg=this.getMessageAsText(objSiwcMsg, type);
             let _hex= Buffer.from(msg).toString('hex');
-            COSESign1Message = await objSiwcMsg.api.signData(usedAddress, _hex);
+
+            // get key and signature
+            COSESign1Message = await objSiwcMsg.api.signData(usedAddress, _hex);            
+            COSESign1Message.buffer = _hex;     // add buffer
 
             // notify?
             if(this.fnOnNotifySignedMessage) {

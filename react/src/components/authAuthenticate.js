@@ -367,10 +367,10 @@ class AuthAuthenticate extends AuthConnect {
         let _str="none";
         for (var i=0; i<this.state.aActiveConnector.length; i++) {
             if(i===0) {
-                _str = "<b>"+this.state.aActiveConnector[0].assets.name+"</b>"
+                _str = "<b>"+this.state.aActiveConnector[0].assets.connector_name+"</b>"
             }
             else {
-                _str= _str + ", <b>"+ this.state.aActiveConnector[i].assets.name+"</b>"
+                _str= _str + ", <b>"+ this.state.aActiveConnector[i].assets.connector_name+"</b>"
             }
         }
 

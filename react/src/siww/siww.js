@@ -4,11 +4,13 @@
 
 import {siwc_connect} from "./siwc_connect"
 import {siwm_connect} from "./siwm_connect"
+import {siwk_connect} from "./siwk_connect"
 
 
-const siwc=new siwc_connect();
-const siwm=new siwm_connect();
-let aConnector=[siwc, siwm];
+const siwc=new siwc_connect();          // Cardano support (all wallets)
+const siwm=new siwm_connect();          // Ethereum support (via Metamask)
+const siwk=new siwk_connect();          // Cosmos support (via Keplr)
+let aConnector=[siwc, siwm, siwk];
 
 export class siww {
     
@@ -25,6 +27,9 @@ export class siww {
 
             case "metamask":
                 return siwm;
+    
+            case "keplr":
+                return siwk;
     
             default: 
                 return null;

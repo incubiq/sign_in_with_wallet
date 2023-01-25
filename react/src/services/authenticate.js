@@ -49,6 +49,7 @@ const srv_authenticate = async(obj) => {
 const srv_verify = async(obj) => {
   return await srv_postRoute(API_HOST+API_WEB3ROUTE+'verify', {
     connector: obj.connector,
+    buffer: obj.buffer,
     key: obj.key,
     signature: obj.signature,
     type: obj.type,

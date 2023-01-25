@@ -25,7 +25,7 @@ const chainIDs =  {
     "42220": {chain: "Celo Mainnet", symbol: "CELO"},
     "9001": {chain: "Evmos", symbol: "Evmos"},
     "2203": {chain: "Bitcoin EVM", symbol: "eBTC"}
-};      // find more here : https://chainlist.org/
+};      // find more here : https://chainlist.org/  and this one : https://github.com/ethereum-lists/chains/tree/master/_data
 
 
 export class siwm_connect  extends siww_connect {
@@ -161,24 +161,6 @@ export class siwm_connect  extends siww_connect {
         }
     }
 
-    async async_getConnectedWalletBalance(_objWallet){
-        try {
-            if(!_objWallet.api && _objWallet.id!==null) {
-                _objWallet.api = await this.async_enableWallet(_objWallet.id);
-            }
-
-            if(!_objWallet.api) {
-                throw new Error("Bad params");
-            }
-
-            let balance = await this._async_getBalance(_objWallet.api);
-            return balance;
-        }
-        catch(err) {
-            return null;
-        }
-    }
-
 //
 //      Misc access to wallet public info
 //
@@ -199,35 +181,6 @@ export class siwm_connect  extends siww_connect {
         return null;
     }
 
-    async _async_getUnusedAddress(_api) {
-        try {
-            if(true) {
-                return [];
-            }
-            else {
-                throw new Error("Could not access any unused addresses of wallet");
-            }
-        } catch (err) {
-            console.log (err.message)
-        }
-        return null;
-    }
-
-    async _async_getUtxo(_api) {       
-        return null;
-    }
-
-    async _async_getBalance(_api) {
-        try {
-            // todo
-            let amount=0;  
-            return amount;
-        } catch (err) {
-            console.log ("Could not get Balance");
-        }
-        return null;        
-    }
-
     // Sign a message
     async async_signMessage(_idWallet, objSiwcMsg, type){
         try {
@@ -242,7 +195,8 @@ export class siwm_connect  extends siww_connect {
             let _hex= Buffer.from(msg).toString('hex');
             let _signed = await web3.eth.personal.sign(msg, objSiwcMsg.address);
             let COSESign1Message={
-                key: _hex,
+                buffer: _hex,
+                key: null,
                 signature: _signed
             }
             // notify?

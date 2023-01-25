@@ -1,6 +1,6 @@
 import AppBase from "./appBase";
 import {WidgetMessage} from "../utils/widgetMessage";
-import {getConnectors, getDefault, CONNECTOR_SIWC, CONNECTOR_SIWM} from "../const/connectors"; 
+import {getConnectors, getDefault} from "../const/connectors"; 
 import {CRITICALITY_SEVERE} from "../const/message";
 
 // for test only
@@ -57,35 +57,25 @@ constructor(props) {
         // UI effect
         this.setState({inTimerEffect: true});
 
+        // init all connectors
         let _aActive=[];
         this.setState({didInitSIWW: true});
         let _objConnector=getConnectors();
         let _ct=null;
         this.props.aConnector.forEach(item => {
-            switch(item) {
-                case CONNECTOR_SIWC:
-                    _ct=this.createConnector("cardano");
-                    break;
-
-                case CONNECTOR_SIWM:
-                    _ct=this.createConnector("metamask");
-                    break;
-                    
-                default:
-                    console.log("Error - Unknown chain to connect to!");
-                    break;
-            }
-
-            // add to active bloackchain to explore, if can see it
-            _objConnector[item].aAcceptedBlockchain=_ct.getAcceptedChains();
-            if(window[_objConnector[item].window]) {
-                _aActive.push({
-                    symbol: item,                    
-                    connector: _ct,
-                    assets: _objConnector[item],
-                    hasNotified: false,         // have we been notified by the connector that it is active?
-                    isAccepted: true            // is the blockchain from the connector an accepted one?
-                });
+            _ct=this.createConnector(_objConnector[item].blockchain_name);
+            if(_ct) {
+                // add to active bloackchain to explore, if can see it
+                _objConnector[item].aAcceptedBlockchain=_ct.getAcceptedChains();
+                if(window[_objConnector[item].window]) {
+                    _aActive.push({
+                        symbol: item,                    
+                        connector: _ct,
+                        assets: _objConnector[item],
+                        hasNotified: false,         // have we been notified by the connector that it is active?
+                        isAccepted: true            // is the blockchain from the connector an accepted one?
+                    });
+                }
             }
         });
 
