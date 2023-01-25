@@ -214,8 +214,8 @@ export class siwm_connect  extends siww_connect {
 
         }
         catch(err) {
-            console.log (err.info);
-            throw new Error(err.info);
+            console.log (err.message);
+            throw new Error(err.message);
         }
     }
 }

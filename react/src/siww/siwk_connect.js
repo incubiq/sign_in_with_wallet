@@ -5,7 +5,6 @@
 import {siww_connect} from "./siww_connect"
 
 const CONNECTOR_NAME = "SIWK"
-
 const KEPLR_ATOM_NETWORK = "keplr"
 const KEPLR_ATOM_MAINNET = "Atom Mainnet"
 
@@ -21,9 +20,9 @@ let gaChain=[{
     id: "cosmoshub-4",
     image : "symbol_atom.png"
 }];
-let isKeplrEnabled=false;
-let myKeplr=null;
 
+let isKeplrEnabled=true;        // oh that s bad... keplr does not know if it was enabled or not... so we have to think yes it was
+let myKeplr=null;
 
 export class siwk_connect  extends siww_connect {
 
@@ -33,7 +32,7 @@ export class siwk_connect  extends siww_connect {
 
     createDefaultWallet(_idWallet) {
         let objDefault={
-            chain: null,
+            chain: null,                       
             connector: CONNECTOR_NAME,
             id: _idWallet,                                            // id of wallet
             api: null,
@@ -47,10 +46,10 @@ export class siwk_connect  extends siww_connect {
             address: null
         }
         if(window && window.keplr) {
-            objDefault.name="Keplr";                 // get name of wallet
-            objDefault.logo="/assets/images/keplr.png";                 // get get wallet logo ; sorry it s hardcoded
+            objDefault.chain=KEPLR_ATOM_MAINNET;                 // by default we plug on this chain 
+            objDefault.name="Keplr";                             // get name of wallet
+            objDefault.logo="/assets/images/keplr.png";          // get get wallet logo ; sorry it s hardcoded
         }
-
         return this.getSanitizedWallet(objDefault);
     }
 
@@ -106,7 +105,7 @@ export class siwk_connect  extends siww_connect {
         let _api=null;
         try {
 
-            // get the list of all chains on this wallet
+            // todo for later... we can get the list of all chains on this wallet
 //            let aChain = await window.keplr.getChainInfosWithoutEndpoints();
 //            this.registerChains(aChain);
 
@@ -114,6 +113,10 @@ export class siwk_connect  extends siww_connect {
             let _chainId=this.getAcceptedChains()[0].id;    // getting the first chain listed 
             let _temp= await window.keplr.getOfflineSigner(_chainId);
             if(_temp && _temp.keplr) {myKeplr=_temp.keplr} else {myKeplr=window.keplr}
+
+            if(!myKeplr) {
+                throw new Error("No Keplr installed");
+            }
             
             await myKeplr.enable(_chainId);   
             _api={
@@ -132,8 +135,8 @@ export class siwk_connect  extends siww_connect {
         return _api;
     }
 
-    async async_isWalletEnabled(idWallet) {
-        return isKeplrEnabled;
+    async async_isWalletEnabled(idWallet) {        
+        return (window.keplr && isKeplrEnabled);
     }
 
     async async_getConnectedWalletExtendedInfo(_id){
@@ -188,6 +191,9 @@ export class siwk_connect  extends siww_connect {
     // Sign a message
     async async_signMessage(_idWallet, objSiwcMsg, type){
         try {
+            // damn keplr cannot know if it s been enabled already... so we force it here in case it was not...
+            this.async_enableWallet();
+
             let _chainId=this.getAcceptedChains()[0].id;    // getting the first chain listed 
             const address = await this._async_getFirstAddress(_chainId);
 
@@ -197,12 +203,8 @@ export class siwk_connect  extends siww_connect {
 
             let msg=this.getMessageAsText(objSiwcMsg, type);
             let _hex= Buffer.from(msg).toString('hex');
-
-//            let _signed = await myKeplr.signEthereum(_chainId, address, msg, "message");
-//            let _signature = _signed.toString("hex");
             let _signed = await myKeplr.signArbitrary(_chainId, address, msg);
-
-            let _verif = await myKeplr.verifyArbitrary(_chainId, address, msg, _signed);
+//            let _verif = await myKeplr.verifyArbitrary(_chainId, address, msg, _signed);      // we are not using this... validation is made on server
 
             let COSESign1Message={
                 buffer: _hex,
@@ -224,8 +226,8 @@ export class siwk_connect  extends siww_connect {
             return COSESign1Message;
         }
         catch(err) {
-            console.log (err.info);
-            throw new Error(err.info);
+            console.log (err.message);
+            throw new Error(err.message);
         }
     }
 }
