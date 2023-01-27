@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 
-class DialogOwnership extends Component {
+class AdminDialogOwnership extends Component {
 
 /*
  *          page inits
@@ -78,4 +78,4 @@ class DialogOwnership extends Component {
     }
 }
 
-export default DialogOwnership;
+export default AdminDialogOwnership;

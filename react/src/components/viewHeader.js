@@ -55,11 +55,11 @@ class ViewHeader extends Component {
 
     render() {
         return (
-            <div className={"siww-header "+ (this.props.theme.webapp.dark_mode? this.props.theme.webapp.dark_mode : '')}>
+            <div className={"siww-header "+ (this.props.theme && this.props.theme.webapp.dark_mode? this.props.theme.webapp.dark_mode : '')}>
                 {this.props.isOauth ?
                 <>
                     <div className="display-app-logo">
-                        <img className="client-login-logo" src={this.props.theme.webapp.logo} alt="logo" />
+                        <img className="client-login-logo" src={this.props.theme && this.props.theme.webapp.logo? this.props.theme.webapp.logo: null} alt="logo" />
                         <div className="login-subtitle">
                             <span>{this.props.oauthClientName !==""? this.props.oauthClientName : "???"}</span>
                             <br />
@@ -90,7 +90,7 @@ class ViewHeader extends Component {
 
                     </div>
                     <div className="login-subtitle">
-                        <div className={this.props.connector.isAccepted ?"" : "red"}>{this.props.connector.isAccepted ? "Sign with "+ this.props.wallet : "Unsupported!"}</div>
+                        <div className={this.props.connector.isAccepted ?"" : "red"}>{this.props.connector.isAccepted ? "Sign with "+ (this.props.wallet?this.props.wallet : "Wallet") : "Unsupported!"}</div>
                         <div>{this.props.connector.assets.blockchain_name}</div>
                     </div>
                 </div>

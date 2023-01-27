@@ -2,9 +2,7 @@ import React, { Component, Suspense } from "react";
 import {Route, Routes  } from 'react-router-dom';
 
 // default theming
-import {getTheme, getStyles} from "./assets/themes/cardano"; 
 import {WidgetLoading} from "./utils/widgetLoading"; 
-import {getConnectors} from "./const/connectors"; 
 
 // authentication apps
 const AuthConnect  = React.lazy(() => import ("./components/authConnect"));              // to connect with wallet 
@@ -12,15 +10,16 @@ const AuthAuthorize  = React.lazy(() => import ("./components/authAuthorize")); 
 const AuthLogin  = React.lazy(() => import ("./components/authLogin"));                  // this one gives a login into SIWW (used by admin user)
 const AuthError  = React.lazy(() => import ("./components/authError"));                  // just to display backend fwded errors in a nice UI
 
-// /app route require user login into SIWW
-const AppLogged  = React.lazy(() => import ("./components/appLogged"));
-const AppConfigure  = React.lazy(() => import ("./components/appConfigure"));
+// admin panel apps
+//const AdminViewBase  = React.lazy(() => import ("./components/adminViewBase"));
+const AdminViewConfigure  = React.lazy(() => import ("./components/adminViewConfigure"));
+const AdminViewHome  = React.lazy(() => import ("./components/adminViewHome"));
+const AdminViewSettings  = React.lazy(() => import ("./components/adminViewSettings"));
+const AdminViewDomains  = React.lazy(() => import ("./components/adminViewDomains"));
 
 
 const AppAuthApi  = React.lazy(() => import ("./api/appAuthApi"));
 const App  = React.lazy(() => import ("./app"));
-
-const _connectors=getConnectors().aConnector;
 
 /* 
  *      Routing class
@@ -33,9 +32,8 @@ class AppRoutes extends Component {
 */
 
   renderBackground() {
-    let styles=getStyles();
     return (
-        <div id="siww-login-container" style={styles.container}>
+        <div id="siww-login-container" style={this.props.styles? this.props.styles.container: null}>
             <WidgetLoading 
                 isVisible = {true}
                 fullHeight = {true}
@@ -58,7 +56,6 @@ class AppRoutes extends Component {
                         isDebug={this.props.isDebug}
                         host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
-                        aConnector={_connectors}
                     />
                 </Suspense> 
                 } exact />
@@ -74,7 +71,6 @@ class AppRoutes extends Component {
                         isDebug={this.props.isDebug}
                         host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
-                        aConnector={_connectors}
 
                         // cookie
                         AuthenticationCookieName={this.props.AuthenticationCookieName}
@@ -87,37 +83,9 @@ class AppRoutes extends Component {
                         webAppName = {this.props.webAppName}
                         webAppDomain = {this.props.webAppDomain}
                         webApp = {this.props.webApp}              
-                        theme={getTheme()}
-                        styles={getStyles()}
-                        // overload theme??
-                        // TODO
+                        theme={this.props.theme}
+                        styles={this.props.styles}
 
-                    />
-                </Suspense> 
-                } exact />
-
-            <Route  path="/auth/login" element={
-            // route for logging user as admin in admin panel            
-            <Suspense 
-                    fallback={this.renderBackground()}>
-                    <AuthLogin
-
-                        // utils
-                        version={this.props.version}
-                        isDebug={this.props.isDebug}
-                        host={this.props.host}
-                        onRedirect={this.props.onSoftRedirect}
-                        aConnector={_connectors}
-
-                        // cookie
-                        AuthenticationCookieName={this.props.AuthenticationCookieName}
-                        AuthenticationCookieToken={this.props.AuthenticationCookieToken}
-                        AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
-                        onUpdateCookie = {this.props.onUpdateCookie}
-
-                        // webapp    
-                        theme={getTheme()}
-                        styles={getStyles()}
                     />
                 </Suspense> 
                 } exact />
@@ -133,11 +101,10 @@ class AppRoutes extends Component {
                         isDebug={this.props.isDebug}
                         host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
-                        aConnector={_connectors}
 
                         // webapp    
-                        theme={getTheme()}
-                        styles={getStyles()}
+                        theme={this.props.theme}
+                        styles={this.props.styles}
                     />
                 </Suspense> 
                 } exact />
@@ -146,24 +113,79 @@ class AppRoutes extends Component {
             // route for a logged user into the admin panel
                 <Suspense 
                     fallback={this.renderBackground()}>
-                    <AppLogged
+                    <AdminViewHome
 
                         // utils
                         version={this.props.version}
                         isDebug={this.props.isDebug}
                         host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
-                        aConnector={_connectors}
 
                         // cookie
-                        AuthenticationCookieName={this.props.AuthenticationCookieName}
-                        AuthenticationCookieToken={this.props.AuthenticationCookieToken}
-                        AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
+                        AuthenticationCookieName={this.props.AdminCookieName}
+                        AuthenticationCookieToken={this.props.AdminCookieToken}
+                        AuthenticationCookieSecret={this.props.AdminCookieSecret}
                         onUpdateCookie = {this.props.onUpdateCookie}
 
-                        // themes
-                        theme={getTheme()}
-                        styles={getStyles()}
+                        // view
+                        view = "home"
+                    />
+                </Suspense> 
+                } exact />
+
+            <Route  path="/app/domains" element={
+            // route for a logged user into the admin panel
+                <Suspense 
+                    fallback={this.renderBackground()}>
+                    <AdminViewDomains
+
+                        // utils
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
+                        host={this.props.host}
+                        onRedirect={this.props.onSoftRedirect}
+
+                        // cookie
+                        AuthenticationCookieName={this.props.AdminCookieName}
+                        AuthenticationCookieToken={this.props.AdminCookieToken}
+                        AuthenticationCookieSecret={this.props.AdminCookieSecret}
+                        onUpdateCookie = {this.props.onUpdateCookie}
+
+                        // view
+                        view = "domains"
+
+                        // webapp    
+                        webAppId = {this.props.webAppId}
+                        webAppName = {this.props.webAppName}
+                        webAppDomain = {this.props.webAppDomain}
+                        
+                        // themes (for preview)
+                        theme={this.props.theme}
+                        styles={this.props.styles}
+                    />
+                </Suspense> 
+                } exact />
+
+            <Route  path="/app/settings" element={
+            // route for a logged user into the admin panel
+                <Suspense 
+                    fallback={this.renderBackground()}>
+                    <AdminViewSettings
+
+                        // utils
+                        version={this.props.version}
+                        isDebug={this.props.isDebug}
+                        host={this.props.host}
+                        onRedirect={this.props.onSoftRedirect}
+
+                        // cookie
+                        AuthenticationCookieName={this.props.AdminCookieName}
+                        AuthenticationCookieToken={this.props.AdminCookieToken}
+                        AuthenticationCookieSecret={this.props.AdminCookieSecret}
+                        onUpdateCookie = {this.props.onUpdateCookie}
+
+                        // view
+                        view = "settings"
                     />
                 </Suspense> 
                 } exact />
@@ -172,27 +194,26 @@ class AppRoutes extends Component {
             // route for configuring a domain by an admin
                 <Suspense 
                     fallback={this.renderBackground()}>
-                    <AppConfigure
+                    <AdminViewConfigure
 
                         // utils
                         version={this.props.version}
                         isDebug={this.props.isDebug}
                         host={this.props.host}
                         onRedirect={this.props.onSoftRedirect}
-                        aConnector={_connectors}
 
                         // cookie
-                        AuthenticationCookieName={this.props.AuthenticationCookieName}
-                        AuthenticationCookieToken={this.props.AuthenticationCookieToken}
-                        AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
+                        AuthenticationCookieName={this.props.AdminCookieName}
+                        AuthenticationCookieToken={this.props.AdminCookieToken}
+                        AuthenticationCookieSecret={this.props.AdminCookieSecret}
                         onUpdateCookie = {this.props.onUpdateCookie}
 
                         // webapp    
                         webAppId = {this.props.webAppId}
                         webAppName = {this.props.webAppName}
                         webAppDomain = {this.props.webAppDomain}
-                        theme={getTheme()}
-                        styles={getStyles()}
+                        theme={this.props.theme}
+                        styles={this.props.styles}
                     />
                 </Suspense> 
                 } exact />
@@ -208,7 +229,34 @@ class AppRoutes extends Component {
                 } exact />
 
 {/* TEST ROUTES */}
+
+            <Route  path="/auth/login" element={
+                // DEPRECATED - route for logging user as admin in admin panel            
+                <Suspense 
+                        fallback={this.renderBackground()}>
+                        <AuthLogin
+
+                            // utils
+                            version={this.props.version}
+                            isDebug={this.props.isDebug}
+                            host={this.props.host}
+                            onRedirect={this.props.onSoftRedirect}
+
+                            // cookie
+                            AuthenticationCookieName={this.props.AuthenticationCookieName}
+                            AuthenticationCookieToken={this.props.AuthenticationCookieToken}
+                            AuthenticationCookieSecret={this.props.AuthenticationCookieSecret}
+                            onUpdateCookie = {this.props.onUpdateCookie}
+
+                            // webapp    
+                            theme={this.props.theme}
+                            styles={this.props.styles}
+                        />
+                    </Suspense> 
+                    } exact />
+
             <Route  path="connect/cardano" element={
+            // DEPRECATED - route for testing cardano connector
                 <Suspense 
                     fallback={this.renderBackground()}>
                     <AuthConnect
@@ -216,27 +264,26 @@ class AppRoutes extends Component {
                         version={this.props.version}
                         isDebug={this.props.isDebug}
                         host={this.props.host}
-                        aConnector={_connectors}
 
                         // default themes
-                        theme={getTheme()}
-                        styles={getStyles()}
+                        theme={this.props.theme}
+                        styles={this.props.styles}
                     />
                 </Suspense> 
                 } exact />
 
             <Route  path="/sign/cardano" element={
+            // DEPRECATED - test route for cardano signMessage
                 <Suspense 
                     fallback={<div>Sign message Cardano...</div>}>
                     <AuthConnect
                         version={this.props.version}
                         isDebug={this.props.isDebug}
                         host={this.props.host}
-                        aConnector={_connectors}
 
                         // default themes
-                        theme={getTheme()}
-                        styles={getStyles()}
+                        theme={this.props.theme}
+                        styles={this.props.styles}
                     />
                 </Suspense> 
                 } exact />

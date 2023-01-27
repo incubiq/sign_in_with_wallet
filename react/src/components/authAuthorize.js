@@ -199,11 +199,11 @@ class AuthAuthorize extends AuthAuthenticate {
             {this.state.aScope.length>0? 
                 <>
                 {this.state.aIdentity.length>0?
-                    <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
+                    <div className={"siww-panel " + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")}>
 
                         {this.state.viewMode===VIEWMODE_DATASHARE? 
                             <ViewDataShare 
-                                theme = {this.state.theme}
+                                theme = {this.props.theme}
                                 oauthClientName = {this.props.webAppName}
                                 iSelectedIdentity = {this.state.iSelectedIdentity}
                                 aIdentity = {this.state.aIdentity}
@@ -211,7 +211,7 @@ class AuthAuthorize extends AuthAuthenticate {
                             />
                         : 
                             <ViewIdentities 
-                                theme = {this.state.theme}
+                                theme = {this.props.theme}
                                 iSelectedIdentity = {this.state.iSelectedIdentity}
                                 aIdentity = {this.state.aIdentity}
                                 onHover = {this.onHover.bind(this)}
@@ -248,7 +248,7 @@ class AuthAuthorize extends AuthAuthenticate {
                         </div>
                     </div>   
                 : 
-                <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
+                <div className={"siww-panel " + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")}>
                     <WidgetMessage 
                         headline = "Who are you?"
                         text = "Cannot find your identity..."
@@ -266,7 +266,7 @@ class AuthAuthorize extends AuthAuthenticate {
             }
             </>                    
             : 
-            <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
+            <div className={"siww-panel " + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")}>
                 <WidgetMessage 
                     error = {true}
                     headline = "Invalid configuration!"
@@ -331,7 +331,7 @@ class AuthAuthorize extends AuthAuthenticate {
 
         return (
             <>
-                <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
+                <div className={"siww-panel " + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")}>
                     <WidgetMessage 
                         headline = {"On your way to "+this.props.webAppName+"...!"}
                         text = {"Stay safe online with SignWithWallet"}
@@ -341,7 +341,7 @@ class AuthAuthorize extends AuthAuthenticate {
 
             <FormAuthorize 
                 isVisible = {this.state.isAuthorized}
-                theme = {this.state.theme}
+                theme = {this.props.theme}
                 app_name = {this.props.webAppName}
                 app_id = {this.props.webAppId}
                 aScope = {this.state.aScope}
@@ -361,7 +361,7 @@ class AuthAuthorize extends AuthAuthenticate {
 
     renderWelcome( ){
         return (
-                <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+                <div className={"modal modal-login center-vh" + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
                     <div className="siww-header ">
                         <span>Before you continue...</span>
                     </div>
@@ -427,13 +427,13 @@ class AuthAuthorize extends AuthAuthenticate {
 
     render() {
         return (
-            <div id="siww-login-container" style={this.props.styles.container}>
+            <div id="siww-login-container" style={this.props.styles? this.props.styles.container: null}>
                 {this.state.hasAgreedWelcome===false? 
                     this.renderWelcome()
                 :
 
 
-                <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+                <div className={"modal modal-login center-vh" + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles? this.props.styles.color: null}>
 
                     <ViewHeader 
                         app_id= {this.props.webAppId}
@@ -441,7 +441,7 @@ class AuthAuthorize extends AuthAuthenticate {
                         oauthDomain = {this.props.webAppDomain}
                         is_verified = {this.props.webApp!=null && this.props.webApp.isVerified===true}
                         isOauth = {true}
-                        theme = {this.state.theme}
+                        theme = {this.props.theme}
                         wallet = {this.state.wallet_name}
                         aConnector = {this.state.aActiveConnector}
                         connector = {this.getActiveConnector()}

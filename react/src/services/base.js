@@ -4,6 +4,7 @@ const API_PUBLICROUTE= "/api/v1/public/";
 const API_PRIVATEROUTE= "/api/v1/private/";
 const API_WEB3ROUTE= "/web3/";
 const API_OAUTHROUTE= "/oauth/";
+const API_ADMINROUTE= "/admin/";
 
 
 const srv_getRoute = async(route, _token) => {
@@ -96,6 +97,7 @@ export {
   API_PUBLICROUTE,
   API_WEB3ROUTE,
   API_OAUTHROUTE,
+  API_ADMINROUTE,
   srv_getRoute, 
   srv_getUniqueRoute,
   srv_patchRoute,

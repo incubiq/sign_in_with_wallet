@@ -5,35 +5,28 @@
 import {siwc_connect} from "./siwc_connect"
 import {siwm_connect} from "./siwm_connect"
 import {siwk_connect} from "./siwk_connect"
+//import {siwp_connect} from "./siwp_connect"
 
 
 const siwc=new siwc_connect();          // Cardano support (all wallets)
 const siwm=new siwm_connect();          // Ethereum support (via Metamask)
 const siwk=new siwk_connect();          // Cosmos support (via Keplr)
+//const siwp=new siwp_connect();          // Solana support (via Phantom)
 let aConnector=[siwc, siwm, siwk];
 
 export class siww {
     
     
     // instantiate the proper connector
-    getConnector(_chain) {
-        if(!_chain) {return null}
-        _chain=_chain.toLowerCase();
+    getConnector(_symbol) {
+        if(!_symbol) {return null}
 
         // get the chain or wallet connector
-        switch(_chain) {
-            case "cardano":
-                return siwc;
-
-            case "metamask":
-                return siwm;
-    
-            case "keplr":
-                return siwk;
-    
-            default: 
-                return null;
-        }
+        if(_symbol===siwc.getConnectorSymbol()) {return siwc}
+        if(_symbol===siwm.getConnectorSymbol()) {return siwm}
+        if(_symbol===siwk.getConnectorSymbol()) {return siwk}
+//        if(_symbol===siwp.getConnectorSymbol()) {return siwp}
+        return null;
     }
 
     _getConnectorFromWalletId(_id) {
@@ -47,6 +40,27 @@ export class siww {
     }
 
     
+  getAllConnectorsWithMetadata() {
+
+    const _fillMetadata = function(_ct, _objFill) {
+        let _symbol=_ct.getConnectorSymbol();
+        _objFill.aConnector.push(_symbol)
+        _objFill[_symbol] = _ct.getConnectorMetadata() 
+        _objFill[_symbol].aAcceptedBlockchain= [];
+    }
+
+    let objRet = {
+        aConnector:  [],
+    }
+      
+    _fillMetadata(siwc, objRet);        // add SIWC
+    _fillMetadata(siwm, objRet);        // add SIWM
+    _fillMetadata(siwk, objRet);        // add SIWK
+//    _fillMetadata(siwp, objRet);        // add SIWP
+
+    return objRet;
+  }
+
 //
 //      All connectors public APIs
 //

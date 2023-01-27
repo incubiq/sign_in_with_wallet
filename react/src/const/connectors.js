@@ -15,6 +15,8 @@
     }
   }
 
+  // todo : remove those calls to connectors here...
+  
   const getConnectors = () => {
     let objRet = {
       aConnector:  [CONNECTOR_SIWC, CONNECTOR_SIWM, CONNECTOR_SIWK],

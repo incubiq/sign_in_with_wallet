@@ -234,6 +234,10 @@ const deleteMe = () => {
   removeCache(CACHE_ME);
 }
 
+const deleteMeAdmin = () => {
+  //todo
+}
+
 const getHasAgreedWelcome = () => {
   let objMe=getCache(CACHE_ME);
   return (objMe!==null && objMe.hasAgreedWelcome===true);
@@ -261,5 +265,6 @@ export {
   grantAccessToWebApp,
   revokeAccessToWebApp,
   isGrantedAccessToWebApp,
-  deleteMe
+  deleteMe,
+  deleteMeAdmin
 };

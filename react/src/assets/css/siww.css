@@ -259,42 +259,6 @@ h1 a {
     min-height: 180px;
 }
 
-.domain-list{
-    height: 140px;
-    margin: 6px;
-    display: inline-flex;
-    list-style: none;
-    padding-inline-start: 0;
-}
-
-.domain-panel {
-    position: relative;
-    text-align: center;
-    padding: 8px;
-    margin: 4px;
-    min-width:124px;
-    min-height:124px;
-    border: 1px solid var(--disconnected-dark);
-    background-color: var(--disconnected);
-    cursor: pointer;
-    overflow: hidden;
-    line-height: 18px;
-}
-
-.domain-panel .domain-logo {
-    max-height: 64px;
-    max-width: 64px;
-    padding: 8px 0 16px 0;
-}
-
-.domain-panel .domain-name {
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.domain-panel .domain-url {
-    font-size: 10px;
-}
 
 .domain-checked {
     position: absolute;
@@ -645,7 +609,7 @@ h1 a {
 .btn.right {
     float: right;
 }
-.btn-tiny {
+.btn.btn-tiny {
     padding: 2px 16px;
     font-size: 14px;
     border-radius: 8px;
@@ -789,55 +753,7 @@ h1 a {
     border-radius: 50%;
   }
 
-  .siww_configure-header {
-    background-color: #f0f0f0;
-    border-bottom: 1px solid #888;
-    min-height: 64px;
-    font-size: 14px;
-    padding: 4px 8px;
-    color: #555;
-  }
-
-  .siww_configure-header h1{
-    margin-bottom: 0;
-  }
-  .siww_configure-header .connected{
-    font-size:12px;
-    display: inline-flex;
-  }
-
-  .siww_configure-body {
-    position: relative;
-    overflow-y: scroll;
-    max-height: calc(100vh - 212px);
-  }
-
-  .siww_configure-footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-  }
-
-  .siww_configure {
-    margin: 12px;
-    color:#333;
-    margin: 12px auto;
-    text-align: center;
-    width: max-content;
-  }
   
-  .siww_configure .row {
-    margin: 2px 0 12px auto;
-    display: block;
-  }
-
-  .siww_configure .label {
-    display: inline-block;
-    min-width: 120px;
-    font-size: 14px;
-    text-align: left;
-  }
-
   .hint {
     display: block;
     font-size: 11px;
@@ -846,76 +762,6 @@ h1 a {
     color: #888;
   }
 
-  .siww_configure .row .value {
-    display: inline-block;
-    width: 240px;
-    color: #333;
-  }
-  .siww_configure .row.compulsory .value {
-    width: calc(240px - 16px);
-  }
-
-  .siww_configure .row .icon { 
-    display: none;
-  }
-  .siww_configure .row.compulsory .icon {
-    width: 12px;
-    height: 12px;
-    margin-right: 4px;
-    display: inline-block;
-  }
-
-  .siww_configure .category {
-    font-size: 16px;
-    font-weight: bold;
-    text-align: left;
-    padding-top: 12px;
-  }
-
-  .siww_configure .preview {
-    width: calc(100% - 24px);
-    margin: 12px;
-    border: 1px solid #333;
-    background-color: #fafafa;
-    min-height: 320px;
-    height: calc(100% - 76px);
-    position: fixed;
-    top: 0;
-    left: 0;
-    box-shadow: 0px 3px 6px var(--shadow);
-    z-index: 1000;
-  }
-
-  .siww_configure .preview .btn-close {
-    position: absolute;
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-
-  .siww_configure .preview .btn-close.top.left {
-    top: 0;
-    left: 0;
-  }
-
-  .siww_configure .preview .btn-close.bottom.right {
-    bottom: 0;
-    right: 0;
-  }
-
-  .siww_configure .addAuthorization {
-    position: fixed;
-    top: 25%;
-    left: 10%;
-    width: 80%;
-  }
-
-  .siww_warning_banner  {
-    background-color: yellow;
-    font-weight: bold;
-    text-align: center;
-    border: 1px solid #888;
-    margin: 4px;
-  }
 
 @media screen and (max-width: 767px) {
     .footer {
@@ -956,17 +802,6 @@ h1 a {
         font-size: 65%;
     }
 
-    .siww_configure .label {
-        min-width: 100px;
-    }
-    .siww_configure .row .value {
-        width: 200px;
-      }
-
-    .siww_configure .row.compulsory .value {
-        width: calc(200px - 16px);
-      }
-    
 }
 
 

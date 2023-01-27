@@ -24,9 +24,6 @@ class AppBase extends Component {
             aIdentity: aId,                           // all user's known identities (from cache)
             iSelectedIdentity: null,                  // if not null, user's wallet identity is selected
             
-            // theme
-            theme: this.props.theme,                  // todo : likely remove from here (set the theme before calling in here)
-
             // UI/UX
             hover: null,                              // to display any msg to user in footer
             inTimerEffect: false,
@@ -78,7 +75,7 @@ class AppBase extends Component {
         return (
             <ViewFooter 
                 version={this.props.version}
-                theme = {this.state.theme}
+                theme = {this.props.theme}
                 message = {this.state.hover}
                 inTimerEffect = {this.state.inTimerEffect}
                 delayEffect = {this.state.delayEffect}

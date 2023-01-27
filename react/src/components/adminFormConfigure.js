@@ -1,8 +1,8 @@
 import ViewFooter from "./viewFooter";
 import ViewHeader from "./viewHeader";
 import ViewDataShare from "./viewDataShare";
-import FormReserve from "./formReserve";
-import DialogOwnership from "./dialogOwnership"
+import AdminFormReserve from "./adminFormReserve";
+import AdminDialogOwnership from "./adminDialogOwnership"
 import {getSupportedConnectors, getConnectorDisplayName} from "../assets/themes/all"; 
 import {getAuthorizationCondition, getAuthorizationConditions, getAuthorizationOperator, getAuthorizationOperators} from "../const/authorization"; 
 import {srv_claimDomain, srv_updateDomain, srv_getDomainPrivateInfo, srv_renewDNS, srv_verifyDNS} from "../services/configure";
@@ -14,7 +14,7 @@ const fakeIdentity = {
     wallet_address: "<addr...>"
 }
 
-class FormConfigure extends FormReserve {
+class AdminFormConfigure extends AdminFormReserve {
 
 /*
  *          page inits
@@ -22,39 +22,47 @@ class FormConfigure extends FormReserve {
 
     constructor(props) {
         super(props);    
-        this.state= Object.assign({}, this.state, {
-            
+        let _obj=this._getInitialStateObject(props);
+        this.state= Object.assign({}, this.state, _obj);
+    }
+
+    resetStates(props){
+        this.setState(this._getInitialStateObject(props));
+    }
+
+    _getInitialStateObject(props){
+            return {
             // domain
-            domain_name: props.domain_name? props.domain_name : "",
-            display_name: "",
+                domain_name: props.domain_name? props.domain_name : "",
+                display_name: "",
 
-            app_id: props.app_id? props.app_id : "",
-            app_secret: props.app_secret? props.app_secret : "",
+                app_id: props.app_id? props.app_id : "",
+                app_secret: props.app_secret? props.app_secret : "",
 
-            // valid?
-            is_verified: false,
-            dns_token: null,
-            dns_token_expires_at: null,
+                // valid?
+                is_verified: false,
+                dns_token: null,
+                dns_token_expires_at: null,
 
-            // theme
-            theme: this.props.theme,
+                // theme
+                theme: props.theme,
 
-            // config state vars
-            background: "",
-            logo: "",
-            text_color: "",
-            button_color: "",
-            button_text_color: "",
-            dark_mode: false,
+                // config state vars
+                background: "",
+                logo: "",
+                text_color: "",
+                button_color: "",
+                button_text_color: "",
+                dark_mode: false,
 
-            // oAuth 2.0 redirects
-            redirect_uri: "",
-            redirect_error: "",
+                // oAuth 2.0 redirects
+                redirect_uri: "",
+                redirect_error: "",
 
-            // localhost tunnel
-            tunnel:"",
+                // localhost tunnel
+                tunnel:"",
 
-            // 
+                 // 
             token_lifespan: (3*24*60*60*1000),              // 3 days
 
             // permission / scopes
@@ -85,14 +93,14 @@ class FormConfigure extends FormReserve {
             }],
 
             // UI / UX
+            isEditing: false,                               // are we in edit mode?
             isPreview: false,
             isAddAuthorization: false,
             isDialogOwnershipVisible: false,
             message: ""                                         // msg displayed in Dialog..
-        });
-
+        }            
     }
-    
+
     componentDidMount() {
         super.componentDidMount();
         if(this.props.app_id) {
@@ -105,6 +113,11 @@ class FormConfigure extends FormReserve {
         super.componentDidUpdate(prevProps);
         if(this.props.app_id!==null && this.props.app_id!==prevProps.app_id) {
             this.async_initializeDomain(this.props.app_id);            
+        }
+        else {
+            if(this.props.app_id!==prevProps.app_id) {
+                this.resetStates(this.props);
+            }
         }
     }     
 
@@ -137,7 +150,7 @@ class FormConfigure extends FormReserve {
                 this.setState({aLevel: dataDomain.data.a_authorization_level});
             }
             if(dataDomain.data.theme)  {
-                let _objTheme=Object.assign({}, this.state.theme);
+                let _objTheme=Object.assign({}, this.props.theme);
                 for (const key in dataDomain.data.theme) {
                     _objTheme.webapp[key]=dataDomain.data.theme[key];
                 }                
@@ -227,6 +240,8 @@ class FormConfigure extends FormReserve {
 
             this.props.fnShowMessage({message: "Fill-up data and scroll down to claim domain"});
             this._enableFormDomain(dataDomain.data.domain_name);
+
+            this.setState({isEditing: true});
         }
     }
 
@@ -315,7 +330,10 @@ class FormConfigure extends FormReserve {
                     this.props.fnShowMessage({message: res.message});
                 }
                 else {
-                    this.props.onRedirect("/app")
+                    this.setState({isEditing: false})
+                    this.setState({message: "Config was saved..."});
+
+//                    this.props.onRedirect("/app")
                 }                
             })
     }
@@ -406,14 +424,14 @@ class FormConfigure extends FormReserve {
             className="hidden"
         >
             <div id="siww-login-container" style={this.props.styles.container}>
-                <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+                <div className={"modal modal-login center-vh" + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                 <ViewHeader 
                     app_id= {null}
                     oauthClientName = {this.state.display_name}
                     oauthDomain = {this.state.domain_name}
                     isOauth = {true}
-                    theme = {this.state.theme}
+                    theme = {this.props.theme}
                     wallet = "Wallet"
                     aConnector = {null}
                     connector = {{
@@ -424,7 +442,7 @@ class FormConfigure extends FormReserve {
 
                 <div className="siww-panel">
                     <ViewDataShare 
-                        theme = {this.state.theme}
+                        theme = {this.props.theme}
                         oauthClientName = {this.state.display_name}
                         iSelectedIdentity = {0}
                         aIdentity = {[fakeIdentity]}
@@ -444,7 +462,7 @@ class FormConfigure extends FormReserve {
 
                 <ViewFooter 
                     version={this.props.version}
-                    theme = {this.state.theme}
+                    theme = {this.props.theme}
                     message = {this.state.hover}
                 />
 
@@ -527,7 +545,7 @@ class FormConfigure extends FormReserve {
             className="hidden"
         >
             <div className="modalContainer blur"></div>
-            <div className={"modal center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+            <div className={"modal center-vh" + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
                 <div className="siww-header">
                     <span>Add an Authorization level</span>
                 </div>
@@ -704,7 +722,7 @@ class FormConfigure extends FormReserve {
                     </div>
                     {this.state.is_verified===false ?
                         <div className="hint align-left">
-                            <img class="icon" src="/assets/images/icon_warning.png" alt="Warning" />
+                            <img className="icon" src="/assets/images/icon_warning.png" alt="Warning" />
                             <span>Verify your domain to enable authorization levels</span>
                         </div>
                     :""}
@@ -722,279 +740,277 @@ class FormConfigure extends FormReserve {
         let that=this;
         return( <>
 
-            <div className="siww_configure-body">
-                <div  
-                    className="siww_configure"
-                    id="form-configure"
-                >
+            {this.renderToolbar()}
+            {this.state.isEditing?
+                <div className="adminPanel_configure-body">
 
-                    <div className="category">
-                        Application's domain
-                    </div>
+                    <div  
+                        className="adminPanel_configure"
+                        id="form-configure"
+                    >
 
-                    {this.renderRow({
-                        id: "domain_name", 
-                        type: "text", 
-                        label: "Domain", 
-                        hint: "The domain name of your web app", 
-                        placeholder: "mydomain.com",
-                        isDisabled: true,
-                        isCompulsory: true,
-                        fnValidate: function (_input) {
-                            if(that.props.isLocalhost) {
-                                return that.validateUrl(_input);
-                            }
-                            return that.validateDomain(_input);
-                        },
-                        fnEnableForm: function (_input) {
-                            return that._enableFormDomain(_input);
-                        }
-                    })}
-
-                    {this.renderRow({
-                        id: "display_name", 
-                        type: "text", 
-                        label: "Display name", 
-                        hint: "Name of your app, as will be shown to end-users during authentication", 
-                        placeholder: "My App",
-                        isCompulsory: true,
-                        isDisabled: that.props.isLocalhost===true,
-                        fnValidate: function (_input) {
-                            return that.validateDomainName(_input);
-                        },
-                        fnEnableForm: function (_input) {
-                            return that._enableFormName(_input);
-                        }
-                    })}
-
-                    {this.state.is_verified===true || this.props.isLocalhost ? 
-                    <>
                         <div className="category">
-                            oAuth ID and Secret
+                            Application's domain
                         </div>
 
                         {this.renderRow({
-                            id: "app_id", 
+                            id: "domain_name", 
                             type: "text", 
-                            label: "Application ID", 
-                            hint: "application ID (use it in your oAuth configuration call) ", 
-                            placeholder: "",
-                            isDisabled: true
+                            label: "Domain", 
+                            hint: "The domain name of your web app", 
+                            placeholder: "mydomain.com",
+                            isDisabled: true,
+                            isCompulsory: true,
+                            fnValidate: function (_input) {
+                                if(that.props.isLocalhost) {
+                                    return that.validateUrl(_input);
+                                }
+                                return that.validateDomain(_input);
+                            },
+                            fnEnableForm: function (_input) {
+                                return that._enableFormDomain(_input);
+                            }
                         })}
 
                         {this.renderRow({
-                            id: "app_secret", 
+                            id: "display_name", 
                             type: "text", 
-                            label: "Application Secret", 
-                            hint: "application Secret (keep it safe - use it in your oAuth configuration call) ", 
-                            placeholder: "",
-                            isDisabled: true
+                            label: "Display name", 
+                            hint: "Name of your app, as will be shown to end-users during authentication", 
+                            placeholder: "My App",
+                            isCompulsory: true,
+                            isDisabled: that.props.isLocalhost===true,
+                            fnValidate: function (_input) {
+                                return that.validateDomainName(_input);
+                            },
+                            fnEnableForm: function (_input) {
+                                return that._enableFormName(_input);
+                            }
                         })}
 
-                    </>
-                :""}
-
-                {this.props.isLocalhost===true ? 
-                    <>
-                    <div className="category">
-                        Localhost Tunnel
-                    </div>
-
-                    {this.renderRow({
-                        id: "tunnel", 
-                        type: "text", 
-                        label: "Tunnel", 
-                        hint: "Enter ngrok or localt tunnel URL",  
-                        placeholder: "https://great-day-89.loca.lt",
-                        isCompulsory: true,
-                        fnValidate: function (_input) {
-                            return that.validateUrl(_input);
-                        },
-                        fnEnableForm: function (_input) {
-                            return that._enableFormTunnel(_input);
-                        }
-                    })}
-                    </>
-                :""}
-
-                    <div className="category">
-                        oAuth 2.0 callbacks
-                    </div>
-
-                    {this.renderRow({
-                        id: "redirect_uri", 
-                        type: "text", 
-                        label: "Redirect URI", 
-                        hint: "Redirect URI for the oAuth callback", 
-                        placeholder: "/auth/siww/callback",
-                        isCompulsory: true,
-                        isDisabled: that.props.isLocalhost===true,
-                        fnValidate: function (_input) {
-                            return that.validateCallback(_input);
-                        },
-                        fnEnableForm: function (_input) {
-                            return that._enableFormCallback(_input);
-                        }
-                    })}
-
-                    {this.renderRow({
-                        id: "redirect_error", 
-                        type: "text", 
-                        label: "Redirect Error", 
-                        hint: "Redirect URI in case of oAuth error",  
-                        placeholder: "/auth/siww/error",
-                        isDisabled: that.props.isLocalhost===true,
-                        isCompulsory: false
-                    })}
-                
-                    <div className="category">
-                        Scopes
-                    </div>
-
-                    {this.renderScopes(this.state.aScope)}
-
-                    <div className="category">
-                        <span>Authorization levels</span>
-                    </div>
-
-                    {this.renderAuthLevels(this.state.aLevel)}
-
-                    <div className="category">
-                        Theme
-                    </div>
-
-                    {this.props.isLocalhost===false ? 
-                    <>
-                    
-                        {this.renderRow({
-                            id: "background", 
-                            type: "text", 
-                            label: "Background", 
-                            hint: "URL of a background image for branding the authentication page", 
-                            placeholder: "https://mydomain.com/background.jpg",
-                            isCompulsory: false
-                        })}
-
-                        {this.renderRow({
-                            id: "logo", 
-                            type: "text", 
-                            label: "Logo", 
-                            hint: "Logo of your web app, as will be shown to end-users during authentication", 
-                            placeholder: "https://mydomain.com/logo_256x256.jpg",
-                            isCompulsory: false
-                        })}
-
-                        {this.renderRow({
-                            id: "text_color", 
-                            type: "text", 
-                            label: "Text color", 
-                            hint: "Color of texts in the Authentication form (default = #333) ", 
-                            placeholder: "#333",
-                            isCompulsory: false
-                        })}
-
-                        {this.renderRow({
-                            id: "button_color", 
-                            type: "text", 
-                            label: "Button color", 
-                            hint: "Color of buttons' background in the Authentication form (default = #003366) ", 
-                            placeholder: "#003366",
-                            isCompulsory: false
-                        })}
-                        
-                        {this.renderRow({
-                            id: "button_text_color", 
-                            type: "text", 
-                            label: "Button text color", 
-                            hint: "Color of buttons' texts in the Authentication form (default = #f0f0f0) ", 
-                            placeholder: "#f0f0f0",
-                            isCompulsory: false
-                        })}
-                    </>
-                    :
-                        <div className="hint align-left">
-                            Localhost does not support theme customisation
-                        </div>
-                    }
-                    
-{/*
-                    {this.renderRow({
-                        id: "redirect_uri_dev", 
-                        type: "text", 
-                        label: "Redir. URI (dev)", 
-                        hint: "Redirect URI for the oAuth callback (when in dev/test mode)", 
-                        placeholder: "/auth/siww/callback"
-                    })}
-
-                    {this.renderRow({
-                        id: "redirect_error_dev", 
-                        type: "text", 
-                        label: "Redir. Error (dev)", 
-                        hint: "Redirect URI in case of oAuth error (when in dev/test mode)", 
-                        placeholder: "/auth/siww/error"
-                    })}
-
-                    <div className="category">
-                        Secrets
-                    </div>
-
-                    {this.renderRow({
-                        id: "token_lifespan", 
-                        type: "number", 
-                        label: "Token lifespan", 
-                        hint: "Duration of SIWW cookie in seconds (259,200 secs = 3 days by default)", 
-                        placeholder: "",
-                        onChange: function(e) {
-                            that.setState({token_lifespan : parseInt(e.target.value)});
-                        }
-                    })}
-*/}
-                    {this.renderPreview()}
-
-                    {this.state.app_secret === ""?
-                        <div 
-                                className={"btn btn-primary " + (this.state.canValidate? "" : "disabled")}
-                                onClick = {this.async_claimDomain.bind(this)}
-                            >                                
-                            Claim domain!
-                        </div>
-
-                    : 
+                        {this.state.is_verified===true || this.props.isLocalhost ? 
                         <>
-                            <div 
-                                className={"btn btn-quiet " + (this.state.canValidate? "" : "disabled")}
-                                onClick = {this.async_updateDomain.bind(this)}
-                            >                                
-                                Update
+                            <div className="category">
+                                oAuth ID and Secret
                             </div>
 
-                        {this.state.is_verified===false && !this.props.isLocalhost? 
-                            <div 
-                                className="btn btn-primary "
-                                onClick = {this.async_renewDomain.bind(this)}
-                            >                                
-                                Prove ownership
-                            </div>
-                        :""}
+                            {this.renderRow({
+                                id: "app_id", 
+                                type: "text", 
+                                label: "Application ID", 
+                                hint: "application ID (use it in your oAuth configuration call) ", 
+                                placeholder: "",
+                                isDisabled: true
+                            })}
 
-                        {this.state.isDialogOwnershipVisible? 
-                            <DialogOwnership
-                                domain_name = {this.state.domain_name}
-                                app_id = {this.state.app_id}
-                                app_secret = {this.state.app_secret}
-                                dns_token = {this.state.dns_token}
-                                onClose = {()  => this.setState({isDialogOwnershipVisible: false})}
-                                onValidate = {()  => this.async_verifyDomain()}
-                                message= {this.state.message}
-                            />
-                        :""}
+                            {this.renderRow({
+                                id: "app_secret", 
+                                type: "text", 
+                                label: "Application Secret", 
+                                hint: "application Secret (keep it safe - use it in your oAuth configuration call) ", 
+                                placeholder: "",
+                                isDisabled: true
+                            })}
 
                         </>
-                    }
+                    :""}
+
+                    {this.props.isLocalhost===true ? 
+                        <>
+                        <div className="category">
+                            Localhost Tunnel
+                        </div>
+
+                        {this.renderRow({
+                            id: "tunnel", 
+                            type: "text", 
+                            label: "Tunnel", 
+                            hint: "Enter ngrok or localt tunnel URL",  
+                            placeholder: "https://great-day-89.loca.lt",
+                            isCompulsory: true,
+                            fnValidate: function (_input) {
+                                return that.validateUrl(_input);
+                            },
+                            fnEnableForm: function (_input) {
+                                return that._enableFormTunnel(_input);
+                            }
+                        })}
+                        </>
+                    :""}
+
+                        <div className="category">
+                            oAuth 2.0 callbacks
+                        </div>
+
+                        {this.renderRow({
+                            id: "redirect_uri", 
+                            type: "text", 
+                            label: "Redirect URI", 
+                            hint: "Redirect URI for the oAuth callback", 
+                            placeholder: "/auth/siww/callback",
+                            isCompulsory: true,
+                            isDisabled: that.props.isLocalhost===true,
+                            fnValidate: function (_input) {
+                                return that.validateCallback(_input);
+                            },
+                            fnEnableForm: function (_input) {
+                                return that._enableFormCallback(_input);
+                            }
+                        })}
+
+                        {this.renderRow({
+                            id: "redirect_error", 
+                            type: "text", 
+                            label: "Redirect Error", 
+                            hint: "Redirect URI in case of oAuth error",  
+                            placeholder: "/auth/siww/error",
+                            isDisabled: that.props.isLocalhost===true,
+                            isCompulsory: false
+                        })}
+                    
+                        <div className="category">
+                            Scopes
+                        </div>
+
+                        {this.renderScopes(this.state.aScope)}
+
+                        <div className="category">
+                            <span>Authorization levels</span>
+                        </div>
+
+                        {this.renderAuthLevels(this.state.aLevel)}
+
+                        <div className="category">
+                            Theme
+                        </div>
+
+                        {this.props.isLocalhost===false ? 
+                        <>
+                        
+                            {this.renderRow({
+                                id: "background", 
+                                type: "text", 
+                                label: "Background", 
+                                hint: "URL of a background image for branding the authentication page", 
+                                placeholder: "https://mydomain.com/background.jpg",
+                                isCompulsory: false
+                            })}
+
+                            {this.renderRow({
+                                id: "logo", 
+                                type: "text", 
+                                label: "Logo", 
+                                hint: "Logo of your web app, as will be shown to end-users during authentication", 
+                                placeholder: "https://mydomain.com/logo_256x256.jpg",
+                                isCompulsory: false
+                            })}
+
+                            {this.renderRow({
+                                id: "text_color", 
+                                type: "text", 
+                                label: "Text color", 
+                                hint: "Color of texts in the Authentication form (default = #333) ", 
+                                placeholder: "#333",
+                                isCompulsory: false
+                            })}
+
+                            {this.renderRow({
+                                id: "button_color", 
+                                type: "text", 
+                                label: "Button color", 
+                                hint: "Color of buttons' background in the Authentication form (default = #003366) ", 
+                                placeholder: "#003366",
+                                isCompulsory: false
+                            })}
+                            
+                            {this.renderRow({
+                                id: "button_text_color", 
+                                type: "text", 
+                                label: "Button text color", 
+                                hint: "Color of buttons' texts in the Authentication form (default = #f0f0f0) ", 
+                                placeholder: "#f0f0f0",
+                                isCompulsory: false
+                            })}
+                        </>
+                        :
+                            <div className="hint align-left">
+                                Localhost does not support theme customisation
+                            </div>
+                        }
+                        
+    {/*
+                        {this.renderRow({
+                            id: "redirect_uri_dev", 
+                            type: "text", 
+                            label: "Redir. URI (dev)", 
+                            hint: "Redirect URI for the oAuth callback (when in dev/test mode)", 
+                            placeholder: "/auth/siww/callback"
+                        })}
+
+                        {this.renderRow({
+                            id: "redirect_error_dev", 
+                            type: "text", 
+                            label: "Redir. Error (dev)", 
+                            hint: "Redirect URI in case of oAuth error (when in dev/test mode)", 
+                            placeholder: "/auth/siww/error"
+                        })}
+
+                        <div className="category">
+                            Secrets
+                        </div>
+
+                        {this.renderRow({
+                            id: "token_lifespan", 
+                            type: "number", 
+                            label: "Token lifespan", 
+                            hint: "Duration of SIWW cookie in seconds (259,200 secs = 3 days by default)", 
+                            placeholder: "",
+                            onChange: function(e) {
+                                that.setState({token_lifespan : parseInt(e.target.value)});
+                            }
+                        })}
+    */}
+
+
+                        {this.state.app_secret === ""?
+                            <div 
+                                    className={"btn btn-primary " + (this.state.canValidate? "" : "disabled")}
+                                    onClick = {this.async_claimDomain.bind(this)}
+                                >                                
+                                Claim domain!
+                            </div>
+
+                        : 
+                            <>
+                            </>
+                        }
+
+                    </div>
+                </div>
+            : 
+            <div className="adminPanel_configure-body">
+
+                <div className="adminPanel_configure">
+                {this.renderPreview()}
+
+                {this.state.isDialogOwnershipVisible? 
+                    <AdminDialogOwnership
+                        domain_name = {this.state.domain_name}
+                        app_id = {this.state.app_id}
+                        app_secret = {this.state.app_secret}
+                        dns_token = {this.state.dns_token}
+                        onClose = {()  => this.setState({isDialogOwnershipVisible: false})}
+                        onValidate = {()  => this.async_verifyDomain()}
+                        message= {this.state.message}
+                    />
+                :""}
+
+                will show some stats here...
 
                 </div>
-            </div>
 
+            </div>
+        }
         </>
 
         )
@@ -1003,22 +1019,58 @@ class FormConfigure extends FormReserve {
     renderToolbar( ){
         return (
             <div className="toolbar">
-                    <div 
-                        className="btn btn-tiny"
-                        onClick = {( )=> {this.props.onRedirect("/app")}}
-                    >
-                        &lt;&lt; Back to Admin panel
-                    </div>        
 
-                {this.state.domain_name===""? "" 
-                :
+                {this.state.isEditing? 
+                <>
                     <div 
-                        className="btn right btn-tiny btn-primary" 
-                        onClick = {this.togglePreview.bind(this)}
-                    >
-                        Preview
+                        className={"btn btn-tiny right btn-primary "}
+                        onClick = {( )=> {
+                            this.setState({isEditing: false})
+                        }}
+                    >                                
+                       ❌ Exit
                     </div>
+                
+                    <div 
+                        className={"btn btn-tiny right btn-primary " + (this.state.canValidate? "" : "disabled")}
+                        onClick = {this.async_updateDomain.bind(this)}
+                    >                                
+                        💾 Save Config
+                    </div>
+                    
+                </>
+                : 
+                <>
+                    <div 
+                        className="btn btn-tiny right btn-primary " 
+                        onClick = {() => {
+                            this.setState({isEditing: true})
+                        }}
+                    >                                
+                       ✍️ Edit Config
+                    </div>
+
+                    {this.state.is_verified===false && !this.props.isLocalhost? 
+                        <div 
+                            className="btn btn-tiny right btn-primary "
+                            onClick = {this.async_renewDomain.bind(this)}
+                        >                                
+                         🧾 Prove ownership
+                        </div>
+                    :""}                
+
+                    {this.state.domain_name===""? ""                     
+                    :
+                        <div 
+                            className="btn btn-tiny right btn-primary" 
+                            onClick = {this.togglePreview.bind(this)}
+                        >
+                          🪟 Preview
+                        </div>
+                    }
+                </>
                 }
+
             </div>      
         );
     }
@@ -1026,8 +1078,6 @@ class FormConfigure extends FormReserve {
     render() {
         return (
             <>
-                {this.renderToolbar()}
-
                 {this.state.domain_name===""? 
                     this.renderFormReserve()
                 :
@@ -1038,4 +1088,4 @@ class FormConfigure extends FormReserve {
     }
 }
 
-export default FormConfigure;
+export default AdminFormConfigure;

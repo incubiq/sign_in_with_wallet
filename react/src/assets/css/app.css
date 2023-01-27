@@ -1,35 +1,22 @@
 :root {
-  --dark-text: #3f272f;
-  --light: #f5f5ff;
-  --light-alt: #eeeef9;
+  --app-dark-text: #3f272f;
+  --app-light-text: #fafafa;
+  --app-light: #f8f8ff;
+  --app-light-alt: #eeeef9;
 
-  --disabled: #aaa;
-  --disabled-alt: #ccc;
-  --disabled-dark: #888;
+  --app-disabled: #aaa;
+  --app-disabled-alt: #ccc;
+  --app-disabled-dark: #888;
 
-  --danger: #ff6a50;
+  --app-danger: #ff6a50;
 
-  --green: #20e720;
-  --orange: #ffbb55;
-  --red: #ff6a50;
-  --grey: #ccc;
+  --app-accent-1-lighter: #e4e5ff;
+  --app-accent-1-light: #c1c3ff;
+  --app-accent-1: #a2a4ff;
+  --app-accent-1-shadow: #c9cbff;
+  --app-accent-1-dark: #777bff;
+  --app-accent-1-darker: #5b4ce2;
 
-  --accent-1-lighter: #e4e5ff;
-  --accent-1-light: #c1c3ff;
-  --accent-1: #a2a4ff;
-  --accent-1-shadow: #c9cbff;
-  --accent-1-dark: #777bff;
-  --accent-1-darker: #5b4ce2;
-
-  --accent-2-light: #e159ae;
-  --accent-2: #e01695;
-  --accent-2-dark: #e1008d;
-
-  --accent-3-light: #91D707;
-  --accent-3: #5E8B04;
-  --accent-3-dark: #4A6D03;
-
-  --shadow: rgba(63,39, 47, 0.5);
 }
 
 body {
@@ -65,4 +52,265 @@ body {
 
 .connectContainer li {
   margin-bottom: 6px;
+}
+
+/* 
+  Admin section of app 
+*/
+
+.adminPanel-header {
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #888;
+  min-height: 48px;
+  font-size: 14px;
+  padding: 4px 8px;
+  color: #555;
+}
+
+.adminPanel-header .logo{
+  margin-bottom: 0;
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  height: 48px;
+  width: 48px;
+}
+.adminPanel-header .connected{
+  font-size:12px;
+  display: inline-flex;
+}
+
+.adminPanel-header .btn {
+  background-color:var(--app-accent-1-lighter);
+  color: var(--app-dark-text)
+}
+
+.adminPanel-header .btn.selected {
+  background-color: var(--app-accent-1-darker);
+  color: var(--app-light-text)
+} 
+
+.adminPanel-content {
+  position: relative;
+  padding: 0px;
+  margin: 0px;
+  height: calc(100vh - 124px);
+} 
+
+.adminPanel-selector {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  max-width: 166px;
+  height: 100%;
+  display: inline-block;
+  background-color: var(--app-light);
+}
+
+.adminPanel-form {
+  position: absolute;
+  display: inline-block;
+  border-left: 1px solid var(--app-light-alt);
+  width: calc(100% - 155px);
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.adminPanel-form .toolbar {
+  position: relative;
+  height: 42px;
+  background-color: var(--app-accent-1-lighter);
+  border-bottom: 1px solid #ddd;
+}
+
+.adminPanel-form .toolbar .btn-tiny {
+  margin:3px 6px;
+  background-color: var(--app-light);
+  color: var(--app-dark-text);
+}
+.adminPanel-form .toolbar .btn-tiny:hover, .adminPanel-form .toolbar .btn-tiny:active {
+  background-color: var(--app-light-alt);
+}
+
+
+.domain-list{
+  margin: 6px;
+  display: inline-block;
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+.domain-selector {
+  position: relative;
+  text-align: center;
+  padding: 8px;
+  margin: 4px;
+  min-width:124px;
+  min-height:124px;
+  border: 1px solid var(--disconnected-dark);
+  background-color: var(--disconnected);
+  cursor: pointer;
+  overflow: hidden;
+  line-height: 18px;
+  display: inline-block;
+}
+
+
+.domain-selector.selected {
+  background-color: var(--app-accent-1-lighter);
+  border: 1px solid var(--app-accent-1-dark);
+}
+
+.domain-selector .domain-logo {
+  max-height: 64px;
+  max-width: 64px;
+  padding: 8px 0 16px 0;
+}
+
+.domain-selector .domain-name {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.domain-selector .domain-url {
+  font-size: 10px;
+}
+
+.adminPanel_configure-body {
+  position: relative;
+}
+
+.siww_configure-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.adminPanel_configure {
+  margin: 12px;
+  color:#333;
+  margin: 12px auto;
+  text-align: center;
+  width: max-content;
+}
+
+.adminPanel_configure .row {
+  margin: 2px 0 12px auto;
+  display: block;
+}
+
+.adminPanel_configure .label {
+  display: inline-block;
+  min-width: 120px;
+  font-size: 14px;
+  text-align: left;
+}
+
+
+.adminPanel_configure .row .value {
+  display: inline-block;
+  width: 240px;
+  color: #333;
+}
+.adminPanel_configure .row.compulsory .value {
+  width: calc(240px - 16px);
+}
+
+.adminPanel_configure .row .icon { 
+  display: none;
+}
+.adminPanel_configure .row.compulsory .icon {
+  width: 12px;
+  height: 12px;
+  margin-right: 4px;
+  display: inline-block;
+}
+
+.adminPanel_configure .category {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: left;
+  padding-top: 12px;
+}
+
+.adminPanel_configure .preview {
+  width: calc(100% - 24px);
+  margin: 12px;
+  border: 1px solid #333;
+  background-color: #fafafa;
+  min-height: 320px;
+  height: calc(100% - 76px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-shadow: 0px 3px 6px var(--shadow);
+  z-index: 1000;
+}
+
+.preview .btn-close {
+  position: absolute;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.preview .btn-close.top.left {
+  top: 0;
+  left: 0;
+}
+
+.preview .btn-close.bottom.right {
+  bottom: 0;
+  right: 0;
+}
+
+.adminPanel_configure .addAuthorization {
+  position: fixed;
+  top: 25%;
+  left: 10%;
+  width: 80%;
+}
+
+.siww_warning_banner  {
+  background-color: yellow;
+  font-weight: bold;
+  text-align: center;
+  border: 1px solid #888;
+  margin: 4px;
+}
+
+@media screen and (max-width: 767px) {
+ 
+  .adminPanel-selector {
+    overflow-y: hidden;
+    overflow-x: scroll;
+    width: 100vw;
+    max-height: 172px;
+    max-width: initial;
+    display: block;
+  }
+  
+  .adminPanel-form {
+    border-left: none;
+    border-top: 1px solid var(--app-light-alt);
+    width: 100%;
+    height: calc(100% - 178px);
+  }
+  
+  .domain-list {
+    display: inline-flex;
+    max-height: 156px;
+    width: calc(100% - 12px);
+  }
+
+  .adminPanel_configure .label {
+    min-width: 100px;
+  }
+  .adminPanel_configure .row .value {
+      width: 200px;
+    }
+
+  .adminPanel_configure .row.compulsory .value {
+      width: calc(200px - 16px);
+    }
+
+
 }

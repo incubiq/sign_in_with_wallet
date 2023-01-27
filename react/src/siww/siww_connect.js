@@ -4,7 +4,7 @@
 
 import {replyFast, checkIsValidDomain, checkIsValidStatement, checkIsValidChain, checkIsValidDate, generateNonce}  from './siww_utils'
 
-const CONNECTOR_NAME = "SIWW"       // must override by class
+const CONNECTOR_SYMBOL = "SIWW"       // must override by class
 
 export class siww_connect {
 
@@ -15,7 +15,7 @@ export class siww_connect {
     createDefaultWallet(_idWallet) {
         return {
             chain: null,
-            connector: "SIWW",
+            connector: CONNECTOR_SYMBOL,
             id: _idWallet,
             name: null,
             logo: null,
@@ -29,7 +29,7 @@ export class siww_connect {
 
     getUnknownChainInfo(_networkId) {
         return {
-            connector: CONNECTOR_NAME,
+            connector: CONNECTOR_SYMBOL,
             name: null,
             symbol: null,
             id: _networkId? _networkId: 0,
@@ -69,6 +69,10 @@ export class siww_connect {
     // must overwrite on implementation class
     getAcceptedChains() {
         return [];
+    }
+
+    getConnectorSymbol() {
+        return CONNECTOR_SYMBOL;
     }
 
 //

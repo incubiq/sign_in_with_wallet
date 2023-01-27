@@ -1,7 +1,7 @@
-import AppLogged from "./appLogged";
-import FormConfigure from "./formConfigure";
+import AdminViewBase from "./adminViewBase";
+import AdminFormConfigure from "./adminFormConfigure";
 
-class AppConfigure extends AppLogged {
+class AdminViewConfigure extends AdminViewBase {
 
 /*
  *          page inits
@@ -56,7 +56,7 @@ class AppConfigure extends AppLogged {
                         {this.renderToolbar()}                        
                     </>
                 :
-                <FormConfigure 
+                <AdminFormConfigure
                         version={this.props.version}
                         isDebug={this.props.isDebug}
                         onRedirect={this.props.onRedirect}
@@ -87,4 +87,4 @@ class AppConfigure extends AppLogged {
     4. test authentication
 */
 
-export default AppConfigure;
+export default AdminViewConfigure;

@@ -1,9 +1,13 @@
 import AuthAuthenticate from "./authAuthenticate";
 import ViewWallets from "./viewWallets";
-import AuthBanner from "./authBanner";
+import AdminPanelHeader from "./adminPanelHeader";
 
 // class for logging into SIWW backend (for user "admin" purposes)
 // this is NOT used for oAuth login as an end user
+
+//
+// !!!! IS NOW REPLACED BY PROPER OAUTH !!!!
+//
 
 class AuthLogin extends AuthAuthenticate {
 
@@ -45,7 +49,7 @@ class AuthLogin extends AuthAuthenticate {
                     />
                 </form>
 
-                <AuthBanner 
+                <AdminPanelHeader 
                     authenticated_wallet_address = {null}
                     authenticated_wallet_id = {null}
                     AuthenticationCookieName = {this.props.AuthenticationCookieName}
@@ -64,7 +68,7 @@ class AuthLogin extends AuthAuthenticate {
                             <div className="hint">Your wallet is used to authenticate you into your dashboard.<br /><br /> Claim webApps under this wallet/identity, then configure oAuth access.</div>
                             <br />
                             <ViewWallets 
-                                theme = {this.state.theme}
+                                theme = {this.props.theme}
                                 aWallet= {this.state.aWallet}
                                 onSelect= {this.async_connectWallet.bind(this)}
                                 fnShowMessage={() => {}}                            

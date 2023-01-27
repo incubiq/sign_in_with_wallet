@@ -7,7 +7,8 @@ import Web3 from 'web3';
 
 const web3 = new Web3(Web3.givenProvider || window.location.origin);
 
-const CONNECTOR_NAME = "SIWM"
+const CONNECTOR_SYMBOL = "SIWM"
+const CONNECTOR_NAME = "Metamask"
 
 const METAMASK_ETH_NETWORK = "ethereum"
 const METAMASK_ETH_MAINNET = "Ethereum Mainnet"
@@ -37,7 +38,7 @@ export class siwm_connect  extends siww_connect {
     createDefaultWallet(_idWallet) {
         let objDefault={
             chain: null,
-            connector: CONNECTOR_NAME,
+            connector: CONNECTOR_SYMBOL,
             id: _idWallet,                                            // id of wallet
             api: null,
             apiVersion: null,
@@ -59,18 +60,32 @@ export class siwm_connect  extends siww_connect {
 
     getAcceptedChains() {
         return [{
-            connector: CONNECTOR_NAME,
+            connector: CONNECTOR_SYMBOL,
             name: METAMASK_ETH_MAINNET,
             symbol: "ETH",
             id: 1,
             image : "symbol_ethereum.png"        // sorry, hardcoded
         }, {
-            connector: CONNECTOR_NAME,
+            connector: CONNECTOR_SYMBOL,
             name: METAMASK_BSC_MAINNET,
             symbol: "BNB",
             id: 56,
             image : "symbol_binance.png"         // sorry, hardcoded
         }];
+    }
+
+    getConnectorSymbol() {
+        return CONNECTOR_SYMBOL;
+    }
+
+    getConnectorMetadata (){
+        return {
+            symbol: CONNECTOR_SYMBOL,         // symbol
+            connector_name: CONNECTOR_NAME,   // name of this connector
+            wallet_name: CONNECTOR_NAME,      // target display name
+            blockchain_name: METAMASK_ETH_MAINNET,  // blockchain name
+            window: "ethereum",                // the window element to explore      
+        }
     }
 
 //
@@ -208,7 +223,7 @@ export class siwm_connect  extends siww_connect {
             COSESign1Message.valid_for=objSiwcMsg.valid_for;
             COSESign1Message.issued_at=objSiwcMsg.issued_at;
             COSESign1Message.address=usedAddress;
-            COSESign1Message.connector=CONNECTOR_NAME;
+            COSESign1Message.connector=CONNECTOR_SYMBOL;
             COSESign1Message.type=type;
             return COSESign1Message;
 

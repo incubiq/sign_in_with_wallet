@@ -97,7 +97,7 @@ class ViewProgressBar extends Component {
             height:"8px",
             width: "0"
         };
-        if(this.props.theme.webapp.color && this.props.theme.webapp.color.button_text) {
+        if(this.props.theme && this.props.theme.webapp.color && this.props.theme.webapp.color.button_text) {
             styleCont.backgroundColor=this.props.theme.webapp.color.button_text;
             styleProgress.backgroundColor=this.props.theme.webapp.color.button;
         }

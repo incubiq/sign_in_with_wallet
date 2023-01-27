@@ -12,6 +12,7 @@ class ViewDomain extends Component {
             <div 
                 onClick = {this.props.onClick}
                 attr-id = {this.props.app_id}
+                attr-index = {this.props.index}
             > 
                 <img className="domain-logo" src={this.props.logo ? this.props.logo : ""} alt="logo" />  
                 {this.props.isVerified!==null? 

@@ -1,18 +1,18 @@
 /*
- *      Sign-In With Keplr / wallet connect
+ *      Sign-In With Phantom/Solana / wallet connect
  */
 
 import {siww_connect} from "./siww_connect"
 
-const CONNECTOR_SYMBOL = "SIWK"
-const CONNECTOR_NAME = "Keplr"
+const CONNECTOR_SYMBOL = "SIWS"
+const CONNECTOR_NAME = "Phantom"
 
-const KEPLR_ATOM_NETWORK = "keplr"
-const KEPLR_ATOM_MAINNET = "Atom Mainnet"
+const KEPLR_SOLANA_NETWORK = "Solana"
+const KEPLR_SOLANA_MAINNET = "Solana Mainnet"
 
 // default chain that must/should be there
 const chainIDs =  {
-    "cosmoshub-4": {chain: KEPLR_ATOM_MAINNET, symbol:"ATOM"},
+    "cosmoshub-4": {chain: KEPLR_SOLANA_MAINNET, symbol:"ATOM"},
 };      
 
 let gaChain=[{
@@ -26,7 +26,7 @@ let gaChain=[{
 let isKeplrEnabled=true;        // oh that s bad... keplr does not know if it was enabled or not... so we have to think yes it was
 let myKeplr=null;
 
-export class siwk_connect  extends siww_connect {
+export class siwp_connect  extends siww_connect {
 
 //
 //      helpers
@@ -48,7 +48,7 @@ export class siwk_connect  extends siww_connect {
             address: null
         }
         if(window && window.keplr) {
-            objDefault.chain=KEPLR_ATOM_MAINNET;                 // by default we plug on this chain 
+            objDefault.chain=KEPLR_SOLANA_MAINNET;                 // by default we plug on this chain 
             objDefault.name="Keplr";                             // get name of wallet
             objDefault.logo="/assets/images/keplr.png";          // get get wallet logo ; sorry it s hardcoded
         }
@@ -84,11 +84,10 @@ export class siwk_connect  extends siww_connect {
             symbol: CONNECTOR_SYMBOL,         // symbol
             connector_name: CONNECTOR_NAME,   // name of this connector
             wallet_name: CONNECTOR_NAME,      // target display name
-            blockchain_name: KEPLR_ATOM_MAINNET,  // blockchain name
-            window: "keplr",                  // the window element to explore            
+            blockchain_name: KEPLR_SOLANA_MAINNET,  // blockchain name
+            window: "phantom",                  // the window element to explore            
         }
     }
-
 
 //
 //      Initialization
@@ -249,4 +248,4 @@ export class siwk_connect  extends siww_connect {
     }
 }
 
-export default siwk_connect;
+export default siwp_connect;

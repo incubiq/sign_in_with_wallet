@@ -1,14 +1,14 @@
 import AppBase from "./appBase";
 import {WidgetMessage} from "../utils/widgetMessage";
-import {getConnectors, getDefault} from "../const/connectors"; 
+import {getDefault} from "../const/connectors"; 
 import {CRITICALITY_SEVERE} from "../const/message";
 
 // for test only
-//import siww from "../siww/siww";        
-//const SIWW=new siww();
+import siww from "../siww/siww";        
+const SIWW=new siww();
 
 // real prod
-const SIWW = require('@incubiq/siww');
+//const SIWW = require('@incubiq/siww');
 
 class AuthConnect extends AppBase {
 
@@ -60,10 +60,10 @@ constructor(props) {
         // init all connectors
         let _aActive=[];
         this.setState({didInitSIWW: true});
-        let _objConnector=getConnectors();
+        let _objConnector=SIWW.getAllConnectorsWithMetadata();
         let _ct=null;
-        this.props.aConnector.forEach(item => {
-            _ct=this.createConnector(_objConnector[item].blockchain_name);
+        _objConnector.aConnector.forEach(item => {
+            _ct=this.createConnector(_objConnector[item].symbol);
             if(_ct) {
                 // add to active bloackchain to explore, if can see it
                 _objConnector[item].aAcceptedBlockchain=_ct.getAcceptedChains();

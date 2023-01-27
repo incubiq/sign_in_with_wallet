@@ -43,12 +43,33 @@ class App extends Component {
             <br />
 
             <NavLink 
-                to="/auth/login"  
+                to="auth/siww?app_id=self"  
             >
                 <button 
-                    id='btnApi'
+                    id='btnAdminPanel'
+                    onClick={() => {
+                        this.props.onRedirect("/auth/siww?app_id=self")
+                    }
+                }
                 >
-                    Sign-in to SIWW...
+                    Authenticate into Admin Panel...
+                </button>
+            </NavLink>
+
+            <br />
+            <br />
+
+            <NavLink 
+                to="app"  
+            >
+                <button 
+                    id='btnAdminPanel'
+                    onClick={() => {
+                        this.props.onRedirect("/app")
+                    }
+                }
+                >
+                    Open Admin Panel...
                 </button>
             </NavLink>
 

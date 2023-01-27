@@ -62,7 +62,7 @@ class AuthAuthenticate extends AuthConnect {
             // First UI loading effect
             if(!this.state.didAccessWallets) {
                 this.setState({inTimerEffect: true})
-                this.setState({hover: "searching for "+this.state.theme.name+" wallets browser plugins..."});    
+                this.setState({hover: "searching for wallets browser plugins..."});    
             }
         }
     }
@@ -379,7 +379,7 @@ class AuthAuthenticate extends AuthConnect {
 
     renderAuthentication( ){
         return(
-            <div className={"siww-panel " + (this.state.theme.webapp.dark_mode ? "dark-mode": "")}>
+            <div className={"siww-panel " + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")}>
                 <div className="siww_message">
 
                     {this.state.didAccessWallets===false? 
@@ -400,7 +400,7 @@ class AuthAuthenticate extends AuthConnect {
                                         </div>
 
                                         <ViewWallets 
-                                            theme = {this.state.theme}
+                                            theme = {this.props.theme}
                                             aWallet= {this.state.aWallet}
                                             onSelect= {this.async_connectWallet.bind(this)}
                                             fnShowMessage={this.showMessage.bind(this)}                            
@@ -485,8 +485,8 @@ class AuthAuthenticate extends AuthConnect {
 
     render() {
         return (
-            <div id="siww-login-container" style={this.props.styles.container}>
-                <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+            <div id="siww-login-container" style={this.props.styles? this.props.styles.container: null}>
+                <div className={"modal modal-login center-vh" + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles? this.props.styles.color: null}>
 
                     <ViewHeader 
                         app_id= {this.props.webAppId}
@@ -494,7 +494,7 @@ class AuthAuthenticate extends AuthConnect {
                         oauthDomain = {this.props.webAppDomain}
                         is_verified = {this.props.webApp.is_verified===true}
                         isOauth = {true}
-                        theme = {this.state.theme}
+                        theme = {this.props.theme}
                         wallet = {this.state.wallet_name}
                         aConnector = {this.state.aActiveConnector}
                         connector = {this.getActiveConnector()}

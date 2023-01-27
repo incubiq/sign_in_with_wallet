@@ -34,7 +34,7 @@ class AuthError extends AuthConnect {
     render() {
         return (
             <div id="siww-login-container" style={this.props.styles.container}>
-                <div className={"modal modal-login center-vh" + (this.state.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+                <div className={"modal modal-login center-vh" + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
 
                     <ViewHeader 
                         app_id= {this.props.webAppId}
@@ -42,7 +42,7 @@ class AuthError extends AuthConnect {
                         oauthDomain = {this.props.webAppDomain ? this.props.webAppDomain : "<unconfigured>"}
                         is_verified = {this.props.webApp && this.props.webApp.is_verified===true ? true : false}
                         isOauth = {true}
-                        theme = {this.state.theme}
+                        theme = {this.props.theme}
                         wallet = "Wallet"
                         aConnector = {this.state.aActiveConnector}
                         connector = {this.getActiveConnector()}

@@ -1,7 +1,7 @@
 import {Component} from "react";
 import {srv_reserveDomain} from "../services/configure";
 
-class FormReserve extends Component {
+class AdminFormReserve extends Component {
 
 /*
  *          page inits
@@ -23,6 +23,11 @@ class FormReserve extends Component {
     }
 
     componentDidUpdate(prevProps) {
+
+        // reset state
+        if(this.state.canValidate && this.state.reserve_name==="") {
+            this.setState({canValidate: false})
+        }
     }
 
 /*
@@ -147,9 +152,9 @@ class FormReserve extends Component {
     renderFormReserve() {
         let that=this;
         return( <>
-            <div className="siww_configure-body">
+            <div className="adminPanel_configure-body">
                 <div  
-                    className="siww_configure"
+                    className="adminPanel_configure"
                     id="form-reserve"
                 >
 
@@ -193,4 +198,4 @@ class FormReserve extends Component {
     }
 }
 
-export default FormReserve;
+export default AdminFormReserve;
