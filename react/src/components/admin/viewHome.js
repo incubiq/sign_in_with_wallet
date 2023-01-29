@@ -1,4 +1,4 @@
-import AdminViewBase from "./adminViewBase";
+import AdminViewBase from "./viewBase";
 
 class AdminViewHome extends AdminViewBase {
 
@@ -13,11 +13,9 @@ class AdminViewHome extends AdminViewBase {
     
     renderContent() {
         return( 
-            <> 
-                <>
-                    Welcome
-                </>                        
-            </>
+            <>
+                Welcome
+            </>                        
         );
     }
 }

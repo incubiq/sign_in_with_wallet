@@ -107,6 +107,13 @@ h1 a {
     font-weight: bold !important;
 }
 
+.inlineFlex {
+    display: inline-flex;
+}
+.inlineBlock {
+    display: inline-block;
+}
+
 .oops {
     width: 132px;
     margin: 0 auto 28px auto;
@@ -613,8 +620,6 @@ h1 a {
     padding: 2px 16px;
     font-size: 14px;
     border-radius: 8px;
-    border: 1px solid #f0f0f0;
-    background-color: #fafafa;
 }
 .btn-primary {
     background-color: var(--accent-2);

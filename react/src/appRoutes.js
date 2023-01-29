@@ -12,10 +12,10 @@ const AuthError  = React.lazy(() => import ("./components/authError"));         
 
 // admin panel apps
 //const AdminViewBase  = React.lazy(() => import ("./components/adminViewBase"));
-const AdminViewConfigure  = React.lazy(() => import ("./components/adminViewConfigure"));
-const AdminViewHome  = React.lazy(() => import ("./components/adminViewHome"));
-const AdminViewSettings  = React.lazy(() => import ("./components/adminViewSettings"));
-const AdminViewDomains  = React.lazy(() => import ("./components/adminViewDomains"));
+const AdminViewConfigure  = React.lazy(() => import ("./components/admin/viewConfigure"));
+const AdminViewHome  = React.lazy(() => import ("./components/admin/viewHome"));
+const AdminViewSettings  = React.lazy(() => import ("./components/admin/viewSettings"));
+const AdminViewDomains  = React.lazy(() => import ("./components/admin/viewDomains"));
 
 
 const AppAuthApi  = React.lazy(() => import ("./api/appAuthApi"));

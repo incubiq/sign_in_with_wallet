@@ -1,5 +1,5 @@
-import AdminViewBase from "./adminViewBase";
-import AdminFormConfigure from "./adminFormConfigure";
+import AdminViewBase from "./viewBase";
+import AdminFormConfigure from "./formDomainConfigure";
 
 class AdminViewConfigure extends AdminViewBase {
 

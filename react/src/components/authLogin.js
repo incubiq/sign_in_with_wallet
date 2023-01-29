@@ -1,6 +1,6 @@
 import AuthAuthenticate from "./authAuthenticate";
 import ViewWallets from "./viewWallets";
-import AdminPanelHeader from "./adminPanelHeader";
+import AdminPanelHeader from "./admin/panelHeader";
 
 // class for logging into SIWW backend (for user "admin" purposes)
 // this is NOT used for oAuth login as an end user

@@ -1,5 +1,5 @@
 import {Component} from "react";
-import {srv_reserveDomain} from "../services/configure";
+import {srv_reserveDomain} from "../../services/configure";
 
 class AdminFormReserve extends Component {
 
@@ -85,7 +85,10 @@ class AdminFormReserve extends Component {
             domain_name: this.state.reserve_name
         };
 
-        return await srv_reserveDomain(objConfig, this.props.AuthenticationCookieToken);
+        let dataReserve = await srv_reserveDomain(objConfig, this.props.AuthenticationCookieToken);
+        if(dataReserve && dataReserve.data) {
+            this.props.onReserveApp(dataReserve.data);
+        }
     }
 
     changeIcon(_value, _isValid, eltId) {
@@ -149,7 +152,7 @@ class AdminFormReserve extends Component {
         )
     }
 
-    renderFormReserve() {
+    render() {
         let that=this;
         return( <>
             <div className="adminPanel_configure-body">
@@ -191,10 +194,6 @@ class AdminFormReserve extends Component {
 
         </>
         )
-    }
-
-    render() {
-        return (<></>)
     }
 }
 

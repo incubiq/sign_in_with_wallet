@@ -1,5 +1,5 @@
-import AdminViewBase from "./adminViewBase";
-import ViewIdentitySelect from "./viewIdentitySelect";
+import AdminViewBase from "./viewBase";
+import ViewIdentitySelect from "../viewIdentitySelect";
 
 class AdminViewSettings extends AdminViewBase {
 

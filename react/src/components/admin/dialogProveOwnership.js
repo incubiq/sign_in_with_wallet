@@ -1,23 +1,63 @@
 import React, {Component} from "react";
+import {srv_verifyDNS} from "../../services/configure";
+import {CRITICALITY_SEVERE, CRITICALITY_NORMAL} from "../../const/message";
 
-class AdminDialogOwnership extends Component {
+class AdminDialogProveOwnership extends Component {
 
 /*
  *          page inits
  */
 
     constructor(props) {
-        super(props);    
+        super(props);            
         this.state= {
-            
+            message: "",
+            criticality: CRITICALITY_NORMAL
         };
+    }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.isVisible===false && this.props.isVisible) {
+            this.setState({
+                message: "Validate this DNS record to prove ownership",
+                criticality: CRITICALITY_NORMAL
+            });
+        }
+    }
+    
+
+/*
+ *          UI
+ */
+
+    async async_verifyDomain() {
+        let dataDomain=await srv_verifyDNS(this.props.app_id, this.props.AuthenticationCookieToken);
+        if(dataDomain && dataDomain.data) {
+            if(dataDomain.data.is_verified) {
+                this.props.onClose(true);
+            }
+            else {
+                this.setState({
+                    message: "Could not verify, please check your DNS!",
+                    criticality: CRITICALITY_SEVERE
+                });
+            }
+        }
+        else {
+            this.setState({
+                message: dataDomain.message,
+                criticality: CRITICALITY_SEVERE
+            });
+        }
     }
 
     render() {
         return (
             <>
+            {this.props.isVisible? 
+            <>
                 <div className="modalContainer blur"></div>
-
+        
                 <div className="modalContainer">
                     <div className="modal modal-login center-vh" >
                         <h2>Prove ownership</h2>
@@ -50,14 +90,14 @@ class AdminDialogOwnership extends Component {
                             <div className="align-center">
                                 <div 
                                     className="btn btn-primary "
-                                    onClick = {( )=> this.props.onValidate()}
+                                    onClick = {() => this.async_verifyDomain()}
                                 >                                
                                     Validate
                                 </div>
 
                                 <div 
                                     className="btn btn-quiet "
-                                    onClick = {this.props.onClose}
+                                    onClick = {() => this.props.onClose(false)}
                                 >                                
                                     Cancel
                                 </div>
@@ -65,17 +105,18 @@ class AdminDialogOwnership extends Component {
                             </div>
                         </div>
 
-                        <div class="siww-footer">
-                            <div class="credits"></div>
-                            <div class="message">{this.props.message}</div>
+                        <div className="siww-footer">
+                            <div className="credits"></div>
+                            <div className={"message "+ (this.state.criticality===CRITICALITY_SEVERE? "red bold" : "")}>{this.state.message}</div>
                         </div>
-                    </div>
-
-                </div>
+                    </div>        
+                </div>                
+            </>
+            :""}
 
             </>
         )
     }
 }
 
-export default AdminDialogOwnership;
+export default AdminDialogProveOwnership;

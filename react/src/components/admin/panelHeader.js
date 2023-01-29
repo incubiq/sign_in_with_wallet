@@ -1,6 +1,6 @@
-import AppBase from "./appBase";
-import {deleteMeAdmin} from "../services/me";
-import {srv_logout} from "../services/admin";
+import AppBase from "../appBase";
+import {deleteMeAdmin} from "../../services/me";
+import {srv_logout} from "../../services/admin";
 
 // class for displaying top banner in admin mode
 class AdminPanelHeader extends AppBase {

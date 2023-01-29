@@ -27,6 +27,36 @@ body {
   display: none !important;
 }
 
+.semiOpaque {
+  position: static;
+  top:0;
+  left: 0;
+  pointer-events: none;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.7;
+  background-color: #333;
+  z-index: 1000;
+}
+
+.dialog {
+  z-index: 1001;
+}
+
+.dialog .content {
+  display: table;
+  min-height: 100px;
+  text-align: center;
+  padding: 12px;
+  background-color: #fff;
+  width: calc(100% - 24px);  
+}
+
+.dialog .content span {
+  display: table-cell;
+  vertical-align: middle;
+}
+
 .btn {
   margin: 8px;
   padding: 4px;
@@ -86,9 +116,15 @@ body {
 }
 
 .adminPanel-header .btn.selected {
-  background-color: var(--app-accent-1-darker);
+  background-color: var(--app-accent-1-dark);
   color: var(--app-light-text)
 } 
+
+.adminPanel-header .btn-tiny:hover, .adminPanel-header .btn-tiny:active {
+  background-color: var(--app-accent-1-darker);
+  color: var(--app-light-text);
+}
+
 
 .adminPanel-content {
   position: relative;
@@ -127,7 +163,7 @@ body {
   background-color: var(--app-light);
   color: var(--app-dark-text);
 }
-.adminPanel-form .toolbar .btn-tiny:hover, .adminPanel-form .toolbar .btn-tiny:active {
+.adminPanel .toolbar .btn-tiny:hover, .adminPanel .toolbar .btn-tiny:active {
   background-color: var(--app-light-alt);
 }
 
@@ -193,12 +229,12 @@ body {
   width: max-content;
 }
 
-.adminPanel_configure .row {
+.row-list .row {
   margin: 2px 0 12px auto;
   display: block;
 }
 
-.adminPanel_configure .label {
+.row .label {
   display: inline-block;
   min-width: 120px;
   font-size: 14px;
@@ -206,19 +242,19 @@ body {
 }
 
 
-.adminPanel_configure .row .value {
+.row .value {
   display: inline-block;
   width: 240px;
   color: #333;
 }
-.adminPanel_configure .row.compulsory .value {
+.row.compulsory .value {
   width: calc(240px - 16px);
 }
 
-.adminPanel_configure .row .icon { 
+.row .icon { 
   display: none;
 }
-.adminPanel_configure .row.compulsory .icon {
+.row.compulsory .icon {
   width: 12px;
   height: 12px;
   margin-right: 4px;
@@ -244,6 +280,15 @@ body {
   left: 0;
   box-shadow: 0px 3px 6px var(--shadow);
   z-index: 1000;
+}
+
+.appSummary {
+  margin:12px;
+  padding:6px 12px 0 0 ;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  float: left;
+  min-width: 320px;
 }
 
 .preview .btn-close {

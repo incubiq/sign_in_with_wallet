@@ -1,7 +1,8 @@
-import AppBase from "./appBase";
-import AdminPanelHeader from "./adminPanelHeader";
-import {srv_getDomains} from "../services/configure";
-import {getIdentityFromUsername} from "../services/me";
+import AppBase from "../appBase";
+import AdminPanelHeader from "./panelHeader";
+import {srv_getDomains} from "../../services/configure";
+import {getIdentityFromUsername} from "../../services/me";
+import WidgetDialog from "../../utils/widgetDialog"
 
 import jsonwebtoken from "jsonwebtoken";
 
@@ -25,7 +26,14 @@ class AdminViewBase extends AppBase {
             aReservedDomain: [],
 
             // UI 
-            view: props.view              // the current view
+            view: props.view,              // the current view
+
+            isConfirmDialogVisible : false,
+            confirmTitle: "",
+            confirmMessage: "",
+            confirmFirstButtonText: null,
+            confirmSecondButtonText: null,
+            onNotifyConfirm: null
 
         });
     }
@@ -36,6 +44,18 @@ class AdminViewBase extends AppBase {
             this.setState({iSelectedIdentity: i});
         }
         return {data: null}       
+    }
+
+    async async_loadDomains() {
+        try {
+            let _data = await srv_getDomains(null, this.props.AuthenticationCookieToken)
+            if(!_data || !_data.data) {throw new Error}
+
+            this.setState({aClaimedDomain: _data.data.aClaimed});
+            this.setState({aReservedDomain: _data.data.aPending});
+            return _data.data
+        }
+        catch(err){}
     }
 
     logUser() {
@@ -55,13 +75,7 @@ class AdminViewBase extends AppBase {
                     // select this user
                     that.onSelectIdentity(_user.wallet_id);
                     that.setState({hover: "You are logged as Admin of your domains"});
-
-                    srv_getDomains(null, that.props.AuthenticationCookieToken)
-                    .then(_data => {
-                        that.setState({aClaimedDomain: _data.data.aClaimed})
-                        that.setState({aReservedDomain: _data.data.aPending})                    
-                    })
-                    .catch(err => {})
+                    that.async_loadDomains();
                 }
             });
 
@@ -121,6 +135,24 @@ class AdminViewBase extends AppBase {
  *        UI
  */
 
+    onNotifyConfirm (objParam) {
+        this.setState({
+            confirmTitle: objParam.title,
+            confirmMessage: objParam.message,
+            confirmFirstButtonText: objParam.confirmFirstButtonText? objParam.confirmFirstButtonText : null,
+            confirmSecondButtonText: objParam.confirmSecondButtonText? objParam.confirmSecondButtonText : null,
+            isConfirmDialogVisible: true,
+            onNotifyConfirm : objParam.onNotifyConfirm? objParam.onNotifyConfirm : function (){}
+        })
+    }
+
+    onNotifyConfirmChoice (iChoice) {
+        this.setState({
+            isConfirmDialogVisible: false
+        });
+        this.state.onNotifyConfirm(iChoice);
+    }
+
     renderHeader () {
         return (
             <AdminPanelHeader 
@@ -136,12 +168,29 @@ class AdminViewBase extends AppBase {
         </>)
     }
 
+    renderConfirmDialog(){
+        return (
+            <WidgetDialog
+                title = {this.state.confirmTitle}
+                message = {this.state.confirmMessage}
+                version = {this.props.version}
+                isVisible = {this.state.isConfirmDialogVisible}
+                firstButtonText = {this.state.confirmFirstButtonText}
+                secondButtonText = {this.state.confirmSecondButtonText}
+                onConfirm = {this.onNotifyConfirmChoice.bind(this)}
+            />
+        );
+    }
+
     render() {
         return( 
-            <> 
-                {this.renderHeader()}                
-                {this.renderContent()}
-                {this.renderFooter()}
+            <>
+                {this.renderConfirmDialog()}
+                <div className="adminPanel"> 
+                    {this.renderHeader()}                
+                    {this.renderContent()}
+                    {this.renderFooter()}
+                </div>
             </>
         );
     }
