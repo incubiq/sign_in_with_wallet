@@ -1,5 +1,10 @@
 import AdminViewBase from "./viewBase";
-import ViewIdentitySelect from "../viewIdentitySelect";
+import FormIdentity from "./formIdentity";
+import FormConnectedApps from "./formConnectedApps";
+import {deleteMeAdmin} from "../../services/me";
+
+const MENU_IDENTITY = 1;
+const MENU_APPS = 2;
 
 class AdminViewSettings extends AdminViewBase {
 
@@ -8,66 +13,97 @@ class AdminViewSettings extends AdminViewBase {
  */
 
 
+
+constructor(props) {
+    super(props);
+
+    this.state=  Object.assign({}, this.state, {
+        iSelMenu: MENU_IDENTITY
+    });
+}
+
 /*
  *        UI
  */
  
-    renderIdentities() {
+    onLogout() {
+        // 
+        deleteMeAdmin();
+
+        // redirect to a logout...
+        window.location="/admin/logout";
+    }
+
+    onSelectSubmenu(iSubMenu) {
+        this.setState({iSelMenu : iSubMenu});
+    }
+
+    renderToolbar( ){
         return (
-            <>
-                <div className="siww-section">
-                    <h2>Your known identities</h2>
+            <div className="toolbar">
+
+                <div 
+                    className={"btn btn-tiny right btn-primary "}
+                    onClick = {this.props.onLogout}
+                >                                
+                    👋 Logout
                 </div>
-                <div className="connectCont align-left">
-                    <ul className="connectWallets"> 
-                        {this.state.aIdentity.map((item, index) => (
-                            <ViewIdentitySelect 
-                                theme = {this.props.theme}
-                                wallet_id = {item.wallet_id}
-                                wallet_name = {item.wallet_name}
-                                wallet_logo = {item.wallet_logo}
-                                blockchain_image = {item.blockchain_image}
-                                blockchain_name = {item.blockchain_name}
-                                isSelected = {index===this.state.iSelectedIdentity}
-                                address = {item.wallet_address}
-                                onConnect={this.onSelectIdentity.bind(this)}
-                                onHover={() => {}}
-                                index = {index}
-                                key={index}
-                            />
-                        ))}
-                    </ul>
-                </div>
-            </>);
+            
+            </div>      
+        );
     }
 
     renderContent() {
+        let objIdentity=null;
+        if(this.state.iSelectedIdentity!==null) {
+            objIdentity=this.state.aIdentity[this.state.iSelectedIdentity];
+        }
         return( 
-            <>
-                <div className="connected">
-                    {this.state.user && this.state.user.wallet_address? 
-                    <>
-                        <span>Connected with</span>
-                        &nbsp;<b>{this.state.user.wallet_id}</b>&nbsp;
-                        <span>({this.getShortenAnonAddress(this.state.user.wallet_address)})</span>
+            <div className="adminPanel-content">
+                <div className="adminPanel-selector noselect">
+                    <ul className="panel-list">
+                        <li 
+                            className={"domain-selector " + (this.state.iSelMenu===MENU_IDENTITY? "selected" : "")}
+                            onClick = {( ) => this.onSelectSubmenu(MENU_IDENTITY)}
+                        >
+                            <div>
+                                <img className="domain-logo" src="/assets/images/anon_user.png" alt="identity" />
+                                <div className="domain-name">Identity</div>
+                            </div>
+                        </li>
 
-                    </>
-                    : 
-                        <span>Not authenticated</span>
-                    }                            
+                        <li 
+                            className={"domain-selector " + (this.state.iSelMenu===MENU_APPS? "selected" : "")}
+                            onClick = {( ) => this.onSelectSubmenu(MENU_APPS)}
+                        >
+                            <div>
+                                <img className="domain-logo" src="/assets/images/logo_www.png" alt="connected apps" />
+                                <div className="domain-name">Connected Apps</div>
+                            </div>
+                        </li>
+                    </ul>
+
                 </div>
 
-                {this.props.authenticated_wallet_address? 
-                    <div 
-                        className="btn btn-tiny"
-                        onClick = {this.onDisconnect.bind(this)}
-                    >
-                        Disconnect
-                    </div>
-                :""}
 
-                {this.renderIdentities()}           
-            </>
+                <div className="adminPanel-form">
+                    {this.renderToolbar()}
+                    
+                    <FormIdentity 
+                        identity = {objIdentity}
+                        onLogout = {this.onLogout.bind(this)}
+                        isVisible = {this.state.iSelMenu===MENU_IDENTITY}
+                    />
+
+                    <FormConnectedApps        
+                        aApps = {this.state.aConnectedApps}                 
+                        isVisible = {this.state.iSelMenu===MENU_APPS}
+                    />
+    
+                </div>
+
+
+            </div>
         );
     }
 }

@@ -117,7 +117,7 @@ export class siwc_connect  extends siww_connect {
             window: "cardano",                // the window element to explore
         }
     }
-    
+
 //
 //      Initialization
 //
@@ -201,7 +201,6 @@ export class siwc_connect  extends siww_connect {
             _objWallet.isOnProd=chainIDs[_networkId]!==null;
             _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
             _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo(_networkId) ;
-            _objWallet.balance = await this._async_getBalance(_objWallet.api);
             _objWallet.isEnabled=true;
             return _objWallet;
         }

@@ -155,42 +155,34 @@ class AdminFormReserve extends Component {
     render() {
         let that=this;
         return( <>
-            <div className="adminPanel_configure-body">
-                <div  
-                    className="adminPanel_configure"
-                    id="form-reserve"
-                >
+                    <div className="appSummary">
 
-                    <div className="category">
-                        Which domain would you like to configure?
+                        <div className="category">
+                            Which domain would you like to claim?
+                        </div>
+
+                        {this.renderRow({
+                            id: "reserve_name", 
+                            type: "text", 
+                            label: "Domain", 
+                            hint: "Enter the domain name of your web app.", 
+                            placeholder: "mydomain.com",
+                            isCompulsory: true,
+                            fnValidate: function (_input) {
+                                return that.validateDomain(_input);
+                            },
+                            fnEnableForm: function (_input) {
+                                return that.enableReserveForm(_input);
+                            }
+                        })}
+
+                        <div 
+                            className={"btn btn-tiny btn-primary " + (this.state.canValidate? "" : "disabled")}
+                            onClick = {this.async_reserveDomain.bind(this)}
+                        >
+                            Configure this domain!
+                        </div>
                     </div>
-
-                    {this.renderRow({
-                        id: "reserve_name", 
-                        type: "text", 
-                        label: "Domain", 
-                        hint: "Enter the domain name of your web app.", 
-                        placeholder: "mydomain.com",
-                        isCompulsory: true,
-                        fnValidate: function (_input) {
-                            return that.validateDomain(_input);
-                        },
-                        fnEnableForm: function (_input) {
-                            return that.enableReserveForm(_input);
-                        }
-                    })}
-
-                    <div 
-                        className={"btn btn-primary " + (this.state.canValidate? "" : "disabled")}
-                        onClick = {this.async_reserveDomain.bind(this)}
-                    >
-                        Configure this domain!
-                    </div>
-
-                </div>
-
-
-            </div>
 
         </>
         )

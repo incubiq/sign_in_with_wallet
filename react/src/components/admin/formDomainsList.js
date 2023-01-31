@@ -35,7 +35,7 @@ class FormDomainsList extends Component {
     render() {
         return(
             <>
-                    <ul className=" domain-list"> 
+                    <ul className="panel-list"> 
                         <li className={"domain-selector" + (this.props.app_id===null && this.props.iSelDomain===null ? " selected" : "")} >
                             <ViewDomain 
                                 logo = "/assets/images/icon_plus.png"

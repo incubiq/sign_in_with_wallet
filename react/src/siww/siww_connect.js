@@ -307,7 +307,11 @@ export class siww_connect {
                 if(!objMsg.address) {
                     throw new Error("Wallet address not found - have you disconnected wallet?");
                 }
-                
+
+                if(!_objWallet.chain.name) {
+                    throw new Error("unsupported blockchain - please connect with another chain");
+                }
+              
                 if(!this.isMessageInputValid(objMsg)) {
                     throw new Error("missing or incorrect params");
                 }

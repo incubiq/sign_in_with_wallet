@@ -322,13 +322,10 @@ class AdminFormConfigure extends AdminFormReserve {
 
         let that=this;
         return( <>
-
-                <div className="adminPanel_configure-body">
-
-                    <div  
-                        className="adminPanel_configure"
-                        id="form-configure"
-                    >
+                <div  
+                    className="container"
+                    id="form-configure"
+                >
 
                         <div className="category">
                             Application's domain
@@ -561,7 +558,6 @@ class AdminFormConfigure extends AdminFormReserve {
     */}
 
                     </div>
-                </div>
         </>
 
         )

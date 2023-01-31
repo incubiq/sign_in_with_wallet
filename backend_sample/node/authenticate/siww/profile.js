@@ -19,7 +19,7 @@
         let user = json.data;
         if (user) { // Populate the profile fields using a standard format
             profile.connector = user.provider? user.provider.connector: null;
-            profile.blockchain = user.provider? user.provider.blockchain: null;
+            profile.blockchain = user.provider? user.provider.blockchain_symbol: null;
             profile.wallet = user.provider? user.provider.wallet_id: null;
             profile.id = user.username;
 

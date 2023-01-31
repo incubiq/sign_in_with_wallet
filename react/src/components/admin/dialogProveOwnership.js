@@ -59,8 +59,10 @@ class AdminDialogProveOwnership extends Component {
                 <div className="modalContainer blur"></div>
         
                 <div className="modalContainer">
-                    <div className="modal modal-login center-vh" >
-                        <h2>Prove ownership</h2>
+                    <div className="dialog modal center-vh" >
+                        <div className="header">
+                            <h2>Prove ownership</h2>
+                        </div>
                         
                         <div className="siww-panel left">
                             <div className="siw-section">
@@ -89,14 +91,14 @@ class AdminDialogProveOwnership extends Component {
 
                             <div className="align-center">
                                 <div 
-                                    className="btn btn-primary "
+                                    className="btn btn-tiny  btn-primary "
                                     onClick = {() => this.async_verifyDomain()}
                                 >                                
                                     Validate
                                 </div>
 
                                 <div 
-                                    className="btn btn-quiet "
+                                    className="btn btn-tiny btn-quiet "
                                     onClick = {() => this.props.onClose(false)}
                                 >                                
                                     Cancel

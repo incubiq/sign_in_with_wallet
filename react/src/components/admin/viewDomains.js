@@ -178,34 +178,32 @@ class AdminViewDomains extends AdminViewBase {
 
     renderContent() {
         return( 
-            <>
-                <div className="adminPanel-content">
-                    <div className="adminPanel-selector">
-                        <FormDomainsList
-                            app_id = {this.state.app_id}
-                            iSelDomain = {this.state.iSelDomain}
-                            aClaimedDomain = {this.state.aClaimedDomain}
-                            onChangeAppId = {this.onChangeAppId.bind(this)}
-                        />
-                    </div>
+            <div className="adminPanel-content">
+                <div className="adminPanel-selector noselect">
+                    <FormDomainsList
+                        app_id = {this.state.app_id}
+                        iSelDomain = {this.state.iSelDomain}
+                        aClaimedDomain = {this.state.aClaimedDomain}
+                        onChangeAppId = {this.onChangeAppId.bind(this)}
+                    />
+                </div>
 
-                    <div className="adminPanel-form">
-                        {this.state.app_id==="localhost" || this.state.claimed_domain!==null ? 
+                <div className="adminPanel-form">
+                    {this.state.app_id==="localhost" || this.state.claimed_domain!==null ? 
 
-                            this.state.claimed_domain===""? 
-                                this.renderReserve()
+                        this.state.claimed_domain===""? 
+                            this.renderReserve()
+                        :
+                            this.state.isEditing?
+                                this.renderConfigure()
                             :
-                                this.state.isEditing?
-                                    this.renderConfigure()
-                                :
-                                this.renderStats()        
-                        : <></>
-                        }
-
-                    </div>
+                            this.renderStats()        
+                    : <></>
+                    }
 
                 </div>
-            </>
+
+            </div>
         );
     }
 }

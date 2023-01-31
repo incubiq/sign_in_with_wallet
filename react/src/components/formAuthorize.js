@@ -6,6 +6,11 @@ class FormAuthorize extends Component {
  *          UI
  */
 
+    onContinue( ){
+        
+        this.props.onContinue();
+    }
+
     render() {
         let style = {}
         if (this.props.theme && this.props.theme.webapp.color) {
@@ -51,7 +56,7 @@ class FormAuthorize extends Component {
                     <button 
                         className="btn btn-quiet" 
                         style= {style}
-                        onClick = {this.props.onContinue}
+                        onClick = {( )=> this.onContinue()}
                     >
                         Continue
                     </button>

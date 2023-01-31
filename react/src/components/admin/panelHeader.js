@@ -1,18 +1,8 @@
 import AppBase from "../appBase";
-import {deleteMeAdmin} from "../../services/me";
-import {srv_logout} from "../../services/admin";
 
 // class for displaying top banner in admin mode
 class AdminPanelHeader extends AppBase {
     
-    onDisconnect() {
-        // 
-        deleteMeAdmin();
-        srv_logout()
-        .then(data => {
-            // do nothing, we should already be redirected
-        })
-    }
 
     onShowDomains() {
         this.props.onRedirect("/app/domains");
@@ -48,7 +38,7 @@ class AdminPanelHeader extends AppBase {
                         </div>
 
                         <div 
-                            className={"btn btn-tiny " + (this.props.view==="settings" ? "selected": "")}
+                            className={"btn btn-tiny " + (this.props.view==="settings" || this.props.view==="home" ? "selected": "")}
                             onClick = {this.onShowSettings.bind(this)}
                         >
                             Settings

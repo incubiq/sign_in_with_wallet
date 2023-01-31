@@ -282,6 +282,10 @@ class AuthAuthorize extends AuthAuthenticate {
  *          UI redirect
  */
 
+    continueToLogin() {
+        this.doLogin();
+    }
+
     doLogin ( ){
 //        let eltForm=document.getElementById('form-login');
 //        if(eltForm) {
@@ -345,7 +349,7 @@ class AuthAuthorize extends AuthAuthenticate {
                 app_name = {this.props.webAppName}
                 app_id = {this.props.webAppId}
                 aScope = {this.state.aScope}
-                onContinue = {this.doLogin.bind(this)}
+                onContinue = {this.continueToLogin.bind(this)}
                 onRevokeAccess = {this.doRevokeAccess.bind(this)}
             />
                 </div>

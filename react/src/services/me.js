@@ -35,6 +35,11 @@ const getMyIdentities = () => {
     return _aRet;
 }
 
+const getMyConnecteddApps = ( )=> {
+  let _aRet=[];
+  return _aRet
+}
+
 const _findIdentityFromWallet = (_wallet_id, _connector, _blockchain) => {
   let aId=getMyIdentities();
   if(_wallet_id && _connector && aId && aId.length>0) {
@@ -256,6 +261,7 @@ export {
   getHasAgreedWelcome,
   setHasAgreedWelcome,
   getMyIdentities,
+  getMyConnecteddApps,
   getIdentityFromUsername,
   getIdentityFromWallet,
   createPartialIdentity,

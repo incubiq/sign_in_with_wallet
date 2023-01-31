@@ -1,7 +1,7 @@
 import AppBase from "../appBase";
 import AdminPanelHeader from "./panelHeader";
 import {srv_getDomains} from "../../services/configure";
-import {getIdentityFromUsername} from "../../services/me";
+import {getIdentityFromWallet, updatePartialIdentity, getMyConnecteddApps} from "../../services/me";
 import WidgetDialog from "../../utils/widgetDialog"
 
 import jsonwebtoken from "jsonwebtoken";
@@ -19,14 +19,15 @@ class AdminViewBase extends AppBase {
             // authenticated user
             user: null,
 
-            // all identities
-
             // all registered domains
             aClaimedDomain: [],
             aReservedDomain: [],
 
             // UI 
             view: props.view,              // the current view
+
+            // connected apps
+            aConnectedApps: [],
 
             isConfirmDialogVisible : false,
             confirmTitle: "",
@@ -44,6 +45,11 @@ class AdminViewBase extends AppBase {
             this.setState({iSelectedIdentity: i});
         }
         return {data: null}       
+    }
+
+    async async_loadConnectedApps() {
+        let _aC= getMyConnecteddApps();
+        this.setState({aConnectedApps: _aC});
     }
 
     async async_loadDomains() {
@@ -69,13 +75,26 @@ class AdminViewBase extends AppBase {
                 else {
 
                     // get user details
-                    let _user = getIdentityFromUsername(_obj.username);
+                    let _user = getIdentityFromWallet(_obj.wallet_id, _obj.connector, _obj.blockchain_symbol);
+                    if(!_user) {
+                        // bit of a problem!!
+                        window.location="/admin/unauthorized";
+                        return;
+                    }
+
+                    // update user details
+                    updatePartialIdentity(_obj.wallet_id, _obj.connector, {
+                        username: _obj.username,
+                        wallet_address: _obj.wallet_address,
+                    });
+
                     that.setState({user: _user});
 
                     // select this user
                     that.onSelectIdentity(_user.wallet_id);
                     that.setState({hover: "You are logged as Admin of your domains"});
                     that.async_loadDomains();
+                    that.async_loadConnectedApps();
                 }
             });
 

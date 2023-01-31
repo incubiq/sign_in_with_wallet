@@ -113,7 +113,7 @@ class AppRoutes extends Component {
             // route for a logged user into the admin panel
                 <Suspense 
                     fallback={this.renderBackground()}>
-                    <AdminViewHome
+                    <AdminViewSettings      // was AdminViewHome but not much home to show...
 
                         // utils
                         version={this.props.version}

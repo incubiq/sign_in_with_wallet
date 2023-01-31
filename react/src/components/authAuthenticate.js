@@ -171,8 +171,8 @@ class AuthAuthenticate extends AuthConnect {
                     // get full blockchain info
                     let objChainInfo=that.getSIWW().getChainInfoFromSymbol(decoded.wallet_id, decoded.blockchain_symbol);
 
-                    // this identity myust be here in cache, or we will create...
-                    if(getIdentityFromUsername(decoded.username)===null) {
+                    // this identity must be here in cache, or we will create...
+                    if(getIdentityFromWallet(decoded.wallet_id, decoded.connector, decoded.blockchain_symbol)===null) {
                         createPartialIdentity({
                             connector: decoded.connector,
                             blockchain_symbol: decoded.blockchain_symbol,

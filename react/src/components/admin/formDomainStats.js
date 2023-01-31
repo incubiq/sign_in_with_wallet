@@ -129,7 +129,6 @@ class AdminFormStats extends Component {
 
     render() {
         return (<>
-            <div className="adminPanel_configure">
                 {this.renderPreview()}
 
                 <AdminDialogProveOwnership
@@ -187,12 +186,12 @@ class AdminFormStats extends Component {
                     :""}
 
                     </div>
-                    <div>
-                        will show some stats here...
+
+                    <div className="appStats">
+                        Stats for your domain
 
                     </div>
 
-                </div>
         </>)
     }
 }

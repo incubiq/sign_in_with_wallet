@@ -12,7 +12,10 @@ const CONNECTOR_NAME = "Metamask"
 
 const METAMASK_ETH_NETWORK = "ethereum"
 const METAMASK_ETH_MAINNET = "Ethereum Mainnet"
-const METAMASK_BSC_MAINNET = "BSC Mainnet"
+const METAMASK_BSC_MAINNET = "BSC Mainnet" 
+const METAMASK_AVAX_MAINNET =  "Avalanche C-Chain"
+const METAMASK_FTM_MAINNET =  "Fantom Opera"
+const METAMASK_EVMOS_MAINNET =  "Evmos"
 
 // we ONLY list PROD chains here
 const chainIDs =  {
@@ -71,6 +74,24 @@ export class siwm_connect  extends siww_connect {
             symbol: "BNB",
             id: 56,
             image : "symbol_binance.png"         // sorry, hardcoded
+        }, {
+            connector: CONNECTOR_SYMBOL,
+            name: METAMASK_AVAX_MAINNET,
+            symbol: "AVAX",
+            id: 43114,
+            image : "symbol_unknown.png"         // sorry, hardcoded
+        }, {
+            connector: CONNECTOR_SYMBOL,
+            name: METAMASK_FTM_MAINNET,
+            symbol: "FTM",
+            id: 250,
+            image : "symbol_unknown.png"         // sorry, hardcoded
+        }, {
+            connector: CONNECTOR_SYMBOL,
+            name: METAMASK_EVMOS_MAINNET,
+            symbol: "EVMOS",
+            id: 9001,
+            image : "symbol_unknown.png"         // sorry, hardcoded
         }];
     }
 

@@ -1,5 +1,5 @@
 import {Component} from "react";
-import {getSupportedConnectors, getConnectorDisplayName} from "../../assets/themes/all"; 
+import {getConnectors, CONNECTOR_SIWC} from "../../const/connectors"; 
 import {getAuthorizationCondition, getAuthorizationConditions, getAuthorizationOperator, getAuthorizationOperators} from "../../const/authorization"; 
 
 class AdminFormDomainLevels extends Component {
@@ -10,11 +10,13 @@ class AdminFormDomainLevels extends Component {
 
     constructor(props) {
         super(props);    
+        let objC=getConnectors();
         this.state = {
             // authorization levels
-            aConnectors: getSupportedConnectors().aConnector,
+            aConnectors: objC.aConnector,
+            allConnectors: objC,
             curConditionName: "",
-            curConditionConnector: "SIWC",
+            curConditionConnector: CONNECTOR_SIWC,
             curConditionProperty: "",
             curConditionOperator: "",
             curConditionValue: "",
@@ -52,8 +54,8 @@ class AdminFormDomainLevels extends Component {
         else {
             // default condition at start of dialog
             this.setState({curConditionName : ""})
-            this.setState({curConditionConnector : "SIWC"})
-            let defaultCondition=getAuthorizationConditions("SIWC")[0];
+            this.setState({curConditionConnector : CONNECTOR_SIWC})
+            let defaultCondition=getAuthorizationConditions(CONNECTOR_SIWC)[0];
             this.setState({curConditionProperty : defaultCondition.property})
             this.setState({curConditionOperator : defaultCondition.default})
             this.setState({curConditionValue : ""})
@@ -137,9 +139,9 @@ class AdminFormDomainLevels extends Component {
             className="hidden"
         >
             <div className="modalContainer blur"></div>
-            <div className={"modal center-vh" + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
-                <div className="siww-header">
-                    <span>Add an Authorization level</span>
+            <div className={"modal dialog  center-vh" + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+                <div className="header">
+                    <h2>Add an Authorization level</h2>
                 </div>
 
                 <div className="">
@@ -178,7 +180,7 @@ class AdminFormDomainLevels extends Component {
                                 }}
                             >
                                 {this.state.aConnectors.map((item, index) => (
-                                    <option value={item} key={index}>{getConnectorDisplayName(item)}</option>
+                                    <option value={item} key={index}>{this.state.allConnectors[item].wallet_name}</option>
                                 ))}
 
                             </select>
@@ -253,7 +255,7 @@ class AdminFormDomainLevels extends Component {
                             Cancel
                         </div>                            
 
-                        <div className="btn btn-tiny disabled" id="btnAddAuthorization"
+                        <div className="btn btn-tiny btn-primary disabled" id="btnAddAuthorization"
                             onClick = {this.addAuthorization.bind(this)}
                         >
                             Add Level
@@ -286,7 +288,7 @@ class AdminFormDomainLevels extends Component {
                             <>
                                 <div className="group">
                                     <span className="row-name">Connector</span>
-                                    <span className="row-property">{getConnectorDisplayName(item.connector)}</span>
+                                    <span className="row-property">{this.state.allConnectors[item.connector].wallet_name}</span>
                                 </div>
 
                                 <div className="row compulsory align-left">
