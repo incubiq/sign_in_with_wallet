@@ -44,7 +44,7 @@ constructor(props) {
 
                 <div 
                     className={"btn btn-tiny right btn-primary "}
-                    onClick = {this.props.onLogout}
+                    onClick = {this.onLogout.bind(this)}
                 >                                
                     👋 Logout
                 </div>

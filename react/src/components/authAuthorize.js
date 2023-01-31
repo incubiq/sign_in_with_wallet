@@ -8,7 +8,7 @@ import {WidgetMessage} from "../utils/widgetMessage";
 
 import {srv_verify, srv_getAuthorizedLevels} from "../services/authenticate";
 import {getMyIdentities, grantAccessToWebApp, revokeAccessToWebApp, isGrantedAccessToWebApp, setHasAgreedWelcome} from "../services/me";
-import {CRITICALITY_SEVERE} from "../const/message";
+import {CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 
 const VIEWMODE_IDENTITY="identity";
 const VIEWMODE_DATASHARE="datashare";
@@ -240,6 +240,8 @@ class AuthAuthorize extends AuthAuthenticate {
                             <button 
                                 className={this.state.iActiveConnector!==null && this.state.aActiveConnector[this.state.iActiveConnector].isAccepted ? "btn btn-quiet" : "btn btn-quiet disabled"}
                                 onClick={evt => {
+                                    this.setState({hover: "Requesting authorizatin to your wallet..."});
+                                    this.setState({criticality: CRITICALITY_NORMAL});    
                                     this.async_requestAuthorization(this.state.aIdentity[this.state.iSelectedIdentity].username);
                                 }}
                             >

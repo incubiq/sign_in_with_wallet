@@ -101,7 +101,7 @@ export class siww {
             throw new Error()           
         }
         catch (err) {
-            throw new Error("Could not find wallet connector for async_createMessage");
+            throw new Error("Please wait a few more seconds, wallet is still connecting...");
         }
     }
 
@@ -114,7 +114,7 @@ export class siww {
             throw new Error()           
         }
         catch (err) {
-            throw new Error("Could not find wallet connector for async_signMessage");
+            throw new Error("Please wait a few more seconds, wallet is still connecting...");
         }        
     }
 
