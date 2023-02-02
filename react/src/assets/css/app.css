@@ -188,14 +188,14 @@ body {
 }
 
 
-.panel-list{
+.menu-list{
   margin: 6px;
-  display: inline-block;
+  display: inline-block;;
   list-style: none;
   padding-inline-start: 0;
 }
 
-.domain-selector {
+.menu-selector {
   position: relative;
   text-align: center;
   padding: 8px;
@@ -211,15 +211,66 @@ body {
 }
 
 
-.domain-selector.selected {
+.menu-selector.selected {
   background-color: var(--app-accent-1-lighter);
   border: 1px solid var(--app-accent-1-dark);
 }
 
-.domain-selector .domain-logo {
+.menu-selector .menu-logo {
   max-height: 64px;
   max-width: 64px;
   padding: 8px 0 16px 0;
+}
+
+.menu-selector .menu-name {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.domain-list{
+  display: table;;
+  list-style: none;
+  width: 100%;
+  padding-inline-start: 0;
+}
+
+.domain-selector:nth-child(even) {
+  background-color: var(--app-light);
+}
+
+.domain-selector:nth-child(odd) {
+  background-color: var(--app-light-alt);
+}
+
+.domain-list .cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.domain-list .min60H{
+  min-height: 60px;
+  display: initial;
+}
+
+.domain-selector {
+  padding: 8px;
+  margin: 4px;
+  border: 1px solid var(--disconnected-dark);
+  background-color: var(--disconnected);
+  cursor: pointer;
+  overflow: hidden;
+  line-height: 18px;
+  display: table-row;
+}
+
+.domain-selector:hover {
+  background-color: var(--app-accent-1);
+}
+
+.domain-selector .domain-logo {
+  max-height: 32px;
+  max-width: 32px;
+  padding: 8px 0 0 16px;
 }
 
 .domain-selector .domain-name {
@@ -242,7 +293,8 @@ body {
   color:#333;
   margin: 12px auto;
   text-align: left;
-  width: max-content;
+  padding-left: 16px;
+  /* width: max-content; */
 }
 
 .row-list .row {
@@ -282,6 +334,15 @@ body {
   height: 24px;
   position: relative;
   top: 7px;
+}
+
+.adminPanel-form .container h2 {
+  border-bottom: 1px solid #ccc;
+}
+
+.adminPanel-form .container .icon {
+  width: 12px;
+  height: 12px;
 }
 
 .adminPanel-form .container .category {

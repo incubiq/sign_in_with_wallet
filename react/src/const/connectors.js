@@ -27,6 +27,7 @@
       connector_name: "Cardano",        // name of this connector
       aAcceptedBlockchain: [],          // will be filled from Connector itself
       wallet_name: "Cardano wallets",   // target display name
+      wallet_logo: "/assets/images/symbol_cardano.png",
       blockchain_name: "Cardano",       // blockchain name  (can be changed by connector)
       window: "cardano",                // the window element to explore
     }
@@ -36,6 +37,7 @@
       connector_name: "Metamask",        // name of this connector
       aAcceptedBlockchain: [],           // will be filled from Connector itself
       wallet_name: "Metamask",           // target display name
+      wallet_logo: "/assets/images/metamask.png",
       blockchain_name: "Metamask",       // blockchain name  (can be changed by connector)
       window: "ethereum",                // the window element to explore
     }
@@ -45,6 +47,7 @@
       connector_name: "Keplr",           // name of this connector
       aAcceptedBlockchain: [],           // will be filled from Connector itself
       wallet_name: "Keplr",              // target display name
+      wallet_logo: "/assets/images/keplr.png",
       blockchain_name: "Keplr",          // blockchain name  (can be changed by connector)
       window: "keplr",                   // the window element to explore
     }

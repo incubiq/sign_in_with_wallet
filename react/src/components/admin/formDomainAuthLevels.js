@@ -61,7 +61,6 @@ class AdminFormDomainLevels extends Component {
             this.setState({curConditionValue : ""})
         }
 
-
         // show / hide dialog
         this.setState({isAddAuthorization: !this.state.isAddAuthorization});
     }
@@ -84,6 +83,8 @@ class AdminFormDomainLevels extends Component {
             });
             this.setState({aLevel: aCond});
 
+            // notify parent of update
+            this.props.onNotifyUpdateDomainLevels(aCond);
         }
         this.toggleAddAuthorization();
     }
@@ -97,6 +98,9 @@ class AdminFormDomainLevels extends Component {
             }
         });
         this.setState({aLevel: aCond});
+
+        // notify parent of update
+        this.props.onNotifyUpdateDomainLevels(aCond);
     }
 
     canAddAuthorization(objParam) {
@@ -139,7 +143,7 @@ class AdminFormDomainLevels extends Component {
             className="hidden"
         >
             <div className="modalContainer blur"></div>
-            <div className={"modal dialog  center-vh" + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles.color}>
+            <div className={"modal dialog  center-vh" + (this.props.theme && this.props.theme.webapp.dark_mode ? "dark-mode": "")} style={this.props.styles? this.props.styles.color: {}}>
                 <div className="header">
                     <h2>Add an Authorization level</h2>
                 </div>

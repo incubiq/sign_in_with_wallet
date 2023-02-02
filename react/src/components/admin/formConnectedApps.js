@@ -12,6 +12,8 @@ class FormConnectedApps extends Component {
             {this.props.isVisible?
 
                 <div className="container">
+                    <h2>Your connected Apps</h2>
+                    
                     <div className="category">
                         <span>Connected Apps </span>
                     </div>

@@ -2,7 +2,7 @@ import AdminFormReserve from "./formDomainReserve";
 import AdminFormDomainScopes from "./formDomainAuthScopes";
 import AdminFormDomainLevels from "./formDomainAuthLevels";
 import {srv_claimDomain, srv_updateDomain, srv_getDomainPrivateInfo} from "../../services/configure";
-
+import WidgetDialog from "../../utils/widgetDialog"
 
 class AdminFormConfigure extends AdminFormReserve {
 
@@ -22,12 +22,12 @@ class AdminFormConfigure extends AdminFormReserve {
 
     _getInitialStateObject(props){
             return {
-            // domain
-                domain_name: props.domain_name? props.domain_name : "",
-                display_name: "",
+                // domain
+                domain_name: this.props.domain_name? this.props.domain_name: "",    // keep this for domain creation
+                display_name: null,
 
-                app_id: props.app_id? props.app_id : "",
-                app_secret: props.app_secret? props.app_secret : "",
+                app_id: this.props.app_id? this.props.app_id: null,                 // keep this for domain creation
+                app_secret: null,
 
                 // valid?
                 is_claimed: false,
@@ -78,6 +78,7 @@ class AdminFormConfigure extends AdminFormReserve {
 
             // UI / UX
             isAddAuthorization: false,
+            isConfirmDialogVisible: false,
             message: ""                                         // msg displayed in Dialog..
         }            
     }
@@ -110,6 +111,7 @@ class AdminFormConfigure extends AdminFormReserve {
                 is_claimed: true,
                 display_name: dataDomain.data.display_name,
                 domain_name: dataDomain.data.domain_name,
+                reserve_name: dataDomain.data.domain_name,      // a bit of a hack...
                 redirect_uri: dataDomain.data.redirect_uri,
                 token_lifespan: dataDomain.data.token_lifespan,
                 is_verified: dataDomain.data.is_verified,
@@ -154,6 +156,8 @@ class AdminFormConfigure extends AdminFormReserve {
                 }
             }
 
+            // set UI
+            this.setState({hasUpdated: false});
             this._enableFormDomain(this.state.domain_name);
         }
     }
@@ -177,7 +181,8 @@ class AdminFormConfigure extends AdminFormReserve {
         let isDomainNameOK = this.validateDomainName(_input);
         let isDomainOK = this.props.isLocalhost? this.validateUrl(this.state.domain_name)!==null :  this.validateDomain(this.state.domain_name)!==null;
         let isTunnelOK = this.props.isLocalhost? this.validateUrl(this.state.tunnel)!==null :  true;
-        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK && this.state.app_id!==""});
+        let _canValidate=isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK && this.state.app_id!=="";
+        this.setState({canValidate: _canValidate});
     }
 
     _enableFormDomain(_input) {
@@ -185,7 +190,8 @@ class AdminFormConfigure extends AdminFormReserve {
         let isDomainNameOK = this.validateDomainName(this.state.display_name);
         let isDomainOK = this.props.isLocalhost? this.validateUrl(_input)!==null :  this.validateDomain(_input)!==null;
         let isTunnelOK = this.props.isLocalhost? this.validateUrl(this.state.tunnel)!==null :  true;
-        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK && this.state.app_id!==""});
+        let _canValidate=isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK && this.state.app_id!=="";
+        this.setState({canValidate: _canValidate});
     }
 
     _enableFormCallback(_input) {
@@ -193,13 +199,15 @@ class AdminFormConfigure extends AdminFormReserve {
         let isDomainNameOK = this.validateDomainName(this.state.display_name);
         let isDomainOK = this.props.isLocalhost? this.validateUrl(this.state.domain_name)!==null :  this.validateDomain(this.state.domain_name)!==null;
         let isTunnelOK = this.props.isLocalhost? this.validateUrl(this.state.tunnel)!==null :  true;
-        this.setState({canValidate: isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK && this.state.app_id!==""});
+        let _canValidate=isCallbackOK && isDomainNameOK && isDomainOK && isTunnelOK && this.state.app_id!=="";
+        this.setState({canValidate: _canValidate});
     }
 
     _enableFormTunnel(_input) {
         // all other props are disabled anyway, so check oly on tunnel
         let isTunnelOK = this.props.isLocalhost? this.validateUrl(_input)!==null :  true;
-        this.setState({canValidate: isTunnelOK && this.state.app_id!==""});
+        let _canValidate=isTunnelOK && this.state.app_id!=="";
+        this.setState({canValidate: _canValidate});
     }
 
 /*
@@ -243,6 +251,7 @@ class AdminFormConfigure extends AdminFormReserve {
                     })
                 }
                 else {
+                    this.setState({hasUpdated: false});     // no need to ask for confirm after this save
                     this.async_initializeDomain(this.state.app_id);
                     this.props.onNotifyClaimedDomain(this.state.app_id);
                     this.props.onNotifyConfirm({
@@ -304,6 +313,8 @@ class AdminFormConfigure extends AdminFormReserve {
                     })
                 }
                 else {
+                    this.setState({hasUpdated: false});     // no need to ask for confirm after this save
+                    this.props.onNotifyUpdateDomain(this.state.app_id);
                     this.props.onNotifyConfirm({
                         title: "Confirmation",
                         message: "Domain configuration was successfully saved!",
@@ -366,7 +377,7 @@ class AdminFormConfigure extends AdminFormReserve {
                             }
                         })}
 
-                        {this.state.is_verified===true || this.props.isLocalhost ? 
+                        {this.state.app_secret ? 
                         <>
                             <div className="category">
                                 oAuth ID and Secret
@@ -463,7 +474,12 @@ class AdminFormConfigure extends AdminFormReserve {
                             is_verified = {this.state.is_verified}
                             theme={this.props.theme} 
                             styles={this.props.styles}
-            
+                            onNotifyUpdateDomainLevels = {(_aLevel)=> {
+                                this.setState({
+                                    hasUpdated: true,
+                                    aLevel: _aLevel
+                                });
+                            }}                        
                         />
 
                         <div className="category">
@@ -563,13 +579,40 @@ class AdminFormConfigure extends AdminFormReserve {
         )
     }
 
+    renderConfirmDialog(){
+        return (
+            <WidgetDialog
+                title = "Discard changes?"
+                message = "Please confirm you wish to exit without saving"
+                version = {this.props.version}
+                isVisible = {this.state.isConfirmDialogVisible}
+                firstButtonText = "Exit without saving"
+                secondButtonText = "Keep editing"
+                onConfirm = {(_choice)=> {
+                    this.setState({isConfirmDialogVisible : false});
+                    if(_choice===1) {
+                        this.props.onClickExit()
+                    }
+                }}
+            />
+        );
+    }
+
     renderToolbar( ){
         return (
             <div className="toolbar">
 
                 <div 
                     className={"btn btn-tiny right btn-primary "}
-                    onClick = {this.props.onClickExit}
+                    onClick = {( )=> {
+                        // confirm??
+                        if(this.state.hasUpdated) {
+                            this.setState({isConfirmDialogVisible : true});
+                        }
+                        else {
+                            this.props.onClickExit()
+                        }
+                    }}
                 >                                
                     ❌ Exit
                 </div>
@@ -577,7 +620,7 @@ class AdminFormConfigure extends AdminFormReserve {
 
                 {this.state.is_claimed ?
                     <div 
-                        className={"btn btn-tiny right btn-primary " + (this.state.canValidate? "" : "disabled")}
+                        className={"btn btn-tiny right btn-primary " + (this.state.canValidate && this.state.hasUpdated? "" : "disabled")}
                         onClick = {this.async_updateDomain.bind(this)}
                     >                                
                         💾 Save Config
@@ -599,6 +642,7 @@ class AdminFormConfigure extends AdminFormReserve {
         return (
             <>
                 {this.renderToolbar()}
+                {this.renderConfirmDialog()}
                 {this.renderFormConfigure()}
             </>
         )

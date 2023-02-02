@@ -11,10 +11,7 @@ const AuthLogin  = React.lazy(() => import ("./components/authLogin"));         
 const AuthError  = React.lazy(() => import ("./components/authError"));                  // just to display backend fwded errors in a nice UI
 
 // admin panel apps
-//const AdminViewBase  = React.lazy(() => import ("./components/adminViewBase"));
-const AdminViewConfigure  = React.lazy(() => import ("./components/admin/viewConfigure"));
 const AdminViewHome  = React.lazy(() => import ("./components/admin/viewHome"));
-const AdminViewSettings  = React.lazy(() => import ("./components/admin/viewSettings"));
 const AdminViewDomains  = React.lazy(() => import ("./components/admin/viewDomains"));
 
 
@@ -113,7 +110,7 @@ class AppRoutes extends Component {
             // route for a logged user into the admin panel
                 <Suspense 
                     fallback={this.renderBackground()}>
-                    <AdminViewSettings      // was AdminViewHome but not much home to show...
+                    <AdminViewHome
 
                         // utils
                         version={this.props.version}
@@ -127,8 +124,9 @@ class AppRoutes extends Component {
                         AuthenticationCookieSecret={this.props.AdminCookieSecret}
                         onUpdateCookie = {this.props.onUpdateCookie}
 
-                        // view
-                        view = "home"
+                        // themes (for preview)
+                        theme={this.props.theme}
+                        styles={this.props.styles}
                     />
                 </Suspense> 
                 } exact />
@@ -160,58 +158,6 @@ class AppRoutes extends Component {
                         webAppDomain = {this.props.webAppDomain}
                         
                         // themes (for preview)
-                        theme={this.props.theme}
-                        styles={this.props.styles}
-                    />
-                </Suspense> 
-                } exact />
-
-            <Route  path="/app/settings" element={
-            // route for a logged user into the admin panel
-                <Suspense 
-                    fallback={this.renderBackground()}>
-                    <AdminViewSettings
-
-                        // utils
-                        version={this.props.version}
-                        isDebug={this.props.isDebug}
-                        host={this.props.host}
-                        onRedirect={this.props.onSoftRedirect}
-
-                        // cookie
-                        AuthenticationCookieName={this.props.AdminCookieName}
-                        AuthenticationCookieToken={this.props.AdminCookieToken}
-                        AuthenticationCookieSecret={this.props.AdminCookieSecret}
-                        onUpdateCookie = {this.props.onUpdateCookie}
-
-                        // view
-                        view = "settings"
-                    />
-                </Suspense> 
-                } exact />
-
-            <Route  path="/app/configure" element={
-            // route for configuring a domain by an admin
-                <Suspense 
-                    fallback={this.renderBackground()}>
-                    <AdminViewConfigure
-
-                        // utils
-                        version={this.props.version}
-                        isDebug={this.props.isDebug}
-                        host={this.props.host}
-                        onRedirect={this.props.onSoftRedirect}
-
-                        // cookie
-                        AuthenticationCookieName={this.props.AdminCookieName}
-                        AuthenticationCookieToken={this.props.AdminCookieToken}
-                        AuthenticationCookieSecret={this.props.AdminCookieSecret}
-                        onUpdateCookie = {this.props.onUpdateCookie}
-
-                        // webapp    
-                        webAppId = {this.props.webAppId}
-                        webAppName = {this.props.webAppName}
-                        webAppDomain = {this.props.webAppDomain}
                         theme={this.props.theme}
                         styles={this.props.styles}
                     />

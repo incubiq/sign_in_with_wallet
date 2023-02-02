@@ -1,10 +1,20 @@
 import {Component} from "react";
+import {deleteMeAdmin} from "../../services/me";
+import {WidgetLoading} from "../../utils/widgetLoading"; 
 
 class FormIdentity extends Component {
 
 /*
  *          UI
  */
+
+    onLogout() {
+        // 
+        deleteMeAdmin();
+
+        // redirect to a logout...
+        window.location="/admin/logout";
+    }
 
     render() {
         return(
@@ -14,6 +24,8 @@ class FormIdentity extends Component {
 
                 {this.props.identity ? 
                 <div className="container">
+                    <h2>Your identities</h2>
+
                     <div className="category">
                         <span>You are logged-in </span>
                     </div>
@@ -66,8 +78,22 @@ class FormIdentity extends Component {
                                 disabled = "disabled"
                             />
                     </div>
+
+                    <div 
+                        className={"btn btn-tiny  btn-primary "}
+                        onClick = {this.onLogout.bind(this)}
+                    >                                
+                        Logout
+                    </div>
+
                 </div>
-                :""}
+                :
+                    <WidgetLoading 
+                        isVisible = {true}
+                        fullHeight = {true}
+                        text = "Loading your profile, just a moment..."
+                    />
+                }
 
             </>
             :""}

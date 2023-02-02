@@ -1,6 +1,5 @@
 import AuthAuthenticate from "./authAuthenticate";
 import ViewWallets from "./viewWallets";
-import AdminPanelHeader from "./admin/panelHeader";
 
 // class for logging into SIWW backend (for user "admin" purposes)
 // this is NOT used for oAuth login as an end user
@@ -48,12 +47,6 @@ class AuthLogin extends AuthAuthenticate {
                         onChange = {() => {}}
                     />
                 </form>
-
-                <AdminPanelHeader 
-                    authenticated_wallet_address = {null}
-                    authenticated_wallet_id = {null}
-                    AuthenticationCookieName = {this.props.AuthenticationCookieName}
-                />
 
                 <div className="center-vh">
 

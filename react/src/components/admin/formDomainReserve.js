@@ -16,6 +16,7 @@ class AdminFormReserve extends Component {
 
             // UI / UX
             canValidate: false,
+            hasUpdated: false
         }
     }
 
@@ -125,7 +126,7 @@ class AdminFormReserve extends Component {
                     className="value "
                     id={objParam.id} 
                     disabled={objParam.isDisabled===true? "disabled": ""}
-                    value={that.state[objParam.id]}
+                    value={that.state[objParam.id]? that.state[objParam.id]: ""}
                     placeholder = {objParam.placeholder}
                     onChange={(_event) => {
                         let _obj={};
@@ -135,7 +136,8 @@ class AdminFormReserve extends Component {
                             let _isValid=objParam.fnValidate(_event.target.value);
                             that.changeIcon(_event.target.value, _isValid, "icon_"+objParam.id);    
                         }
-
+                        that.setState({hasUpdated: true});
+                        
                         // enable form button?
                         if(objParam.fnEnableForm) {
                             objParam.fnEnableForm(_event.target.value);
@@ -152,9 +154,26 @@ class AdminFormReserve extends Component {
         )
     }
 
+    renderToolbar( ){
+        return (
+            <div className="toolbar">
+
+                <div 
+                    className={"btn btn-tiny right btn-primary "}
+                    onClick = {this.props.onClickExit}
+                >                                
+                    ❌ Exit
+                </div>
+                            
+            </div>      
+        );
+    }
+
+
     render() {
         let that=this;
         return( <>
+                    {this.renderToolbar()}
                     <div className="appSummary">
 
                         <div className="category">

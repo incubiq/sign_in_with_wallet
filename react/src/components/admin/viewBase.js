@@ -1,5 +1,4 @@
 import AppBase from "../appBase";
-import AdminPanelHeader from "./panelHeader";
 import {srv_getDomains} from "../../services/configure";
 import {getIdentityFromWallet, updatePartialIdentity, getMyConnecteddApps} from "../../services/me";
 import WidgetDialog from "../../utils/widgetDialog"
@@ -172,15 +171,6 @@ class AdminViewBase extends AppBase {
         this.state.onNotifyConfirm(iChoice);
     }
 
-    renderHeader () {
-        return (
-            <AdminPanelHeader 
-                onRedirect = {this.props.onRedirect}
-                view={this.state.view}
-            />            
-        );
-    }
-
     renderContent() {
         return (<>
             <div className="siww_warning_banner">Preview version - will be released OFFICIALLY early 2023...</div>        
@@ -206,7 +196,6 @@ class AdminViewBase extends AppBase {
             <>
                 {this.renderConfirmDialog()}
                 <div className="adminPanel"> 
-                    {this.renderHeader()}                
                     {this.renderContent()}
                     {this.renderFooter()}
                 </div>
