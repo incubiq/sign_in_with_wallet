@@ -12,7 +12,6 @@ const AuthError  = React.lazy(() => import ("./components/authError"));         
 
 // admin panel apps
 const AdminViewHome  = React.lazy(() => import ("./components/admin/viewHome"));
-const AdminViewDomains  = React.lazy(() => import ("./components/admin/viewDomains"));
 
 
 const AppAuthApi  = React.lazy(() => import ("./api/appAuthApi"));
@@ -124,39 +123,6 @@ class AppRoutes extends Component {
                         AuthenticationCookieSecret={this.props.AdminCookieSecret}
                         onUpdateCookie = {this.props.onUpdateCookie}
 
-                        // themes (for preview)
-                        theme={this.props.theme}
-                        styles={this.props.styles}
-                    />
-                </Suspense> 
-                } exact />
-
-            <Route  path="/app/domains" element={
-            // route for a logged user into the admin panel
-                <Suspense 
-                    fallback={this.renderBackground()}>
-                    <AdminViewDomains
-
-                        // utils
-                        version={this.props.version}
-                        isDebug={this.props.isDebug}
-                        host={this.props.host}
-                        onRedirect={this.props.onSoftRedirect}
-
-                        // cookie
-                        AuthenticationCookieName={this.props.AdminCookieName}
-                        AuthenticationCookieToken={this.props.AdminCookieToken}
-                        AuthenticationCookieSecret={this.props.AdminCookieSecret}
-                        onUpdateCookie = {this.props.onUpdateCookie}
-
-                        // view
-                        view = "domains"
-
-                        // webapp    
-                        webAppId = {this.props.webAppId}
-                        webAppName = {this.props.webAppName}
-                        webAppDomain = {this.props.webAppDomain}
-                        
                         // themes (for preview)
                         theme={this.props.theme}
                         styles={this.props.styles}

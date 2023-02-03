@@ -200,7 +200,7 @@ class FormClaimedDomains extends Component {
                     that.onUpdateDomain(id_domain);
                 }}
 
-                isLocalhost= {this.props.webAppId==="localhost"}
+                isLocalhost= {this.state.app_id==="localhost"}
                 app_id= {this.state.app_id}
                 domain_name= {this.state.claimed_domain}
 
