@@ -15,18 +15,15 @@ let gaChain=[{
     connector: CONNECTOR_SYMBOL,
     name: "Solana",
     symbol: "SOL",
-    id: "solana_main",
+    id: "0x1",
     image : "symbol_solana.png"
 }];
 
 let isPhantomEnabled=true;        // oh that s bad... phantom does not know if it was enabled or not... so we have to think yes it was
-const isPhantomInstalled = window.phantom?.solana?.isPhantom;
+let isPhantomInstalled = (window.phantom && window.phantom.solana && window.phantom.solana.isPhantom);
 const getProvider = () => {
-    if ('phantom' in window) {
-      const provider = window.phantom?.solana;
-      if (provider?.isPhantom) {
-        return provider;
-      }
+    if (isPhantomInstalled) {
+      return window.phantom.solana;
     }
     return null;
   };
@@ -56,7 +53,7 @@ export class siwp_connect  extends siww_connect {
     // default chain that must/should be there
     getChainIDs() {
         return {
-            "solana_main": {chain: SOLANA_MAINNET, symbol:"SOL"},
+            "0x1": {chain: SOLANA_MAINNET, symbol:"SOL"},
         }   
     }
     
@@ -153,7 +150,7 @@ export class siwp_connect  extends siww_connect {
             const provider = getProvider();            
             const encodedMessage = new TextEncoder().encode(objRet.msg);
             const _signed = await provider.signMessage(encodedMessage, "utf8");
-            objRet.key= _signed.publicKey;
+            objRet.key= _signed.publicKey.toBase58();
             objRet.signature= _signed.signature;
             return objRet;    
         }
