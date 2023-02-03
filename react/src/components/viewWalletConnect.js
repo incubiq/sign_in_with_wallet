@@ -1,7 +1,7 @@
 import {Component} from "react";
 import {CRITICALITY_SEVERE} from "../const/message";
 
-let isMounted=false;
+let _isMounted=false;
 class ViewWalletConnect extends Component {
 
 /*
@@ -16,12 +16,16 @@ class ViewWalletConnect extends Component {
     }
 
     componentDidMount() {
-        isMounted=true;
+        _isMounted=true;
     }
 
     componentWillUnmount() {
-        isMounted=false;
+        // a bit shit, we remove the connecting effect before unmounting
+        this.setState({isConnecting: false});
+        _isMounted=false;
     }
+
+    isMounted( ){return _isMounted}
 
 /*
  *      UI
@@ -35,7 +39,7 @@ class ViewWalletConnect extends Component {
             let _id=idElt.getAttribute("attr-id");
             
             // waiting/loading effect
-            if(isMounted) {
+            if(this.isMounted()) {
                 this.setState({isConnecting: true});
                 if(this.props.fnShowMessage) {
                     this.props.fnShowMessage({
@@ -46,7 +50,9 @@ class ViewWalletConnect extends Component {
             }
 
             let data=await this.props.onConnect(_id);
-            this.setState({isConnecting: false});
+            if(this.isMounted()) {
+                this.setState({isConnecting: false});
+            }
 
             if(data.error) {
                 if(this.props.fnShowMessage) {
@@ -58,7 +64,7 @@ class ViewWalletConnect extends Component {
                 }
             }
             else {
-                if(data.didUserAccept && isMounted) {
+                if(data.didUserAccept && this.isMounted()) {
                     if(this.props.fnShowMessage) {
                         this.props.fnShowMessage({
                             message: "Connected to your <b>"+_id+"</b> wallet...", 
@@ -77,9 +83,9 @@ class ViewWalletConnect extends Component {
         let msg=null;
         
         if(_id && bOver && this.props.fnShowMessage && !this.state.isConnecting) {
-            msg=this.props.isConnected ? 
-                "Click to choose <strong>"+_id+"</strong> wallet as the signing identity."
-                : "Click to add <strong>"+_id+"</strong> wallet as a signing identity.";
+            // default message if select Wallet Connect OR Identity
+            msg="Click to choose <strong>"+_id+"</strong> wallet as the signing identity."
+            if(this.props.isConnected===false) {msg="Click to add <strong>"+_id+"</strong> wallet as a signing identity."}
         }
 
         if(msg) {

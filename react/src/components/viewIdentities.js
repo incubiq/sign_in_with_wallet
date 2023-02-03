@@ -34,6 +34,7 @@ class ViewIdentities extends Component {
                                 onHover={objParam.onHover}
                                 index = {index}
                                 key={index}
+                                fnShowMessage={this.props.fnShowMessage}
                             />
                         ))}
                     </ul>

@@ -216,6 +216,7 @@ class AuthAuthorize extends AuthAuthenticate {
                                 aIdentity = {this.state.aIdentity}
                                 onHover = {this.onHover.bind(this)}
                                 onSelect= {this.onChangeIdentity.bind(this)}
+                                fnShowMessage={this.showMessage.bind(this)}              
                             />
                         }
 
