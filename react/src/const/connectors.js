@@ -4,7 +4,8 @@
   const CONNECTOR_SIWC = "SIWC"
   const CONNECTOR_SIWM = "SIWM"
   const CONNECTOR_SIWK = "SIWK"
-  
+  const CONNECTOR_SIWP = "SIWP"
+
   const getDefault = () => {
     return {
       symbol: CONNECTOR_SIWW,           // for internal use
@@ -19,7 +20,7 @@
   
   const getConnectors = () => {
     let objRet = {
-      aConnector:  [CONNECTOR_SIWC, CONNECTOR_SIWM, CONNECTOR_SIWK],
+      aConnector:  [CONNECTOR_SIWC, CONNECTOR_SIWM, CONNECTOR_SIWK, CONNECTOR_SIWP],
     }
 
     objRet[CONNECTOR_SIWC] = {
@@ -52,6 +53,16 @@
       window: "keplr",                   // the window element to explore
     }
 
+    objRet[CONNECTOR_SIWP] = {
+      symbol: CONNECTOR_SIWP,            // for internal use
+      connector_name: "Phantom",         // name of this connector
+      aAcceptedBlockchain: [],           // will be filled from Connector itself
+      wallet_name: "Phantom",            // target display name
+      wallet_logo: "/assets/images/phantom.png",
+      blockchain_name: "Phantom",        // blockchain name  (can be changed by connector)
+      window: "phantom",                 // the window element to explore
+    }
+
     return objRet;
   }
 
@@ -59,6 +70,7 @@ export {
   CONNECTOR_SIWC,
   CONNECTOR_SIWM,
   CONNECTOR_SIWK,
+  CONNECTOR_SIWP,
   getConnectors,
   getDefault
 };
