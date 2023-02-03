@@ -59,11 +59,6 @@ const CARDANO_MAINNET = "Cardano Mainnet"
 
 const DEPRECATED_WALLETS = ["ccvault"]          // ID of all wallets we are not going to accept
 
-// we ONLY list PROD chains here
-const chainIDs =  {
-    "1": {chain: CARDANO_MAINNET, symbol:"ADA"},
-}
-
 export class siwc_connect  extends siww_connect {
 
 //
@@ -71,21 +66,9 @@ export class siwc_connect  extends siww_connect {
 //
 
     createDefaultWallet(_idWallet) {
-        let objDefault={
-            chain: CARDANO_NETWORK,
-            connector: CONNECTOR_SYMBOL,
-            id: _idWallet,                                            // id of wallet
-            api: null,
-            apiVersion: null,
-            name: null,
-            logo: null,
-            isEnabled: false,
-            isOnProd: false,
-            hasReplied: false,
-            networkId: 0,
-            address: null
-        }
+        let objDefault=super.createDefaultWallet(_idWallet);    
         if(window && window.cardano) {
+            objDefault.chain=CARDANO_NETWORK;
             objDefault.apiVersion=window.cardano[_idWallet].apiVersion;     // get API version of wallet
             objDefault.name=window.cardano[_idWallet].name;                 // get name of wallet
             objDefault.logo=window.cardano[_idWallet].icon;                 // get get wallet logo
@@ -94,18 +77,23 @@ export class siwc_connect  extends siww_connect {
         return this.getSanitizedWallet(objDefault);
     }
 
+    getConnectorSymbol() {return CONNECTOR_SYMBOL}
+
+    // we ONLY list PROD chains here
+    getChainIDs() {
+        return {
+            "1": {chain: CARDANO_MAINNET, symbol:"ADA"},
+        }
+    }
+
     getAcceptedChains() {
         return [{
-            connector: CONNECTOR_SYMBOL,
+            connector: this.getConnectorSymbol(),
             name: CARDANO_MAINNET,
             symbol: "ADA",
             id: 1,
             image : "symbol_cardano.png"        // sorry, hardcoded
         }];
-    }
-
-    getConnectorSymbol() {
-        return CONNECTOR_SYMBOL;
     }
 
     getConnectorMetadata (){
@@ -176,40 +164,6 @@ export class siwc_connect  extends siww_connect {
         return _isEnabled;
     }
 
-    async async_getConnectedWalletExtendedInfo(_id){
-        let _objWallet=null;
-        try {
-            _objWallet=this.getWalletFromList(_id);
-            if(!_objWallet)  {
-                throw new Error("Could not find wallet "+_id);
-            }
-
-            // are we enabled?
-            _objWallet=_objWallet.wallet;
-            if(!_objWallet.api && _objWallet.id!==null) {
-                _objWallet.api = await this.async_enableWallet(_objWallet.id);
-            }
-
-            if(!_objWallet.api) {
-                throw new Error("Bad params");
-            }
-
-            let _networkId = await _objWallet.api.getNetworkId();
-            let _aChain=this.getAcceptedChains();
-            let iChain=_aChain.findIndex(function (x) {return x.id===_networkId});
-            _objWallet.networkId = _networkId;
-            _objWallet.isOnProd=chainIDs[_networkId]!==null;
-            _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
-            _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo(_networkId) ;
-            _objWallet.isEnabled=true;
-            return _objWallet;
-        }
-        catch(err) {
-            if(_objWallet) {_objWallet.isEnabled=false;}
-            return _objWallet;
-        }
-    }
-
 //
 //      Misc access to wallet public info
 //
@@ -246,39 +200,35 @@ export class siwc_connect  extends siww_connect {
         return null;
     }
 
-    // Sign a message
-    async async_signMessage(_idWallet, objSiwcMsg, type){
+    // Sign a message on Cardano chain
+    async async_signMessageOnly(objSiwcMsg, type, unused){
         try {
-            let COSESign1Message=null;
+            // get signing address
             const usedAddresses = await objSiwcMsg.api.getUsedAddresses();
             const usedAddress = usedAddresses[0];
 
-            let msg=this.getMessageAsText(objSiwcMsg, type);
-            let _hex= Buffer.from(msg).toString('hex');
+            // cardano specials, we swap signing address 
+            objSiwcMsg.address=usedAddress;
 
-            // get key and signature
-            COSESign1Message = await objSiwcMsg.api.signData(usedAddress, _hex);            
-            COSESign1Message.buffer = _hex;     // add buffer
+            // validate address and encode message
+            let objRet=await super.async_signMessageOnly(objSiwcMsg, type, usedAddress);
 
-            // notify?
-            if(this.fnOnNotifySignedMessage) {
-                this.fnOnNotifySignedMessage(COSESign1Message);
+            // sign via wallet
+            try{
+                let _signed = await objSiwcMsg.api.signData(usedAddress, objRet.buffer);            
+                objRet.key=_signed.key;
+                objRet.signature = _signed.signature;    
+                return objRet;    
             }
-
-            // add info for server side validation
-            COSESign1Message.valid_for=objSiwcMsg.valid_for;
-            COSESign1Message.issued_at=objSiwcMsg.issued_at;
-            COSESign1Message.address=usedAddress;
-            COSESign1Message.connector=CONNECTOR_SYMBOL;
-            COSESign1Message.type=type;
-            return COSESign1Message;
-
+            catch(err) {
+                throw new Error(err.info);
+            }
         }
-        catch(err) {
-            console.log (err.info);
-            throw new Error(err.info);
+        catch (err) {
+            throw err;
         }
     }
+
 }
 
 export default siwc_connect;

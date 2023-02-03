@@ -8,14 +8,14 @@ const CONNECTOR_SYMBOL = "SIWP"
 const CONNECTOR_NAME = "Phantom"
 const WALLET_NAME = "Phantom"
 
-const KEPLR_SOLANA_NETWORK = "Solana"
-const KEPLR_SOLANA_MAINNET = "Solana Mainnet"
+const SOLANA_NETWORK = "Solana"
+const SOLANA_MAINNET = "Solana Mainnet"
 
 let gaChain=[{
     connector: CONNECTOR_SYMBOL,
     name: "Solana",
     symbol: "SOL",
-    id: "???",
+    id: "solana_main",
     image : "symbol_solana.png"
 }];
 
@@ -38,42 +38,34 @@ export class siwp_connect  extends siww_connect {
 //
 
     createDefaultWallet(_idWallet) {
-        let objDefault={
-            chain: null,                       
-            connector: CONNECTOR_SYMBOL,
-            id: _idWallet,                                            // id of wallet
-            api: null,
-            apiVersion: null,
-            name: null,
-            logo: null,
-            isEnabled: false,
-            isOnProd: false,
-            hasReplied: false,
-            networkId: 0,
-            address: null
-        }
-        if(window && window.keplr) {
-            objDefault.chain=KEPLR_SOLANA_MAINNET;                 // by default we plug on this chain 
+        let objDefault=super.createDefaultWallet(_idWallet);    
+        if(isPhantomInstalled) {
+            objDefault.chain=SOLANA_MAINNET;               // by default we plug on this chain 
             objDefault.name=WALLET_NAME;                           // get name of wallet
             objDefault.logo="/assets/images/phantom.png";          // get get wallet logo ; sorry it s hardcoded
         }
         return this.getSanitizedWallet(objDefault);
     }
 
+    getConnectorSymbol() {return CONNECTOR_SYMBOL}
+
     getAcceptedChains() {
         return gaChain;
     }
 
-    getConnectorSymbol() {
-        return CONNECTOR_SYMBOL;
+    // default chain that must/should be there
+    getChainIDs() {
+        return {
+            "solana_main": {chain: SOLANA_MAINNET, symbol:"SOL"},
+        }   
     }
-
+    
     getConnectorMetadata (){
         return {
             symbol: CONNECTOR_SYMBOL,         // symbol
             connector_name: CONNECTOR_NAME,   // name of this connector
             wallet_name: CONNECTOR_NAME,      // target display name
-            blockchain_name: KEPLR_SOLANA_MAINNET,  // blockchain name
+            blockchain_name: SOLANA_MAINNET,  // blockchain name
             window: "phantom",                  // the window element to explore            
         }
     }
@@ -114,9 +106,13 @@ export class siwp_connect  extends siww_connect {
                 throw new Error("No Phantom installed");
             }
             
+            let _chainId=this.getAcceptedChains()[0].id;    // getting the first chain listed 
             const provider = getProvider();
             const resp = await provider.connect();
             _api={
+                getNetworkId: function(){
+                    return _chainId;
+                }
             }// no api here... but compatibility...
         }
         catch(err) {
@@ -131,44 +127,11 @@ export class siwp_connect  extends siww_connect {
         return _isEnabled;
     }
 
-    async async_getConnectedWalletExtendedInfo(_id){
-        let _objWallet=null;
-        try {
-            _objWallet=this.getWalletFromList(_id);
-            if(!_objWallet)  {
-                throw new Error("Could not find wallet "+_id);
-            }
-
-            _objWallet=_objWallet.wallet;
-            if(!_objWallet.api && _objWallet.id!==null) {
-                _objWallet.api = await this.async_enableWallet(_id);
-            }
-
-            if(!_objWallet.api) {
-                throw new Error("Bad params");
-            }
-
-            let _networkId = "???";
-            let _aChain=this.getAcceptedChains();
-            let iChain=_aChain.findIndex(function (x) {return x.id===_networkId});
-            _objWallet.networkId = _networkId;
-            _objWallet.isOnProd=true;
-            _objWallet.address=await this._async_getFirstAddress(_networkId);
-            _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo(_networkId) ;
-            _objWallet.isEnabled=true;
-            return _objWallet;
-        }
-        catch(err) {
-            _objWallet.isEnabled=false;
-            return _objWallet;
-        }
-    }
-
 //
 //      Misc access to wallet public info
 //
 
-    async _async_getFirstAddress() {
+    async _async_getFirstAddress(_api) {
         try {
             return getProvider().publicKey.toString();
         } catch (err) {
@@ -176,49 +139,29 @@ export class siwp_connect  extends siww_connect {
         }
         return null;
     }
-
-    // Sign a message
-    async async_signMessage(_idWallet, objSiwcMsg, type){
+    
+    // Sign a message via Phantom
+    async async_signMessageOnly(objSiwcMsg, type, unused){
         try {
-            // damn keplr cannot know if it s been enabled already... so we force it here in case it was not...
-            this.async_enableWallet();
+            // get signing address
+            const usedAddress = await this._async_getFirstAddress(objSiwcMsg.api);
+    
+            // validate address and encode message
+            let objRet=await super.async_signMessageOnly(objSiwcMsg, type, usedAddress);
 
-            const address = await this._async_getFirstAddress();
-            if(address!==objSiwcMsg.address) {
-                throw new Error("Public address does not match");
-            }
-
-            let msg=this.getMessageAsText(objSiwcMsg, type);
-            let _hex= Buffer.from(msg).toString('hex');
-
+            // sign via wallet
             const provider = getProvider();            
-            const encodedMessage = new TextEncoder().encode(msg);
+            const encodedMessage = new TextEncoder().encode(objRet.msg);
             const _signed = await provider.signMessage(encodedMessage, "utf8");
-
-            let COSESign1Message={
-                buffer: _hex,
-                key: _signed.publicKey,
-                signature: _signed.signature
-            }
-            // notify?
-            if(this.fnOnNotifySignedMessage) {
-                this.fnOnNotifySignedMessage(COSESign1Message);
-            }
-
-            // add info for server side validation
-            COSESign1Message.valid_for=objSiwcMsg.valid_for;
-            COSESign1Message.issued_at=objSiwcMsg.issued_at;
-            COSESign1Message.address=address;
-            COSESign1Message.chain=_idWallet;
-            COSESign1Message.connector=CONNECTOR_SYMBOL;
-            COSESign1Message.type=type;
-            return COSESign1Message;
+            objRet.key= _signed.publicKey;
+            objRet.signature= _signed.signature;
+            return objRet;    
         }
-        catch(err) {
-            console.log (err.message);
-            throw new Error(err.message);
+        catch (err) {
+            throw err;
         }
     }
+
 }
 
 export default siwp_connect;

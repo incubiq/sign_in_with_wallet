@@ -15,17 +15,21 @@ export class siww_connect {
     createDefaultWallet(_idWallet) {
         return {
             chain: null,
-            connector: CONNECTOR_SYMBOL,
+            connector: this.getConnectorSymbol(),
             id: _idWallet,
+            api: null,
+            apiVersion: null,
             name: null,
             logo: null,
-            isConnected: false,
+            isEnabled: false,
             isOnProd: false,
             hasReplied: false,
             networkId: 0,
             address: null
         }
     }
+
+    getConnectorSymbol() {return CONNECTOR_SYMBOL}
 
     getUnknownChainInfo(_networkId) {
         return {
@@ -237,14 +241,46 @@ export class siww_connect {
         return false;
     }
 
+//
+//      Common implementation
+//
+
     async async_getConnectedWalletExtendedInfo(_id){
-        // should never get called here...
-        return this._createDefaultWallet();
+        let _objWallet=null;
+        try {
+            _objWallet=this.getWalletFromList(_id);
+            if(!_objWallet)  {
+                throw new Error("Could not find wallet "+_id);
+            }
+
+            // are we enabled?
+            _objWallet=_objWallet.wallet;
+            if(!_objWallet.api && _objWallet.id!==null) {
+                _objWallet.api = await this.async_enableWallet(_objWallet.id);
+            }
+
+            if(!_objWallet.api) {
+                throw new Error("Bad params");
+            }
+
+            let _networkId = await _objWallet.api.getNetworkId();
+            let _aChain=this.getAcceptedChains();
+            let iChain=_aChain.findIndex(function (x) {return x.id===_networkId});
+            _objWallet.networkId = _networkId;
+            _objWallet.isOnProd=this.getChainIDs()[_networkId]!==null;
+            _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
+            _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo(_networkId) ;
+            _objWallet.isEnabled=true;
+            return _objWallet;
+        }
+        catch(err) {
+            if(_objWallet) {_objWallet.isEnabled=false;}
+            return _objWallet;
+        }
     }
 
-
 //
-//      Messages (still in progress)
+//      Messages 
 //
 
     // An input message must have all those params:
@@ -345,8 +381,58 @@ export class siww_connect {
     //  "authentication" : for authenticating user
     //  "revocation" : for revocating consent of data shared by user with domain
     //
-    async async_signMessage(_idWallet, objMsg, type){
-        // implement at higher level
+
+    // Sign a message (blockchain specific, implement on top class)
+    async async_signMessageOnly(objSiwcMsg, type, address){
+        try {
+            if(address!==objSiwcMsg.address) {
+                throw new Error("Public address does not match");
+            }
+    
+            let msg=this.getMessageAsText(objSiwcMsg, type);
+            let _hex= Buffer.from(msg).toString('hex');
+            return {
+                msg: msg,
+                buffer: _hex,
+                key: null,
+                signature: null
+            }    
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
+    // Sign a message
+    async async_signMessage(_idWallet, objSiwcMsg, type){
+        try {
+            // we make sure the weallet is enabled...
+            this.async_enableWallet();
+
+            let COSESign1Message=null;
+
+            // get key and signature            
+            COSESign1Message = await this.async_signMessageOnly(objSiwcMsg, type, null);
+
+            // notify?
+            if(this.fnOnNotifySignedMessage) {
+                this.fnOnNotifySignedMessage(COSESign1Message);
+            }
+
+            // add info for server side validation
+            COSESign1Message.valid_for=objSiwcMsg.valid_for;
+            COSESign1Message.issued_at=objSiwcMsg.issued_at;
+            COSESign1Message.address=objSiwcMsg.address;
+            COSESign1Message.chain=objSiwcMsg.chain;
+            COSESign1Message.connector=this.getConnectorSymbol();
+            COSESign1Message.type=type;
+            return COSESign1Message;
+
+        }
+        catch(err) {
+            console.log (err);
+            throw err;
+        }
     }
     
     // format a message for showing in wallet

@@ -17,20 +17,6 @@ const METAMASK_AVAX_MAINNET =  "Avalanche C-Chain"
 const METAMASK_FTM_MAINNET =  "Fantom Opera"
 const METAMASK_EVMOS_MAINNET =  "Evmos"
 
-// we ONLY list PROD chains here
-const chainIDs =  {
-    "1": {chain: METAMASK_ETH_MAINNET, symbol:"ETH"},
-    "56": {chain: METAMASK_BSC_MAINNET, symbol:"BNB"},
-    "137": {chain: "Polygon Mainnet", symbol: "MATIC"},
-    "42161": {chain: "Arbitrum One", symbol: "ETH"},
-    "43114": {chain: "Avalanche C-Chain", symbol: "AVAX"},
-    "10": {chain: "Optimism", symbol: "ETH"},
-    "250": {chain: "Fantom Opera", symbol: "FTM"},
-    "42220": {chain: "Celo Mainnet", symbol: "CELO"},
-    "9001": {chain: "Evmos", symbol: "Evmos"},
-    "2203": {chain: "Bitcoin EVM", symbol: "eBTC"}
-};      // find more here : https://chainlist.org/  and this one : https://github.com/ethereum-lists/chains/tree/master/_data
-
 
 export class siwm_connect  extends siww_connect {
 
@@ -39,27 +25,17 @@ export class siwm_connect  extends siww_connect {
 //
 
     createDefaultWallet(_idWallet) {
-        let objDefault={
-            chain: null,
-            connector: CONNECTOR_SYMBOL,
-            id: _idWallet,                                            // id of wallet
-            api: null,
-            apiVersion: null,
-            name: null,
-            logo: null,
-            isEnabled: false,
-            isOnProd: false,
-            hasReplied: false,
-            networkId: 0,
-            address: null
-        }
+        let objDefault=super.createDefaultWallet(_idWallet);    
         if(window && window.ethereum && window.ethereum.isMetaMask) {
+            objDefault.chain=METAMASK_ETH_MAINNET;
             objDefault.name="Metamask";                 // get name of wallet
             objDefault.logo="/assets/images/metamask.png";                 // get get wallet logo ; sorry it s hardcoded
         }
 
         return this.getSanitizedWallet(objDefault);
     }
+
+    getConnectorSymbol() {return CONNECTOR_SYMBOL}
 
     getAcceptedChains() {
         return [{
@@ -95,8 +71,20 @@ export class siwm_connect  extends siww_connect {
         }];
     }
 
-    getConnectorSymbol() {
-        return CONNECTOR_SYMBOL;
+    // we ONLY list PROD chains here
+    getChainIDs() {
+        return {
+            "1": {chain: METAMASK_ETH_MAINNET, symbol:"ETH"},
+            "56": {chain: METAMASK_BSC_MAINNET, symbol:"BNB"},
+            "137": {chain: "Polygon Mainnet", symbol: "MATIC"},
+            "42161": {chain: "Arbitrum One", symbol: "ETH"},
+            "43114": {chain: "Avalanche C-Chain", symbol: "AVAX"},
+            "10": {chain: "Optimism", symbol: "ETH"},
+            "250": {chain: "Fantom Opera", symbol: "FTM"},
+            "42220": {chain: "Celo Mainnet", symbol: "CELO"},
+            "9001": {chain: "Evmos", symbol: "Evmos"},
+            "2203": {chain: "Bitcoin EVM", symbol: "eBTC"}
+        };      // find more here : https://chainlist.org/  and this one : https://github.com/ethereum-lists/chains/tree/master/_data
     }
 
     getConnectorMetadata (){
@@ -141,7 +129,11 @@ export class siwm_connect  extends siww_connect {
         let _api=null;
         try {
             await web3.eth.requestAccounts();
-            _api=function(){};  // no api here... but compatibility...
+            _api={
+                getNetworkId: function(){
+                    return parseInt(window.ethereum.networkVersion);
+                }
+            }// no api here... but compatibility...
         }
         catch(err) {
             console.log ("Wallet connection refused ")
@@ -164,39 +156,6 @@ export class siwm_connect  extends siww_connect {
         return _isEnabled;
     }
 
-    async async_getConnectedWalletExtendedInfo(_id){
-        let _objWallet=null;
-        try {
-            _objWallet=this.getWalletFromList(_id);
-            if(!_objWallet)  {
-                throw new Error("Could not find wallet "+_id);
-            }
-
-            _objWallet=_objWallet.wallet;
-            if(!_objWallet.api && _objWallet.id!==null) {
-                _objWallet.api = await this.async_enableWallet(_objWallet.id);
-            }
-
-            if(!_objWallet.api) {
-                throw new Error("Bad params");
-            }
-
-            let _networkId = parseInt(window.ethereum.networkVersion);
-            let _aChain=this.getAcceptedChains();
-            let iChain=_aChain.findIndex(function (x) {return x.id===_networkId});
-            _objWallet.networkId = _networkId;
-            _objWallet.isOnProd=chainIDs[window.ethereum.networkVersion]!==null;
-            _objWallet.address=await this._async_getFirstAddress(_objWallet.api);
-            _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo(_networkId) ;
-            _objWallet.isEnabled=true;
-            return _objWallet;
-        }
-        catch(err) {
-            _objWallet.isEnabled=false;
-            return _objWallet;
-        }
-    }
-
 //
 //      Misc access to wallet public info
 //
@@ -216,44 +175,28 @@ export class siwm_connect  extends siww_connect {
         }
         return null;
     }
-
-    // Sign a message
-    async async_signMessage(_idWallet, objSiwcMsg, type){
+    
+    // Sign a message via Metamask
+    async async_signMessageOnly(objSiwcMsg, type, unused){
         try {
+            // get signing address
             const usedAddresses = await web3.eth.getAccounts();
             const usedAddress = usedAddresses[0];
+    
+            // validate address and encode message
+            let objRet=await super.async_signMessageOnly(objSiwcMsg, type, usedAddress);
 
-            if(usedAddress!==objSiwcMsg.address) {
-                throw new Error("Public address does not match");
-            }
-
-            let msg=this.getMessageAsText(objSiwcMsg, type);
-            let _hex= Buffer.from(msg).toString('hex');
-            let _signed = await web3.eth.personal.sign(msg, objSiwcMsg.address);
-            let COSESign1Message={
-                buffer: _hex,
-                key: null,
-                signature: _signed
-            }
-            // notify?
-            if(this.fnOnNotifySignedMessage) {
-                this.fnOnNotifySignedMessage(COSESign1Message);
-            }
-
-            // add info for server side validation
-            COSESign1Message.valid_for=objSiwcMsg.valid_for;
-            COSESign1Message.issued_at=objSiwcMsg.issued_at;
-            COSESign1Message.address=usedAddress;
-            COSESign1Message.connector=CONNECTOR_SYMBOL;
-            COSESign1Message.type=type;
-            return COSESign1Message;
-
+            // sign via wallet
+            let _signed = await web3.eth.personal.sign(objRet.msg, usedAddress);
+            objRet.key=null;
+            objRet.signature =_signed;
+            return objRet;    
         }
-        catch(err) {
-            console.log (err.message);
-            throw new Error(err.message);
+        catch (err) {
+            throw err;
         }
     }
+
 }
 
 export default siwm_connect;
