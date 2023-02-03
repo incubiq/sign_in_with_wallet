@@ -5,14 +5,14 @@
 import {siwc_connect} from "./siwc_connect"
 import {siwm_connect} from "./siwm_connect"
 import {siwk_connect} from "./siwk_connect"
-//import {siwp_connect} from "./siwp_connect"
+import {siwp_connect} from "./siwp_connect"
 
 
 const siwc=new siwc_connect();          // Cardano support (all wallets)
 const siwm=new siwm_connect();          // Ethereum support (via Metamask)
 const siwk=new siwk_connect();          // Cosmos support (via Keplr)
-//const siwp=new siwp_connect();          // Solana support (via Phantom)
-let aConnector=[siwc, siwm, siwk];
+const siwp=new siwp_connect();          // Solana support (via Phantom)
+let aConnector=[siwc, siwm, siwk, siwp];
 
 export class siww {
     
@@ -25,7 +25,7 @@ export class siww {
         if(_symbol===siwc.getConnectorSymbol()) {return siwc}
         if(_symbol===siwm.getConnectorSymbol()) {return siwm}
         if(_symbol===siwk.getConnectorSymbol()) {return siwk}
-//        if(_symbol===siwp.getConnectorSymbol()) {return siwp}
+        if(_symbol===siwp.getConnectorSymbol()) {return siwp}
         return null;
     }
 
@@ -56,7 +56,7 @@ export class siww {
     _fillMetadata(siwc, objRet);        // add SIWC
     _fillMetadata(siwm, objRet);        // add SIWM
     _fillMetadata(siwk, objRet);        // add SIWK
-//    _fillMetadata(siwp, objRet);        // add SIWP
+    _fillMetadata(siwp, objRet);        // add SIWP
 
     return objRet;
   }

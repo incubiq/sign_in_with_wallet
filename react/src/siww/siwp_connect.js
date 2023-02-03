@@ -4,27 +4,32 @@
 
 import {siww_connect} from "./siww_connect"
 
-const CONNECTOR_SYMBOL = "SIWS"
+const CONNECTOR_SYMBOL = "SIWP"
 const CONNECTOR_NAME = "Phantom"
+const WALLET_NAME = "Phantom"
 
 const KEPLR_SOLANA_NETWORK = "Solana"
 const KEPLR_SOLANA_MAINNET = "Solana Mainnet"
 
-// default chain that must/should be there
-const chainIDs =  {
-    "cosmoshub-4": {chain: KEPLR_SOLANA_MAINNET, symbol:"ATOM"},
-};      
-
 let gaChain=[{
     connector: CONNECTOR_SYMBOL,
-    name: "Cosmos Hub",
-    symbol: "ATOM",
-    id: "cosmoshub-4",
-    image : "symbol_atom.png"
+    name: "Solana",
+    symbol: "SOL",
+    id: "???",
+    image : "symbol_solana.png"
 }];
 
-let isKeplrEnabled=true;        // oh that s bad... keplr does not know if it was enabled or not... so we have to think yes it was
-let myKeplr=null;
+let isPhantomEnabled=true;        // oh that s bad... phantom does not know if it was enabled or not... so we have to think yes it was
+const isPhantomInstalled = window.phantom?.solana?.isPhantom;
+const getProvider = () => {
+    if ('phantom' in window) {
+      const provider = window.phantom?.solana;
+      if (provider?.isPhantom) {
+        return provider;
+      }
+    }
+    return null;
+  };
 
 export class siwp_connect  extends siww_connect {
 
@@ -49,30 +54,14 @@ export class siwp_connect  extends siww_connect {
         }
         if(window && window.keplr) {
             objDefault.chain=KEPLR_SOLANA_MAINNET;                 // by default we plug on this chain 
-            objDefault.name="Keplr";                             // get name of wallet
-            objDefault.logo="/assets/images/keplr.png";          // get get wallet logo ; sorry it s hardcoded
+            objDefault.name=WALLET_NAME;                           // get name of wallet
+            objDefault.logo="/assets/images/phantom.png";          // get get wallet logo ; sorry it s hardcoded
         }
         return this.getSanitizedWallet(objDefault);
     }
 
     getAcceptedChains() {
         return gaChain;
-    }
-
-    registerChains(_aChain) {
-        if(!_aChain) {return}
-        for(var i=0; i<_aChain.length; i++) {
-            let _isRegistered=gaChain.findIndex(function (x) {return x.id===_aChain[i].chainId});
-            if(_isRegistered===-1) {
-                gaChain.push({
-                    connector: CONNECTOR_SYMBOL,
-                    name: _aChain[i].chainName,
-                    symbol: (_aChain[i].currencies && _aChain[i].currencies.length>0? _aChain[i].currencies[0].coinDenom: null),
-                    id: _aChain[i].chainId,
-                    image : "/assets/images/symbol_unknown.png"
-                })
-            }
-        }
     }
 
     getConnectorSymbol() {
@@ -100,8 +89,8 @@ export class siwp_connect  extends siww_connect {
     async async_onListAccessibleWallets() {
         try {
             let _aWallet=[];
-            if(window && window.keplr) {
-                let objWallet = await this.async_getDefaultWalletInfo("Keplr");
+            if(isPhantomInstalled) {
+                let objWallet = await this.async_getDefaultWalletInfo(WALLET_NAME);
 
                 // push info for connection
                 _aWallet.push(this.getSanitizedWallet(objWallet));
@@ -121,28 +110,14 @@ export class siwp_connect  extends siww_connect {
         let _api=null;
         try {
 
-            // todo for later... we can get the list of all chains on this wallet
-//            let aChain = await window.keplr.getChainInfosWithoutEndpoints();
-//            this.registerChains(aChain);
-
-            // we set the keplr instance to use
-            let _chainId=this.getAcceptedChains()[0].id;    // getting the first chain listed 
-            let _temp= await window.keplr.getOfflineSigner(_chainId);
-            if(_temp && _temp.keplr) {myKeplr=_temp.keplr} else {myKeplr=window.keplr}
-
-            if(!myKeplr) {
-                throw new Error("No Keplr installed");
+            if(!isPhantomInstalled) {
+                throw new Error("No Phantom installed");
             }
             
-            await myKeplr.enable(_chainId);   
+            const provider = getProvider();
+            const resp = await provider.connect();
             _api={
-                getChainId: function(){
-                    return _chainId;
-                }
             }// no api here... but compatibility...
-
-            // we know it s enabled from this point
-            isKeplrEnabled=true;
         }
         catch(err) {
             console.log ("Wallet connection refused ")
@@ -152,7 +127,8 @@ export class siwp_connect  extends siww_connect {
     }
 
     async async_isWalletEnabled(idWallet) {        
-        return (window.keplr && isKeplrEnabled);
+        let _isEnabled=isPhantomInstalled && isPhantomEnabled;
+        return _isEnabled;
     }
 
     async async_getConnectedWalletExtendedInfo(_id){
@@ -172,11 +148,11 @@ export class siwp_connect  extends siww_connect {
                 throw new Error("Bad params");
             }
 
-            let _networkId = _objWallet.api.getChainId();
+            let _networkId = "???";
             let _aChain=this.getAcceptedChains();
             let iChain=_aChain.findIndex(function (x) {return x.id===_networkId});
             _objWallet.networkId = _networkId;
-            _objWallet.isOnProd=chainIDs[_networkId]!==null;
+            _objWallet.isOnProd=true;
             _objWallet.address=await this._async_getFirstAddress(_networkId);
             _objWallet.chain= iChain>=0 ? _aChain[iChain] : this.getUnknownChainInfo(_networkId) ;
             _objWallet.isEnabled=true;
@@ -192,12 +168,9 @@ export class siwp_connect  extends siww_connect {
 //      Misc access to wallet public info
 //
 
-    async _async_getFirstAddress(_chainId) {
+    async _async_getFirstAddress() {
         try {
-            // get the account
-            const offlineSigner = window.keplr.getOfflineSigner(_chainId);
-            const accounts = await offlineSigner.getAccounts();
-            return (accounts && accounts.length>0 ? accounts[0].address : null);
+            return getProvider().publicKey.toString();
         } catch (err) {
             console.log (err.message)
         }
@@ -210,21 +183,21 @@ export class siwp_connect  extends siww_connect {
             // damn keplr cannot know if it s been enabled already... so we force it here in case it was not...
             this.async_enableWallet();
 
-            let _chainId=this.getAcceptedChains()[0].id;    // getting the first chain listed 
-            const address = await this._async_getFirstAddress(_chainId);
-
+            const address = await this._async_getFirstAddress();
             if(address!==objSiwcMsg.address) {
                 throw new Error("Public address does not match");
             }
 
             let msg=this.getMessageAsText(objSiwcMsg, type);
             let _hex= Buffer.from(msg).toString('hex');
-            let _signed = await myKeplr.signArbitrary(_chainId, address, msg);
-//            let _verif = await myKeplr.verifyArbitrary(_chainId, address, msg, _signed);      // we are not using this... validation is made on server
+
+            const provider = getProvider();            
+            const encodedMessage = new TextEncoder().encode(msg);
+            const _signed = await provider.signMessage(encodedMessage, "utf8");
 
             let COSESign1Message={
                 buffer: _hex,
-                key: _signed.pub_key,
+                key: _signed.publicKey,
                 signature: _signed.signature
             }
             // notify?
