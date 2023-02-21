@@ -26,7 +26,9 @@ const getMyIdentities = () => {
     let _aRet=[];
     if(objMe && objMe.identities) {
       objMe.identities.forEach(item => {
-        if(item.connector && item.wallet_id) {
+        // do not accept duplicates 
+        let i=_aRet.findIndex(function (x) {return x.username===item.username});
+        if(item.connector && item.wallet_id && i===-1) {
           _aRet.push(item);
         }
       })

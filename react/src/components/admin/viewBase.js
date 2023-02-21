@@ -1,6 +1,6 @@
 import AppBase from "../appBase";
 import {srv_getDomains} from "../../services/configure";
-import {getIdentityFromWallet, updatePartialIdentity, getMyConnecteddApps} from "../../services/me";
+import {getMyIdentities, getIdentityFromWallet, updatePartialIdentity, getMyConnecteddApps} from "../../services/me";
 import WidgetDialog from "../../utils/widgetDialog"
 
 import jsonwebtoken from "jsonwebtoken";
@@ -21,6 +21,7 @@ class AdminViewBase extends AppBase {
             // all registered domains
             aClaimedDomain: [],
             aReservedDomain: [],
+            iSelectedIdentity: null,
 
             // UI 
             view: props.view,              // the current view
@@ -65,6 +66,13 @@ class AdminViewBase extends AppBase {
 
     logUser() {
         let that=this;
+
+        // make sure we have the user s identities
+        let aId=getMyIdentities();
+        if(this.state.aIdentity.length<aId.length) {
+            this.setState({aIdentity: aId});
+        }
+        
         this.async_getUserFromCookie()
             .then(_obj => {
                 if(!_obj) {
