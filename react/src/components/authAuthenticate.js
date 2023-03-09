@@ -6,7 +6,7 @@ import {WidgetMessage} from "../utils/widgetMessage";
 
 import {CRITICALITY_LOW, CRITICALITY_NORMAL, CRITICALITY_SEVERE} from "../const/message";
 import {srv_prepare, srv_getMe} from "../services/authenticate";
-import {createPartialIdentity, updatePartialIdentity, getMyIdentities, getIdentityFromUsername, getIdentityFromWallet} from "../services/me";
+import {createPartialIdentity, updatePartialIdentity, getMyIdentities, getIdentityFromWallet} from "../services/me";
 
 import jsonwebtoken from "jsonwebtoken";
 
@@ -112,6 +112,15 @@ class AuthAuthenticate extends AuthConnect {
             this.setState({wallet_id: _aIdentity[_i].wallet_id});
             this.setState({wallet_name: _aIdentity[_i].wallet_name});
             this.setState({wallet_address: _aIdentity[_i].wallet_address});
+
+            // we want a new cookie with this identity
+            this._prepareSIWW({
+                wallet_address: _aIdentity[_i].wallet_address,
+                wallet_id: _aIdentity[_i].wallet_id,
+                blockchain_symbol: _aIdentity[_i].blockchain_symbol,
+                connector: _aIdentity[_i].connector
+            });        
+            
         }.bind(this);
 
         // update data with this selection
@@ -172,7 +181,8 @@ class AuthAuthenticate extends AuthConnect {
                     let objChainInfo=that.getSIWW().getChainInfoFromSymbol(decoded.wallet_id, decoded.blockchain_symbol);
 
                     // this identity must be here in cache, or we will create...
-                    if(getIdentityFromWallet(decoded.wallet_id, decoded.connector, decoded.blockchain_symbol)===null) {
+                    let tmpId=getIdentityFromWallet(decoded.wallet_id, decoded.connector, decoded.blockchain_symbol);
+                    if(tmpId===null) {
                         createPartialIdentity({
                             connector: decoded.connector,
                             blockchain_symbol: decoded.blockchain_symbol,
@@ -308,7 +318,8 @@ class AuthAuthenticate extends AuthConnect {
             }
             
             // make sure we have this user's identity in storage + update logo in case it changed
-            if(getIdentityFromWallet(_wallet.id, _wallet.connector, _wallet.chain.symbol)===null) {
+            let tmpId=getIdentityFromWallet(_wallet.id, _wallet.connector, _wallet.chain.symbol);
+            if(tmpId===null) {
                 createPartialIdentity({
                     connector: _wallet.connector,
                     blockchain_name: _wallet.chain.name,
@@ -335,12 +346,7 @@ class AuthAuthenticate extends AuthConnect {
             // did user just click to accept? we use this as Identity
             if(objParam.didUserClick) {
                 if(objParam.didUserAccept) {
-                    this._prepareSIWW({
-                        wallet_address: _wallet.address,
-                        wallet_id: _wallet.id,
-                        blockchain_symbol: _wallet.chain.symbol,
-                        connector: _wallet.connector
-                    });        
+                    // used to request cookie here, now in SelectUser
                 }
             }
             else {

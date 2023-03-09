@@ -18,22 +18,24 @@ import {getCache, setCache, removeCache} from './cache'
 //
 
 const CACHE_ME="me"
+let cacheMe=null;
 
 const getMyIdentities = () => {
-    let objMe=getCache(CACHE_ME);
+    if(!cacheMe) {
+      cacheMe=getCache(CACHE_ME);
+    }
 
     // do not keep shit...
     let _aRet=[];
-    if(objMe && objMe.identities) {
-      objMe.identities.forEach(item => {
+    if(cacheMe && cacheMe.identities) {
+      cacheMe.identities.forEach(item => {
         // do not accept duplicates 
-        let i=_aRet.findIndex(function (x) {return x.username===item.username});
+        let i=_aRet.findIndex(function (x) {return x.wallet_address===item.wallet_address});
         if(item.connector && item.wallet_id && i===-1) {
           _aRet.push(item);
         }
       })
     }
-
     return _aRet;
 }
 
@@ -44,30 +46,34 @@ const getMyConnecteddApps = ( )=> {
 
 const _findIdentityFromWallet = (_wallet_id, _connector, _blockchain) => {
   let aId=getMyIdentities();
+  let objRet=null;
   if(_wallet_id && _connector && aId && aId.length>0) {
     for (var i=0; i<aId.length; i++) {
       if (aId[i].wallet_id===_wallet_id && aId[i].connector === _connector) {
 
         // only return is specified blockchain is same
         if(!_blockchain || aId[i].blockchain_symbol === _blockchain) {
-          return aId[i];
+          objRet=aId[i];
+          break;
         }
       }
     }
   }
-  return null;
+  return objRet;
 }
 
 const _findIdentityFromUsername = (_id) => {
   let aId=getMyIdentities();
+  let objRet=null;
   if(_id && aId && aId.length>0) {
     for (var i=0; i<aId.length; i++) {
       if (aId[i].username===_id) {
-        return aId[i];
+        objRet=aId[i];
+        break;
       }
     }
   }
-  return null;
+  return objRet;
 }
 
 const getIdentityFromUsername = (_username) => {
@@ -100,9 +106,9 @@ const createPartialIdentity = (_objIdentity) => {
       blockchain_symbol: _objIdentity.blockchain_symbol
     });
 
-    // reload
-    objMe=getCache(CACHE_ME);     
+    // reload cache
   }
+  cacheMe=objMe;
   return objMe;
 }
 
@@ -118,10 +124,12 @@ const updatePartialIdentity = (_wallet_id, _connector, _objUpdate) => {
         aId[i]=objIdentity;
       }
     }
-    setCache(CACHE_ME, {
+
+    cacheMe={
       identities: aId,
       hasAgreedWelcome: true      // if we get there, we connected to a wallet, so we agreed...
-    });
+    };
+    setCache(CACHE_ME, cacheMe);
     return true;
   }
   return false;
@@ -139,10 +147,11 @@ const updateIdentity = (_username, _objUpdate) => {
         aId[i]=objIdentity;
       }
     }
-    setCache(CACHE_ME, {
+    cacheMe={
       identities: aId,
       hasAgreedWelcome: true      // if we get there, we connected to a wallet, so we agreed...
-    });
+    };
+    setCache(CACHE_ME, cacheMe);
     return true;
   }
   return false;
@@ -238,6 +247,7 @@ const isGrantedAccessToWebApp = (_username, _client_id) => {
 }
 
 const deleteMe = () => {
+  cacheMe=null;
   removeCache(CACHE_ME);
 }
 
@@ -246,16 +256,19 @@ const deleteMeAdmin = () => {
 }
 
 const getHasAgreedWelcome = () => {
-  let objMe=getCache(CACHE_ME);
-  return (objMe!==null && objMe.hasAgreedWelcome===true);
+  if(!cacheMe) {
+    cacheMe=getCache(CACHE_ME);
+  }
+  return (cacheMe!==null && cacheMe.hasAgreedWelcome===true);
 }
 
 const setHasAgreedWelcome = () => {
   let objMe=getCache(CACHE_ME);
-  setCache(CACHE_ME, {
+  cacheMe={
     identities: objMe? objMe.identities: [],
     hasAgreedWelcome: true
-  });
+  }
+  setCache(CACHE_ME, cacheMe);
 }
 
 export {
