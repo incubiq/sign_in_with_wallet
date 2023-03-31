@@ -14,7 +14,7 @@ global.gConfig={
 
     // cookie / auth
     appName: "TestApp_LoginSIWC",       // app Name used for naming the cookie
-    jwtKey: "any",                      // some basic key for encoding cookies (will get it from SIWW)
+    jwtKey: "any_secret_will_do",       // some basic key for encoding cookies (will get it from SIWW)
     authentication_expire: "72h",       // 72 hours expiration of our cookie
 
     // params for the SIWW session (includes where SIWW is hosted)

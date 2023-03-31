@@ -64,9 +64,6 @@ const express = require('express');
                 return;
             }
 
-            // get the secret key for decoding cookies 
-            gConfig.jwtKey=dataInfo.data.jwt_secret;
-
             // get domain info
             regSIWW.async_getDomainInfo(gConfig.siww)
             .then(function(_dataDomain){
