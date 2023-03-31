@@ -63,8 +63,8 @@ export default function AppRouter(props) {
             //TODO ... need to pass the key from server in a more secure way than this
             setCacheSecret(dataInfo.data.cache_secret);
             setCacheEncryption(dataInfo.data.cache_secret);
-            setAdminCookieSecret(dataInfo.data.jwt_secret);
-            setCookieSecret(dataInfo.data.jwt_secret);
+            setAdminCookieSecret(dataInfo.data.cookie_secret);
+            setCookieSecret(dataInfo.data.cookie_secret);
 
             // do we have a cookie?? if yes, we may already be authenticated
             let _name=dataInfo.data.isDebug? 'jwt_DEBUG_token_SIWW' : 'jwt_token_SIWW';

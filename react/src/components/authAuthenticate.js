@@ -137,12 +137,17 @@ class AuthAuthenticate extends AuthConnect {
                     },  this.props.AuthenticationCookieToken)
                     .then(dataUser => {
                         // update user data
-                        updatePartialIdentity(_aIdentity[_iSel].wallet_id, _aIdentity[_iSel].connector, {
-                            username: dataUser.data.username,
-                        });
-
-                        _aIdentity[_iSel].username=dataUser.data.username;
-                        setUser(_iSel);
+                        if(dataUser.data) {
+                            updatePartialIdentity(_aIdentity[_iSel].wallet_id, _aIdentity[_iSel].connector, {
+                                username: dataUser.data.username,
+                            });
+    
+                            _aIdentity[_iSel].username=dataUser.data.username;
+                            setUser(_iSel);    
+                        }
+                        else {
+                            console.log ("Could not get Username");
+                        }
                     })
                 }
                 else {
@@ -346,7 +351,15 @@ class AuthAuthenticate extends AuthConnect {
             // did user just click to accept? we use this as Identity
             if(objParam.didUserClick) {
                 if(objParam.didUserAccept) {
-                    // used to request cookie here, now in SelectUser
+
+                    // we want a new cookie with this identity 
+                    // todo: unfortunately this will call async_onAuthCookieReceived twice from here, no time to fix this for now, not such a big deal
+                    this._prepareSIWW({
+                        wallet_address: _wallet.address,
+                        wallet_id: _wallet.id,
+                        blockchain_symbol: _wallet.chain.symbol,
+                        connector: _wallet.connector
+                    });        
                 }
             }
             else {
