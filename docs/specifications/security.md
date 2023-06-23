@@ -6,7 +6,7 @@ End-user privacy is provided via the transfer of only the wallet public address,
 
 **Wallet and relying party combined security**
 
-The relying party (in our case SignWithWallet.com) implement this specification for improved security to the end-user. Specifically, the wallet displays the `domain` for which authentication is required, and the relying party validates the wallet signature server side befor authorizing the authentication.
+The relying party (in our case SignWithWallet.com) implement this specification for improved security to the end-user. Specifically, the wallet displays the `domain` for which authentication is required, and the relying party validates the wallet signature server side before authorizing the authentication.
 
 **Encryption**
 
