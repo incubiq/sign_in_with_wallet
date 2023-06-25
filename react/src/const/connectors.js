@@ -52,7 +52,7 @@
       blockchain_name: "Keplr",          // blockchain name  (can be changed by connector)
       window: "keplr",                   // the window element to explore
     }
-
+/*
     objRet[CONNECTOR_SIWP] = {
       symbol: CONNECTOR_SIWP,            // for internal use
       connector_name: "Phantom",         // name of this connector
@@ -62,7 +62,7 @@
       blockchain_name: "Phantom",        // blockchain name  (can be changed by connector)
       window: "phantom",                 // the window element to explore
     }
-
+*/
     return objRet;
   }
 
@@ -70,7 +70,7 @@ export {
   CONNECTOR_SIWC,
   CONNECTOR_SIWM,
   CONNECTOR_SIWK,
-  CONNECTOR_SIWP,
+//  CONNECTOR_SIWP,
   getConnectors,
   getDefault
 };

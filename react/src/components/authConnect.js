@@ -64,7 +64,7 @@ constructor(props) {
         let _ct=null;
         _objConnector.aConnector.forEach(item => {
             _ct=this.createConnector(_objConnector[item].symbol);
-            if(_ct) {
+            if(_ct && _objConnector[item].symbol!=="SIWP") {
                 // add to active bloackchain to explore, if can see it
                 _objConnector[item].aAcceptedBlockchain=_ct.getAcceptedChains();
                 if(window[_objConnector[item].window]) {
